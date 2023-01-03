@@ -1,0 +1,51 @@
+
+
+FILES			= $(PATH_SRCS)Main.cpp $(PATH_SRCS)PhoneBook.cpp $(PATH_SRCS)Contact.cpp \
+
+OBJS			= $(patsubst $(PATH_SRCS)%.cpp, $(PATH_OBJS)%.o, $(FILES))
+
+CC				= c++
+
+CFLAGS			= -Wall -Werror -Wextra -std=c++98
+
+NAME			= PhoneBook
+
+all: signat $(NAME)
+
+$(NAME): msg_in $(OBJS) msg_out
+	@$(CC) $(OBJS) $(CFLAGS) -o $(NAME)
+
+$(PATH_OBJS)%.o:	$(PATH_SRCS)%.cpp
+	@mkdir -p $(PATH_OBJS)
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@printf "$G■"
+
+clean:	
+	@rm -fr $(PATH_OBJS)
+
+fclean: clean
+	@rm -f PhoneBook
+	@echo $GBYE BYE !!! $G
+
+re: fclean all
+
+msg_in:
+	@echo $L"COMPILING CPP00 EX01..."$W
+
+msg_out:
+	@echo $L"\nCPP00 EX00 READY :)"$W
+
+signat:
+	@echo "$G\n\|/~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~\|/"
+	@echo " |             ---------------------------------------------             |"
+	@echo " |             *--* $LPROJET: CPP00 EX01    PAR: NADESJAR$G *--*             |"
+	@echo " |             ---------------------------------------------             |"
+	@echo "/|\~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~---~/|\ \n$W"
+
+L	= $(shell tput -Txterm setaf 5)
+R	= $(shell tput -Txterm setaf 1)
+G	= $(shell tput -Txterm setaf 2)
+C	= $(shell tput -Txterm setaf 6)
+W	= $(shell tput -Txterm setaf 7)
+
+.PHONY: all msg_in msg_out clean fclean re signat
