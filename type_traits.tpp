@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <ft_containers.hpp>
+#include "ft_containers.hpp"
 
 #ifndef FT_CONTAINERS_TYPE_TRAITS_TPP
 # define FT_CONTAINERS_TYPE_TRAITS_TPP

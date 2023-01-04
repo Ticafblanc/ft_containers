@@ -128,7 +128,7 @@ A std::pair object containing the given values. */
 //creates a pair object of type, defined by the argument types
 //Creates a ft::pair object, deducing the target type from the types of arguments.
 template <class T1, class T2>
-ft::pair<T1, T2> make_pair(T1 t, T2 u) {
+inline ft::pair<T1, T2> make_pair(const T1 t, const T2 u) {
     return ft::pair<T1, T2>(t, u);
 };
 

@@ -28,6 +28,8 @@
 
 //#include <map.tpp> //container > ft::map
 
+//#include <vector.tpp> //container >> ft:vector
+
 //#include <stack.tpp> //container >> ft::stack
 
 //#include <iterator.tpp> //contain >> ft::iterator_trait / ft::reverse_iterator

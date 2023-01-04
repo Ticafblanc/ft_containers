@@ -10,20 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <chrono>
-#include <deque>
-#include <unistd.h>
-
-#if REAL  //CREATE A REAL STL EXAMPLE
-    #include <type_traits>
-	namespace ft = std;
-#else
-#include "../type_traits.tpp"
-#endif
+#include "Unit_test.hpp"
 
 int main(){
-    Test ft::enable_if https://en.cppreference.com/w/cpp/types/enable_if
+    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+    //Test ft::enable_if https://en.cppreference.com/w/cpp/types/enable_if
 
     std::cout << "####  Test >> ft::enable_if  ####" << std::endl;
 
@@ -32,20 +23,20 @@ int main(){
 
     std::cout << "####  Test >> ft::is_integral  ####" << std::endl;
 
-    std::cout << std::boolalpha << is_integral<float>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<std::string>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<double>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<bool>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<char>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<short>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<int>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<long>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<long long>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<unsigned char>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<unsigned short>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<unsigned int>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<unsigned long>::value << std::endl;
-    std::cout << std::boolalpha << is_integral<unsigned long long>::value << std::endl << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<float>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<std::string>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<double>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<bool>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<char>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<short>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<int>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<long>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<long long>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<unsigned char>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<unsigned short>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<unsigned int>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<unsigned long>::value << std::endl;
+    std::cout << std::boolalpha << ft::is_integral<unsigned long long>::value << std::endl << std::endl;
 
 
     //Test ft::equal https://en.cppreference.com/w/cpp/algorithm/equal
@@ -55,8 +46,8 @@ int main(){
     std::string radar("radar");
     std::string hello("hello");
 
-    std::cout << ((std::equal(radar.begin(), radar.begin() + radar.size()/2, radar.rbegin())) ? "good" : "bad" ) << std::endl;
-    std::cout << ((std::equal(hello.begin(), hello.begin() + hello.size()/2, hello.rbegin())) ? "good" : "bad" ) << std::endl << std::endl;
+    std::cout << ((ft::equal(radar.begin(), radar.begin() + radar.size()/2, radar.rbegin())) ? "good" : "bad" ) << std::endl;
+    std::cout << ((ft::equal(hello.begin(), hello.begin() + hello.size()/2, hello.rbegin())) ? "good" : "bad" ) << std::endl << std::endl;
 
     //Test ft::lexicographical_compare https://en.cppreference.com/w/cpp/algorithm/lexicographical_compare
 
@@ -96,5 +87,7 @@ int main(){
     for (int i = 0; i < 6; ++i)
         std::cout << *(itv++) << ' ';
     std::cout << '\n' << std::endl;
+    std::cout << "execution time : " << std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now() - start).count() << "ms" << std::endl;
     return 0;
 }

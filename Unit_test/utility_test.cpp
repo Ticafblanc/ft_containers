@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utility_test.cpp                                   :+:      :+:    :+:   */
+/*   Unit_test.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mdoquocb <mdoquocb@student.42quebec.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,17 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include <chrono>
-#include <deque>
-#include <unistd.h>
-
-#if REAL  //CREATE A REAL STL EXAMPLE
-    #include <utility>
-	namespace ft = std;
-#else
-    #include "../utility.tpp"
-#endif
+#include "Unit_test.hpp"
 
 int main(){
     pid_t pid;
@@ -62,10 +52,10 @@ int main(){
                   << "(" << p5.first << ", " << p5.second << ")\n";
 
         // build a pair from a reference to int and an array (decayed to pointer)
-        ft::pair<int, int *> p6 = ft::make_pair(n, a);
+        ft::pair<int, int*> p6 = ft::make_pair(n, a);
         n = 7;
         std::cout << "The value of p2 is "
-                  << "(" << p6.first << ", " << *(p6.second + 2) << ")\n";
+                  << "(" << p6.first << ", " << (p6.second + 2) << ")\n";
 
         //End of calcule time to run ...
         std::cout << std::endl;
