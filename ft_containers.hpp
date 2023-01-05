@@ -19,6 +19,8 @@
 #include <iterator>
 //std::deque
 #include <deque>
+# include <memory>//a voir si add to tmp
+# include <limits>// a voir si add to tmp
 
 #ifndef FT_CONTAINERS_FT_CONTAINERS_HPP
 # define FT_CONTAINERS_FT_CONTAINERS_HPP
