@@ -34,7 +34,11 @@ std::enable_if can be used in many forms, including:
     as a class template or function template parameter
 
 The behavior of a program that adds specializations for enable_if is undefined.*/
+struct true_type {
+};
 
+struct false_type {
+};
 
 template<bool B, class T = void>
 struct enable_if {};
@@ -55,7 +59,7 @@ Template parameters
 T 	- 	a type to check */
 
 
-template <typename T>
+template <typename>
 struct is_integral { static const bool value = false; };
 
 template <>

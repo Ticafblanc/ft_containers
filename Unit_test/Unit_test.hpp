@@ -38,6 +38,7 @@ struct Buffer
     #include <utility>
 	namespace ft = std;
 #else
+    #include "../vector.tpp"
     #include "../stack.tpp"
     #include "../type_traits.tpp"
     #include "../algorithm.tpp"
