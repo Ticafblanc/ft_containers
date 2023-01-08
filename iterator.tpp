@@ -19,6 +19,112 @@
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
+/*legacy iterator struct*/
+template <class T, class Distance>
+struct input_iterator {
+    typedef std::input_iterator_tag             iterator_category;
+    typedef T                                   value_type;
+    typedef Distance                            difference_type;
+    typedef T*                                  pointer;
+    typedef T&                                  reference;
+};
+
+struct output_iterator {
+    typedef std::output_iterator_tag            iterator_category;
+    typedef void                                value_type;
+    typedef void                                difference_type;
+    typedef void                                pointer;
+    typedef void                                reference;
+};
+
+template <class T, class Distance>
+struct forward_iterator {
+    typedef std::forward_iterator_tag           iterator_category;
+    typedef T                                   value_type;
+    typedef Distance                            difference_type;
+    typedef T*                                  pointer;
+    typedef T&                                  reference;
+};
+
+template <class T, class Distance>
+struct bidirectional_iterator {
+    typedef std::bidirectional_iterator_tag     iterator_category;
+    typedef T                                   value_type;
+    typedef Distance                            difference_type;
+    typedef T*                                  pointer;
+    typedef T&                                  reference;
+};
+
+template <class T, class Distance>
+struct random_access_iterator {
+    typedef std::random_access_iterator_tag     iterator_category;
+    typedef T                                   value_type;
+    typedef Distance                            difference_type;
+    typedef T*                                  pointer;
+    typedef T&                                  reference;
+};
+
+/*define iterator_category*/
+template <class T, class Distance>
+inline std::input_iterator_tag  iterator_category(const input_iterator<T, Distance>&)
+{ return std::input_iterator_tag(); }
+
+inline std::output_iterator_tag iterator_category(const output_iterator&)
+{ return std::output_iterator_tag(); }
+
+template <class T, class Distance>
+inline std::forward_iterator_tag iterator_category(const forward_iterator<T, Distance>&)
+{ return std::forward_iterator_tag(); }
+
+template <class T, class Distance>
+inline std::bidirectional_iterator_tag iterator_category(const bidirectional_iterator<T, Distance>&)
+{ return std::bidirectional_iterator_tag(); }
+
+template <class T, class Distance>
+inline std::random_access_iterator_tag iterator_category(const random_access_iterator<T, Distance>&)
+{ return std::random_access_iterator_tag(); }
+
+template <class T>
+inline std::random_access_iterator_tag iterator_category(const T*)
+{ return std::random_access_iterator_tag(); }
+
+/*traits of category*/
+template <bool B>
+struct is_iterator_tag { static const bool value = false; };
+
+template <>
+struct is_iterator_tag<true> { static const bool value = true; };
+
+template <class T>
+struct is_input_iterator { static const bool value = false; };
+
+template <>
+struct is_input_iterator<std::input_iterator_tag> { static const bool value = true; };
+
+template <class T>
+struct is_output_iterator { static const bool value = false; };
+
+template <>
+struct is_output_iterator<std::output_iterator_tag> { static const bool value = true; };
+
+template <class T>
+struct is_forward_iterator { static const bool value = false; };
+
+template <>
+struct is_forward_iterator<std::forward_iterator_tag> { static const bool value = true; };
+
+template <class T>
+struct is_bidirectional_iterator { static const bool value = false; };
+
+template <>
+struct is_bidirectional_iterator<std::bidirectional_iterator_tag> { static const bool value = true; };
+
+template <class T>
+struct is_random_access_iterator { static const bool value = false; };
+
+template <>
+struct is_random_access_iterator<std::random_access_iterator_tag> { static const bool value = true; };
+
     //ft::iterator_trait https://en.cppreference.com/w/cpp/iterator/iterator_traits
 
 /*std::iterator_traits is the type trait class that provides uniform interface to the properties of LegacyIterator

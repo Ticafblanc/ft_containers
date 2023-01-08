@@ -20,6 +20,7 @@ int main(){
     std::vector<int>            i(200,45);
     std::vector<int>::iterator it = i.begin();
     std::vector<int>::iterator ite = i.end();
+
 //    ft::vector<char>            ft_void;
 //    std::vector<char>           std_void;
 //    ft::vector<int>             ft_alloc(std::allocator<int>);
@@ -28,7 +29,7 @@ int main(){
 //    std::vector<double>         std_count(5, 5.5);
     ft::vector<int>             ft_integral(200, 45);
     std::vector<int>             std_integral(200, 45);
-    std::vector<std::vector<int> >            ft_inpuit(it,it + 200);
+    std::vector<std::vector<int> >            ft_input(it,it + 200);
     ft::vector<std::vector<int> >             std_inputit(it, it + 200);
 //    ft::vector<std::string>          ft_is_integral(5, 45.67,std::allocator<std::string>());
 //    std::vector<std::string>         std_is_integral(5, 45.67,std::allocator<std::string>());

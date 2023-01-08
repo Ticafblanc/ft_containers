@@ -116,10 +116,10 @@ public:
 
 
     /*Default constructor. Constructs an empty container with a default-constructed allocator.*/
-    vector() : _Base(){}
+//    vector() : _Base(){}
 
     /*Constructs an empty container with the given allocator alloc*/
-    explicit vector(const Allocator& alloc )  : _Base(alloc){}
+//    explicit vector(const Allocator& alloc )  : _Base(alloc){}
 
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
@@ -129,15 +129,24 @@ public:
 
     /* Constructs the container with the contents of the range [first, last).
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
-     if InputIt is an integral type.*/
+     if InputIt is an integral type.
+    Given the distance between first and last as N ,
+    if first and last are both forward, bidirectional or random-access iterators,
+    the copy constructor of T is only called N  times, and
+    no reallocation occurs.
+    otherwise (first and last are just input iterators),
+    the copy constructor of T is called O(N) times, and
+    reallocation occurs O(log N) times.
+     */
     template <class InputIt>
-    vector(InputIt first, InputIt last,
-           const allocator_type& alloc = allocator_type())
-           : _Base(alloc){
+    vector(InputIt first,
+           typename enable_if<!is_integral<InputIt>::value, InputIt>::type last,
+       const allocator_type& alloc = allocator_type())
+       : _Base(alloc){
         //typedef typename ft::is_integral<InputIt>::value   Integral;
         std::cout << ft::is_integral<InputIt>::value << std::endl;
         //ft::enable_if< ft::is_integral<InputIt>::value > tp;
-        init_InputIt(first, last, ft::enable_if< !ft::is_integral<InputIt>::value >);
+        //init_InputIt<InputIt>(first, last);//, );
     };
 
 //    vector(const vector& x) {
@@ -166,8 +175,11 @@ public:
     template <class Iter, class Size, class iT>
     inline Iter init(Iter ptr, Size count, const iT& value)
     {
-        for (size_t i = 0; i < count; i++, ++ptr)
+        for (size_t i = 0; i < count; i++, ++ptr){
             *ptr = value;
+            std::cout << i ;
+        }
+
         return ptr;
     }
 
@@ -194,23 +206,24 @@ public:
     /* is integrale type
      vector(static_cast<size_type>(first), static_cast<value_type>(last), a) if InputIt is an integral typ
      */
-    template <class InputIt, typename type>
-    void init_InputIt(InputIt first, InputIt last) {
-        std::cout <<"false" << std::endl;
+//    template <class Integral>
+//    void init_InputIt(Integral Size_first, Integral Value_last) {
+//        std::cout <<"true" << std::endl;
+//        this->ptr_start = allocator_type::allocator(static_cast<size_type >(S_first));
+//        this->ptr_finish = init(ptr_start, static_cast<size_type >(S_first), static_cast<value_type >(V_last));
+//        this->ptr_end = ptr_start + static_cast<size_type >(S_first);
+//    }
+//
+//    template <class InputIt>
+//    void init_InputIt(InputIt first, InputIt last) {
+//        std::cout <<"false" << std::endl;
 //        this->ptr_start = allocator_type::allocator(static_cast<size_type >(S_first));
 //        this->ptr_finish = init(ptr_start, static_cast<size_type >(S_first), static_cast<value_type >(V_last));
 //        this->ptr_end = ptr_start + static_cast<size_type >(S_first);
 //
 //        _M_range_initialize(__first, __last, __ITERATOR_CATEGORY(__first));
-    }
+//    }
 
-    template <class Integral>
-    void init_InputIt(Integral Size_first, Integral Value_last) {
-        std::cout <<"true" << std::endl;
-//        this->ptr_start = allocator_type::allocator(static_cast<size_type >(S_first));
-//        this->ptr_finish = init(ptr_start, static_cast<size_type >(S_first), static_cast<value_type >(V_last));
-//        this->ptr_end = ptr_start + static_cast<size_type >(S_first);
-    }
 
 
 
