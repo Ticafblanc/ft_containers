@@ -41,6 +41,7 @@ struct Buffer
     #include "../vector.tpp"
     #include "../stack.tpp"
     #include "../type_traits.tpp"
+    #include "../iterator.tpp"
     #include "../algorithm.tpp"
     #include "../utility.tpp"
 #endif

@@ -14,25 +14,33 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <iterator>
 
 int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     std::vector<int>            i(200,45);
     std::vector<int>::iterator it = i.begin();
-    std::vector<int>::iterator ite = i.end();
+    std::map<int> op();
+    ft::vector<int>::iterator ite = i.end();
+    size_t s = 2;
+    char    c ='t';
+    std::istream_iterator<std::vector<int>, std::vector<int>::difference_type> in();
+    in = i.begin();
 
-//    ft::vector<char>            ft_void;
-//    std::vector<char>           std_void;
-//    ft::vector<int>             ft_alloc(std::allocator<int>);
-//    std::vector<int>            std_alloc(std::allocator<int>);
-//    ft::vector<double>          ft_count(5, 5.5);
-//    std::vector<double>         std_count(5, 5.5);
-    ft::vector<int>             ft_integral(200, 45);
+    ft::vector<char>            ft_void;
+    std::vector<char>           std_void;
+    ft::vector<int>             ft_alloc(std::allocator<int>);
+    std::vector<int>            std_alloc(std::allocator<int>);
+    ft::vector<double>          ft_count(s, c);
+    std::vector<double>         std_count(s, c);
+    int i1 = 200;
+    int i2= 45;
+    ft::vector<int>             ft_integrl(200, 45);
     std::vector<int>             std_integral(200, 45);
-    std::vector<std::vector<int> >            ft_input(it,it + 200);
-    ft::vector<std::vector<int> >             std_inputit(it, it + 200);
-//    ft::vector<std::string>          ft_is_integral(5, 45.67,std::allocator<std::string>());
-//    std::vector<std::string>         std_is_integral(5, 45.67,std::allocator<std::string>());
+    ft::vector<int>             ft_integralv(i1, i2);
+    std::vector<int>             std_integralv(i1, i2);
+    std::vector<int>            ft_input = std::vector<int >(it, it + 200);
+    ft::vector<int>             std_input = ft::vector<int>(it, it + 200);
 
 
 	std::cout << std::endl;

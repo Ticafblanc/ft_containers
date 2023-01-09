@@ -95,31 +95,31 @@ struct is_iterator_tag { static const bool value = false; };
 template <>
 struct is_iterator_tag<true> { static const bool value = true; };
 
-template <class T>
+template <typename>
 struct is_input_iterator { static const bool value = false; };
 
 template <>
 struct is_input_iterator<std::input_iterator_tag> { static const bool value = true; };
 
-template <class T>
+template <typename>
 struct is_output_iterator { static const bool value = false; };
 
 template <>
 struct is_output_iterator<std::output_iterator_tag> { static const bool value = true; };
 
-template <class T>
+template <typename>
 struct is_forward_iterator { static const bool value = false; };
 
 template <>
 struct is_forward_iterator<std::forward_iterator_tag> { static const bool value = true; };
 
-template <class T>
+template <typename>
 struct is_bidirectional_iterator { static const bool value = false; };
 
 template <>
 struct is_bidirectional_iterator<std::bidirectional_iterator_tag> { static const bool value = true; };
 
-template <class T>
+template <typename>
 struct is_random_access_iterator { static const bool value = false; };
 
 template <>
@@ -179,13 +179,19 @@ class reverse_iterator : public std::iterator<typename iterator_traits<Iter>::it
                                                 typename iterator_traits<Iter>::difference_type,
                                                 typename iterator_traits<Iter>::pointer,
                                                 typename iterator_traits<Iter>::reference>{
+private:
+    typedef std::iterator<typename iterator_traits<Iter>::iterator_category,
+            typename iterator_traits<Iter>::value_type,
+            typename iterator_traits<Iter>::difference_type,
+            typename iterator_traits<Iter>::pointer,
+            typename iterator_traits<Iter>::reference>              _Vector;
 public:
     typedef Iter                                                    iterator_type;
-    typedef typename iterator_traits<Iter>::iterator_category       iterator_category;
-    typedef typename iterator_traits<Iter>::value_type              value_type;
-    typedef typename iterator_traits<Iter>::difference_type         difference_type;
-    typedef typename iterator_traits<Iter>::pointer                 pointer;
-    typedef typename iterator_traits<Iter>::reference               reference;
+    typedef typename _Vector::iterator_category                     iterator_category;
+    typedef typename _Vector::value_type                            value_type;
+    typedef typename _Vector::difference_type                       difference_type;
+    typedef typename _Vector::pointer                               pointer;
+    typedef typename _Vector::reference                             reference;
 
     /*Parameters constructor
     x 	- 	iterator to adapt

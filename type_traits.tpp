@@ -34,11 +34,9 @@ std::enable_if can be used in many forms, including:
     as a class template or function template parameter
 
 The behavior of a program that adds specializations for enable_if is undefined.*/
-struct true_type {
-};
+struct true_type { static const bool value = true; };
 
-struct false_type {
-};
+struct false_type { static const bool value = false; };
 
 template<bool B, class T = void>
 struct enable_if {};
@@ -60,40 +58,40 @@ T 	- 	a type to check */
 
 
 template <typename>
-struct is_integral { static const bool value = false; };
+struct is_integral { typedef false_type type; };
 
 template <>
-struct is_integral<bool> { static const bool value = true; };
+struct is_integral<bool> {  typedef true_type type; };
 
 template <>
-struct is_integral<char> { static const bool value = true; };
+struct is_integral<char> { typedef true_type type; };
 
 template <>
-struct is_integral<short> { static const bool value = true; };
+struct is_integral<short> { typedef true_type type; };
 
 template <>
-struct is_integral<int> { static const bool value = true; };
+struct is_integral<int> { typedef true_type type; };
 
 template <>
-struct is_integral<long> { static const bool value = true; };
+struct is_integral<long> { typedef true_type type; };
 
 template <>
-struct is_integral<long long> { static const bool value = true; };
+struct is_integral<long long> { typedef true_type type; };
 
 template <>
-struct is_integral<unsigned char> { static const bool value = true; };
+struct is_integral<unsigned char> { typedef true_type type; };
 
 template <>
-struct is_integral<unsigned short> { static const bool value = true; };
+struct is_integral<unsigned short> { typedef true_type type; };
 
 template <>
-struct is_integral<unsigned int> { static const bool value = true; };
+struct is_integral<unsigned int> { typedef true_type type; };
 
 template <>
-struct is_integral<unsigned long> { static const bool value = true; };
+struct is_integral<unsigned long> { typedef true_type type; };
 
 template <>
-struct is_integral<unsigned long long> { static const bool value = true; };
+struct is_integral<unsigned long long> { typedef true_type type; };
 
 //supplement
 
