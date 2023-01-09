@@ -20,7 +20,6 @@ int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     std::vector<int>            i(200,45);
     std::vector<int>::iterator it = i.begin();
-    std::map<int> op();
     ft::vector<int>::iterator ite = i.end();
     size_t s = 2;
     char    c ='t';

@@ -22,8 +22,10 @@
 #include <deque>
 //std::allocator
 # include <memory>
+//std::mememove
+#include <cstring>
 
-# include <limits>// a voir si add to tmp
+//# include <limits>// a voir si add to tmp
 
 #ifndef FT_CONTAINERS_FT_CONTAINERS_HPP
 # define FT_CONTAINERS_FT_CONTAINERS_HPP
