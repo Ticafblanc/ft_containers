@@ -20,26 +20,31 @@ int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     std::vector<int>            i(200,45);
     std::vector<int>::iterator it = i.begin();
-    ft::vector<int>::iterator ite = i.end();
-    size_t s = 2;
+    //ft::vector<int>::iterator ite = i.end();
+    ft::vector<int>            fi(200,45);
+    ft::vector<int>::iterator fit = fi.begin();
+    std::cout << i.max_size() << std::endl;
+    std::cout << fi.max_size() << std::endl;
+    size_t s = 9;
     char    c ='t';
-    std::istream_iterator<std::vector<int>, std::vector<int>::difference_type> in();
-    in = i.begin();
+//    std::istream_iterator<std::vector<int>, std::vector<int>::difference_type> in();
+//    in = i.begin();
 
-    ft::vector<char>            ft_void;
-    std::vector<char>           std_void;
-    ft::vector<int>             ft_alloc(std::allocator<int>);
-    std::vector<int>            std_alloc(std::allocator<int>);
-    ft::vector<double>          ft_count(s, c);
-    std::vector<double>         std_count(s, c);
-    int i1 = 200;
-    int i2= 45;
-    ft::vector<int>             ft_integrl(200, 45);
-    std::vector<int>             std_integral(200, 45);
-    ft::vector<int>             ft_integralv(i1, i2);
-    std::vector<int>             std_integralv(i1, i2);
-    std::vector<int>            ft_input = std::vector<int >(it, it + 200);
-    ft::vector<int>             std_input = ft::vector<int>(it, it + 200);
+//    ft::vector<char>            ft_void;
+//    std::vector<char>           std_void;
+//    ft::vector<int>             ft_alloc(std::allocator<int>);
+//    std::vector<int>            std_alloc(std::allocator<int>);
+//    ft::vector<char>          ft_count(s, c);
+    std::vector<int>         std_count(s, c);
+
+//    int i1 = 200;
+//    int i2= 45;
+//    ft::vector<int>             ft_integrl(200, 45);
+//    std::vector<int>             std_integral(200, 45);
+//    ft::vector<int>             ft_integralv(i1, i2);
+//    std::vector<int>             std_integralv(i1, i2);
+//    std::vector<int>            ft_input = std::vector<int >(it, it + 200);
+   // ft::vector<int>             std_input = ft::vector<int>(it, it + 200);
 
 
 	std::cout << std::endl;
