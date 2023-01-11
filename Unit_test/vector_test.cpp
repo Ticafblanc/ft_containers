@@ -18,6 +18,7 @@
 
 int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+    std::vector<bool>               b();
     std::vector<int>            i(200,45);
     std::vector<int>::iterator it = i.begin();
     //ft::vector<int>::iterator ite = i.end();

@@ -24,6 +24,8 @@
 # include <memory>
 //std::mememove
 #include <cstring>
+//std::swap
+#include <algorithm>
 
 //# include <limits>// a voir si add to tmp
 

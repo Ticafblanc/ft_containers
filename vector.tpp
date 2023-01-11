@@ -532,23 +532,34 @@ public:
         return iterator(&container_[start]);
     };
 
-//    void swap (vector& x) {
-//        value_type *tmp = x.container_;
-//        size_type tmp_size = x.size_;
-//        size_type tmp_capacity = x.capacity_;
-//
-//        x.container_ = container_;
-//        container_ = tmp;
-//
-//        x.size_ = size_;
-//        size_ = tmp_size;
-//
-//        x.capacity_ = capacity_;
-//        capacity_ = tmp_capacity;
-//    };
-//
+/*
+*=============================================================
+*|                     Modifiers                             |
+*=============================================================
+*/
+
+public:
     void clear() { erase(begin(), end()); };
 
+
+    /*
+     * Exchanges the contents of the container with those of other.
+     * Does not invoke any move, copy, or swap operations on individual
+     * elements.All iterators and references remain valid. The
+     * past-the-end iterator is invalidated.*/
+    void swap (vector& other) {
+        std::swap(this->_Base::_ptr_start, other._Base::_ptr_start);
+        std::swap(this->_Base::_ptr_finish, other._Base::_ptr_finish);
+        std::swap(this->_Base::_ptr_end, other._Base::_ptr_end);
+    };
+
+//private:
+//    iterator swap_it(iterator& It1, iterator& It2)
+//    {
+//        iterator  *tmp = It1;
+//        It1 = It2;
+//        It2 = tmp;
+//    }
 };
 
 /*
@@ -603,8 +614,8 @@ template< class T, class Alloc >
 bool operator>=( const std::vector<T,Alloc>& lhs,
                  const std::vector<T,Alloc>& rhs ) { return !(lhs < rhs); }
 
-template <class T>
-void swap (vector<T>& x, vector<T>& y) { x.swap(y); };//a valider
+//template <class T>
+//void swap (vector<T>& x, vector<T>& y) { x.swap(y); };//a valider
 
 /*  Specializations
 The standard library provides a specialization of std::vector for the type bool, which may be optimized for space
