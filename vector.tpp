@@ -374,7 +374,11 @@ public:
 */
 
 public:
-
+    /*Erases all elements from the container. After this call, size() returns zero.
+     * Invalidates any references, pointers, or iterators referring to contained elements.
+     * Any past-the-end iterators are also invalidated.
+     * Leaves the capacity() of the vector unchanged (note: the standard's restriction on
+     * the changes to capacity is in the specification of vector::reserve, see [1])*/
     void clear() { erase(V_begin(), V_end()); };
 
     /*
@@ -416,37 +420,8 @@ public:
     template <class InputIt>
     iterator    insert  (const_iterator pos, InputIt first, InputIt last)
      {
-         init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
-
-        size_type offset = position - begin();
-        InputIterator tmp = first;
-        difference_type n = 0;
-
-        while (tmp != last) {
-            n++;
-            tmp++;
-        }
-
-        if (size_ + n > capacity_) {
-            if (capacity_ == 0)
-                reserve(n);
-            else {
-                if (size_ * 2 >= size_ + n)
-                    reserve(size_ * 2);
-                else
-                    reserve(size_ + n);
-            }
-        }
-
-        for (size_type i = n + size_ - 1; i > offset + n - 1; i--) {
-            alloc_.construct(&container_[i], container_[i - n]);
-            alloc_.destroy(&container_[i - n]);
-        }
-        for (size_type i = offset; i < offset + n; i++) {
-            alloc_.construct(&container_[i], *first);
-            first++;
-            size_++;
-        }
+        init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+        return (first == last) ? pos: begin() + pos;
     };
 
     /*Erases the specified elements from the container.
@@ -569,7 +544,6 @@ private:
     {
         if ((V_finish() - V_begin()) + (last - first) + 1 >= V_end() - V_begin())
             reserve(New_size (begin(), end(), static_cast<size_t>(last - first)));
-        V_begin() = this->_Base::_alloc.allocate(last - first);
         V_end() = V_begin() + (last - first);
         std::memmove(V_begin(), first,
                      static_cast<std::size_t>(last - first) * sizeof(value_type));
