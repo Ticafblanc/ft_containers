@@ -137,7 +137,7 @@ public:
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
                     : _Base(count, alloc) {
-        _Base::_ptr_finish = init<value_type *, size_type, T>(_Base::_ptr_start, count, value);
+        V_finish() = init<value_type *, size_type, T>(V_begin(), count, value);
     }
 
     /* Constructs the container with the contents of the range [first, last).
@@ -167,7 +167,7 @@ public:
         return *this;
     };
 
-    ~vector () { _Base::_alloc.destroy(_Base::_ptr_start); };
+    ~vector () { _Base::_alloc.destroy(V_begin()); };
 
 private:
 
@@ -179,7 +179,6 @@ private:
         for (size_t i = 0; i < count; i++, ++ptr)
         {
             *ptr = value;
-//            std::cout << i ;
         }
         return ptr;
     }
@@ -198,29 +197,28 @@ private:
     /*   Given the distance between first and last as N ,
     if first and last are both forward, bidirectional or random-access iterators,
     the copy constructor of T is only called N  times, and
-    no reallocation occurs.
-     */
+    no reallocation occurs.*/
     template <class InputIt>
     void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag)
     {
         std::cout<< "in random iterator constructor"<<std::endl;
-        this->_Base::_ptr_start = _Base::_alloc.allocate(last - first);
-        this->_Base::_ptr_end = this->_Base::_ptr_start + (last - first);
-        std::memmove(this->_Base::_ptr_start, first, static_cast<std::size_t>(last - first) * sizeof(value_type));
-        this->_Base::_ptr_finish = this->_Base::_ptr_start + (last - first);
+        V_begin() = this->_Base::_alloc.allocate(last - first);
+        V_end() = V_begin() + (last - first);
+        std::memmove(V_begin(), first,
+                     static_cast<std::size_t>(last - first) * sizeof(value_type));
+        V_finish() = V_begin() + (last - first);
     }
 
     /*
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
-     if InputIt is an integral type.
-     */
+     if InputIt is an integral type.*/
     template <class Integral>
     void init_InputIt (Integral  first, Integral last, true_type)
     {
         std::cout<< "in integral haha iterator constructor"<<std::endl;
-        this->_Base::_ptr_start = this->_alloc.allocate(static_cast<size_type >(first));
-        this->_Base::_ptr_finish = init(this->_Base::_ptr_start, static_cast<size_type >(first), static_cast<value_type >(last));
-        this->_Base::_ptr_end = this->_Base::_ptr_start + static_cast<size_type >(first);
+        V_begin() = this->_alloc.allocate(static_cast<size_type >(first));
+        V_finish() = init(V_begin(), static_cast<size_type >(first), static_cast<value_type >(last));
+        V_end() = V_begin() + static_cast<size_type >(first);
     }
 
     /*define the iterator tag*/
@@ -259,27 +257,13 @@ public:
     const_reverse_iterator rbegin() const { return end(); };
     const_reverse_iterator rend() const   { return begin(); };
 
-//
-//
-//    void resize (size_type n, value_type val = value_type()) {
-//        if (n > capacity_) {
-//            if (capacity_ == 0)
-//                reserve(n);
-//            else {
-//                if (size_ * 2 >= n)
-//                    reserve(size_ * 2);
-//                else
-//                    reserve(n);
-//            }
-//        }
-//        while (size_ < n) {
-//            push_back(val);
-//        }
-//        while (size_ > n) {
-//            pop_back();
-//        };
-//    }
-
+private:
+    iterator V_begin()              { return &this->_Base::_ptr_start; };
+    const_iterator V_begin() const  { return &this->_Base::_ptr_start; };
+    iterator V_finish()             { return &this->_Base::_ptr_finish; };
+    const_iterator V_finish() const { return &this->_Base::_ptr_finish; };
+    iterator V_end()                { return &this->_Base::_ptr_end; };
+    const_iterator V_end() const    { return &this->_Base::_ptr_end; };
 
 /*
 *=============================================================
@@ -290,10 +274,10 @@ public:
 public:
 
     /*Checks if the container has no elements, i.e. whether begin() == end().*/
-    bool        empty()     const   { return begin() == end(); };
+    bool        empty()     const   { return V_begin() == V_finish(); };
 
     /*Returns the number of elements in the container, i.e. std::distance(begin(), end()).*/
-    size_type   size()      const   { return end() - begin(); };
+    size_type   size()      const   { return V_finish() - V_begin(); };
 
     /*Returns the maximum number of elements the container is able to hold due to system or library implementation
      * limitations, i.e. std::distance(begin(), end()) for the largest container.*/
@@ -305,28 +289,28 @@ public:
      * reserve() does not change the size of the vector.
      * if new_cap is greater than capacity(), all iterators, including the past-the-end iterator, and all references
      * to the elements are invalidated. Otherwise, no iterators or references are invalidated*/
-    void reserve (size_type new_cap) {
-         if (capacity() < new_cap)
-         {
-             iterator   tmp = this->_Base::_alloc.allocate(new_cap);
-
-             v.__construct_at_end(this->begin(), this->end());
-             swap(__v);
-             invalidate_all_iterators();
-         }
-        value_type *new_container = alloc_.allocate(new_cap);
-
-        for (size_type i = 0; i < size_; i++) {
-            alloc_.construct(&new_container[i], container_[i]);
-            alloc_.destroy(&container_[i]);
-        }
-        alloc_.deallocate(container_, capacity_);
-        capacity_ = new_cap;
-        container_ = new_container;
-    };
+//    void reserve (size_type new_cap) {
+//         if (capacity() < new_cap)
+//         {
+//             iterator   tmp = this->_Base::_alloc.allocate(new_cap);
+//
+//             v.__construct_at_end(this->begin(), this->end());
+//             swap(__v);
+//             invalidate_all_iterators();
+//         }
+//        value_type *new_container = alloc_.allocate(new_cap);
+//
+//        for (size_type i = 0; i < size_; i++) {
+//            alloc_.construct(&new_container[i], container_[i]);
+//            alloc_.destroy(&container_[i]);
+//        }
+//        alloc_.deallocate(container_, capacity_);
+//        capacity_ = new_cap;
+//        container_ = new_container;
+//    };
 
     /*Returns the number of elements that the container has currently allocated space for.*/
-    size_type   capacity()  const   { return static_cast<size_type>(end() - begin()); };
+    size_type   capacity()  const   { return static_cast<size_type>(V_finish() - V_begin()); };
 
 //
 
@@ -357,78 +341,64 @@ public:
 //    reference back() { return container_[size_ - 1]; };
 //    const_reference back() const { return container_[size_ - 1]; };
 //
-    template <class InputIterator>
-    void assign (InputIterator first, InputIterator last,
-                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
-        clear();
-        InputIterator tmp = first;
-        difference_type n = 0;
-
-        while (tmp != last) {
-            n++;
-            tmp++;
-        }
-
-        reserve(n);
-        insert(begin(), first, last);
-    };
-
-    void assign (size_type n, const value_type& val) {
-        clear();
-        reserve(n);
-        insert(begin(), n, val);
-    };
-
-    /*
-    Appends the given element value to the end of the container.
-
-    1) The new element is initialized as a copy of value.
-    2) value is moved into the new element.
-    If the new size() is greater than capacity() then all iterators and references (including the past-the-end iterator) are invalidated. Otherwise only the past-the-end iterator is invalidated.
-
-    Parameters
-    value	-	the value of the element to append
-    Type requirements
-    -T must meet the requirements of CopyInsertable in order to use overload (1).
-    -T must meet the requirements of MoveInsertable in order to use overload (2).
-     */
-//    void push_back (const value_type& value)
-//    {
-//        if (this->_Base::_ptr_finish != this->_Base::_ptr_end)
-//        {
-//            this->_Base::_ptr_finish++ = new value_type(value);
+//    template <class InputIterator>
+//    void assign (InputIterator first, InputIterator last,
+//                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
+//        clear();
+//        InputIterator tmp = first;
+//        difference_type n = 0;
+//
+//        while (tmp != last) {
+//            n++;
+//            tmp++;
 //        }
-//        else
-//            insert(this->_Base::_ptr_finish, value);
+//
+//        reserve(n);
+//        insert(begin(), first, last);
 //    };
 //
-//    void pop_back() {
-//        if (size_) {
-//            alloc_.destroy(&container_[size_ - 1]);
-//            size_--;
-//        }
+//    void assign (size_type n, const value_type& val) {
+//        clear();
+//        reserve(n);
+//        insert(begin(), n, val);
 //    };
-//
+
+
+
+
+
+/*
+*=============================================================
+*|                     Modifiers                             |
+*=============================================================
+*/
+
+public:
+
+    void clear() { erase(begin(), end()); };
+
     /*
      * Causes reallocation if the new size() is greater than the old capacity(). If the new size() is greater than
      * capacity(), all iterators and references are invalidated. Otherwise, only the iterators and references before
      * the insertion point remain valid. The past-the-end iterator is also invalidated.
      * inserts value before pos
      */
-//    iterator insert ( const_iterator pos, const T& value )
-//    {
-//        if (this->_Base::_ptr_finish != this->_Base::_ptr_end)
-//        {
-//            pos = new value_type(value);
-//        }
-//        else
-//        {
-//            size_t new_size = (this->_Base::_ptr_end - this->_Base::_ptr_start != 0) ?
-//                              2 * (this->_Base::_ptr_end - this->_Base::_ptr_start) : 1;
-//            //use reserve to manage the max size
-//            reserve(new_size++);
-//
-//        }
+    iterator insert ( const_iterator pos, const T& value )
+    {
+        if (this->end() != this->V_end())
+        {
+            std::copy_backward(pos , end(), pos + 1);
+            this->_Base::_alloc.construct(pos, value);
+        }
+        else
+        {
+            size_t new_size = (this->V_end() - this->begin() != 0) ?
+                              2 * (this->V_end() - this->begin()) : 1;
+            //use reserve to manage the max size
+            reserve(new_size);
+
+
+        }
 //
 //        if (index < size_) {
 //            for (size_type i = size_ - 1; i > index; i--) {
@@ -463,7 +433,7 @@ public:
 //            size_++;
 //        }
 //    }
-//
+
 //    template <class InputIterator>
 //    void insert (iterator position, InputIterator first, InputIterator last,
 //                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
@@ -497,60 +467,100 @@ public:
 //            size_++;
 //        }
 //    };
-//
-//    iterator erase (iterator position) {
-//        size_type index = position - begin();
-//
-//        alloc_.destroy(&container_[index]);
-//        size_--;
-//        if (index < size_) {
-//            for (size_type i = index; i < size_; i++) {
-//                alloc_.construct(&container_[i], container_[i + 1]);
-//                alloc_.destroy(&container_[i + 1]);
-//            }
-//        }
-//        return iterator(&container_[index]);
-//    };
-//
-    iterator erase (iterator first, iterator last) {
-        size_type start = first - begin();
-        difference_type offset = last - first;
 
-        if (first == last)
-            return iterator(first);
+    /*Erases the specified elements from the container.
+    Invalidates iterators and references at or after the point of the erase,
+     including the end() iterator.
+    The iterator pos must be valid and dereferenceable. Thus the end() iterator
+     (which is valid, but is not dereferenceable) cannot be used as a value for pos.
+    The  iterator first does not need to be dereferenceable if first == last:
+    erasing an empty range is a no-op.
 
-        for (iterator it = first; it != last; it++)
-            alloc_.destroy(&(*it));
+    Para   meters
+    pos	-	iterator to the element to remove
+    first, last	-	range of elements to remove
+    Type requirements
+    -T must meet the requirements of MoveAssignable.
+    Return value
+    Iterator following the last removed element.
 
-        size_ -= offset;
-        if (start < size_) {
-            for (size_type i = start; i < size_; i++) {
-                alloc_.construct(&container_[i], container_[i + offset]);
-                alloc_.destroy(&container_[i + offset]);
-            }
-        }
-        return iterator(&container_[start]);
+    If pos refers to the last element, then the end() iterator is returned.
+    If last == end() prior to removal, then the updated end() iterator is returned.
+
+    If [first, last) is an empty range, then last is returned.*/
+    //Removes the element at pos.
+    iterator erase (iterator pos)
+    {
+        std::copy(pos + 1, end()--, pos);
+        this->_Base::_alloc.destroy(end() + 1);
+        return pos;
     };
 
-/*
-*=============================================================
-*|                     Modifiers                             |
-*=============================================================
-*/
+    //Removes the elements in the range [first, last).
+    iterator erase (iterator first, iterator last)
+    {
+        this->_Base::_alloc.destroy(std::copy(last, end(), first), end());
+        end() = end() - (last - first);
+        return first;
+    };
 
-public:
-    void clear() { erase(begin(), end()); };
+    /*
+    Appends the given element value to the end of the container.
 
+    1) The new element is initialized as a copy of value.
+    2) value is moved into the new element.
+    If the new size() is greater than capacity() then all iterators and references
+     (including the past-the-end iterator) are invalidated. Otherwise only the
+     past-the-end iterator is invalidated.
+
+    Parameters
+    value	-	the value of the element to append
+    Type requirements
+    -T must meet the requirements of CopyInsertable in order to use overload (1).
+    -T must meet the requirements of MoveInsertable in order to use overload (2).
+     */
+    void push_back (const value_type& value)
+    {
+        if (this->end() != this->V_end())
+            this->_Base::_alloc.construct(end()++, value);
+        else
+            insert(this->end(), value);
+    };
+
+    /*Removes the last element of the container.
+    Calling pop_back on an empty container results in undefined behavior.
+    Iterators and references to the last element, as well as the end()
+     iterator, are invalidated.*/
+    void pop_back()
+    {
+        iterator tmp = end()--;
+        this->_Base::_alloc.destroy(tmp);
+    };
+
+    /*Resizes the container to contain count elements.
+    If the current size is greater than count, the container is reduced
+     to its first count elements.
+    If the current size is less than count,
+    1) additional default-inserted elements are appended
+    2) additional copies of value are appended.*/
+    void resize (size_type count, T value = T())
+    {
+        if (count < size())
+            erase(begin() + count, end());
+        else
+            insert(end(), count - size(), value);
+    };
 
     /*
      * Exchanges the contents of the container with those of other.
      * Does not invoke any move, copy, or swap operations on individual
      * elements.All iterators and references remain valid. The
      * past-the-end iterator is invalidated.*/
-    void swap (vector& other) {
-        std::swap(this->_Base::_ptr_start, other._Base::_ptr_start);
-        std::swap(this->_Base::_ptr_finish, other._Base::_ptr_finish);
-        std::swap(this->_Base::_ptr_end, other._Base::_ptr_end);
+    void swap (vector& other)
+    {
+        std::swap(this->begin(), other.begin());
+        std::swap(this->end(), other.end());
+        std::swap(this->V_end(), other.V_end());
     };
 
 //private:
@@ -560,7 +570,9 @@ public:
 //        It1 = It2;
 //        It2 = tmp;
 //    }
-};
+
+
+};// end of class vector
 
 /*
 *=============================================================
@@ -576,20 +588,13 @@ bool operator==( const std::vector<T,Alloc>& lhs,
                  const std::vector<T,Alloc>& rhs )
 {
     if (lhs.size() == rhs.size())
-    {
-        for (size_t i = 0; i < lhs.size(); ++i)
-        {
-            if (lhs[i] != rhs[i])
-                return false;
-        }
-        return true;
-    }
+        return equal(lhs.begin(), lhs.end(), rhs.begin());
     return false;
-}
+};
 
 template< class T, class Alloc >
 bool operator!=( const std::vector<T,Alloc>& lhs,
-                 const std::vector<T,Alloc>& rhs ){ return !(lhs == rhs); }
+                 const std::vector<T,Alloc>& rhs ){ return !(lhs == rhs); };
 
 /*3-6) Compares the contents of lhs and rhs lexicographically.
  * The comparison is performed
@@ -600,19 +605,19 @@ bool operator<( const std::vector<T,Alloc>& lhs,
 {
     return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                             rhs.begin(), rhs.end());
-}
+};
 
 template< class T, class Alloc >
 bool operator<=( const std::vector<T,Alloc>& lhs,
-                 const std::vector<T,Alloc>& rhs ) { return !(rhs < lhs); }
+                 const std::vector<T,Alloc>& rhs ) { return !(rhs < lhs); };
 
 template< class T, class Alloc >
 bool operator>( const std::vector<T,Alloc>& lhs,
-                const std::vector<T,Alloc>& rhs )  { return rhs < lhs; }
+                const std::vector<T,Alloc>& rhs )  { return rhs < lhs; };
 
 template< class T, class Alloc >
 bool operator>=( const std::vector<T,Alloc>& lhs,
-                 const std::vector<T,Alloc>& rhs ) { return !(lhs < rhs); }
+                 const std::vector<T,Alloc>& rhs ) { return !(lhs < rhs); };
 
 //template <class T>
 //void swap (vector<T>& x, vector<T>& y) { x.swap(y); };//a valider

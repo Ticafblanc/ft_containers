@@ -20,12 +20,12 @@ int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
     std::vector<bool>               b();
     std::vector<int>            i(200,45);
-    std::vector<int>::iterator it = i.begin();
-    //ft::vector<int>::iterator ite = i.end();
-    ft::vector<int>            fi(200,45);
-    ft::vector<int>::iterator fit = fi.begin();
-    std::cout << i.max_size() << std::endl;
-    std::cout << fi.max_size() << std::endl;
+//    std::vector<int>::iterator it = i.begin();
+//    //ft::vector<int>::iterator ite = i.end();
+//    ft::vector<int>            fi(200,45);
+//    ft::vector<int>::iterator fit = fi.begin();
+//    std::cout << i.max_size() << std::endl;
+//    std::cout << fi.max_size() << std::endl;
     size_t s = 9;
     char    c ='t';
 //    std::istream_iterator<std::vector<int>, std::vector<int>::difference_type> in();
