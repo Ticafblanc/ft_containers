@@ -310,7 +310,7 @@ public:
 //    };
 
     /*Returns the number of elements that the container has currently allocated space for.*/
-    size_type   capacity()  const   { return static_cast<size_type>(V_finish() - V_begin()); };
+    size_type   capacity()  const   { return static_cast<size_type>(V_end() - V_begin()); };
 
 //
 
@@ -375,98 +375,77 @@ public:
 
 public:
 
-    void clear() { erase(begin(), end()); };
+    void clear() { erase(V_begin(), V_end()); };
 
     /*
-     * Causes reallocation if the new size() is greater than the old capacity(). If the new size() is greater than
-     * capacity(), all iterators and references are invalidated. Otherwise, only the iterators and references before
+     * Causes reallocation if the new size() is greater than the old capacity().
+     * If the new size() is greater than
+     * capacity(), all iterators and references are invalidated. Otherwise, only
+     * the iterators and references before
      * the insertion point remain valid. The past-the-end iterator is also invalidated.
      * inserts value before pos
+     * Exceptions
+     * If an exception is thrown when inserting a single element at the end, and T is
+     * CopyInsertable or std::is_nothrow_move_constructible<T>::value is true, there
+     * are no effects (strong exception guarantee).
      */
-    iterator insert ( const_iterator pos, const T& value )
+    iterator    insert  ( const_iterator pos, const T& value )
     {
-        if (this->end() != this->V_end())
-        {
-            std::copy_backward(pos , end(), pos + 1);
-            this->_Base::_alloc.construct(pos, value);
+        size_type Save_pos = pos - begin();
+        if ((V_finish() - V_begin()) + 1 >= V_end() - V_begin())
+            reserve(New_size(V_begin(), V_end(), 1));
+        std::copy_backward(pos , V_end(), pos + 1);
+        this->_Base::_alloc.construct(pos, value);
+        V_finish()++;
+        return V_begin() + Save_pos;
+    };
+
+    /*inserts count copies of the value before pos.*/
+    iterator    insert  ( const_iterator pos, size_type count, const T& value )
+    {
+        size_type Save_pos = pos - begin();
+        if ((V_finish() - V_begin()) + count + 1 >= V_end() - V_begin())
+            reserve(New_size (begin(), end(), count));
+        std::copy_backward(pos , end(), pos + 1);
+        this->_Base::_alloc.construct(pos, value);
+        V_finish()++;
+        return (count == 0)? pos: begin() + Save_pos;
+    };
+
+    /*inserts elements from range [first, last) before pos.*/
+    template <class InputIt>
+    iterator    insert  (const_iterator pos, InputIt first, InputIt last)
+     {
+        size_type offset = position - begin();
+        InputIterator tmp = first;
+        difference_type n = 0;
+
+        while (tmp != last) {
+            n++;
+            tmp++;
         }
-        else
-        {
-            size_t new_size = (this->V_end() - this->begin() != 0) ?
-                              2 * (this->V_end() - this->begin()) : 1;
-            //use reserve to manage the max size
-            reserve(new_size);
 
-
+        if (size_ + n > capacity_) {
+            if (capacity_ == 0)
+                reserve(n);
+            else {
+                if (size_ * 2 >= size_ + n)
+                    reserve(size_ * 2);
+                else
+                    reserve(size_ + n);
+            }
         }
-//
-//        if (index < size_) {
-//            for (size_type i = size_ - 1; i > index; i--) {
-//                alloc_.construct(&container_[i], container_[i - 1]);
-//                alloc_.destroy(&container_[i - 1]);
-//            }
-//        }
-//        alloc_.construct(&container_[index], val);
-//        return iterator(&container_[index]);
-//    };
-//
-//    void insert (iterator position, size_type n, const value_type& val) {
-//        size_type index = position - begin();
-//
-//        if (size_ + n > capacity_) {
-//            if (capacity_ == 0)
-//                reserve(n);
-//            else {
-//                if (size_ * 2 >= size_ + n)
-//                    reserve(size_ * 2);
-//                else
-//                    reserve(size_ + n);
-//            }
-//        }
-//
-//        for (size_type i = n + size_ - 1; i > index + n - 1; i--) {
-//            alloc_.construct(&container_[i], container_[i - n]);
-//            alloc_.destroy(&container_[i - n]);
-//        }
-//        for (size_type i = index; i < index + n; i++) {
-//            alloc_.construct(&container_[i], val);
-//            size_++;
-//        }
-//    }
 
-//    template <class InputIterator>
-//    void insert (iterator position, InputIterator first, InputIterator last,
-//                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
-//        size_type offset = position - begin();
-//        InputIterator tmp = first;
-//        difference_type n = 0;
-//
-//        while (tmp != last) {
-//            n++;
-//            tmp++;
-//        }
-//
-//        if (size_ + n > capacity_) {
-//            if (capacity_ == 0)
-//                reserve(n);
-//            else {
-//                if (size_ * 2 >= size_ + n)
-//                    reserve(size_ * 2);
-//                else
-//                    reserve(size_ + n);
-//            }
-//        }
-//
-//        for (size_type i = n + size_ - 1; i > offset + n - 1; i--) {
-//            alloc_.construct(&container_[i], container_[i - n]);
-//            alloc_.destroy(&container_[i - n]);
-//        }
-//        for (size_type i = offset; i < offset + n; i++) {
-//            alloc_.construct(&container_[i], *first);
-//            first++;
-//            size_++;
-//        }
-//    };
+        for (size_type i = n + size_ - 1; i > offset + n - 1; i--) {
+            alloc_.construct(&container_[i], container_[i - n]);
+            alloc_.destroy(&container_[i - n]);
+        }
+        for (size_type i = offset; i < offset + n; i++) {
+            alloc_.construct(&container_[i], *first);
+            first++;
+            size_++;
+        }
+    };
 
     /*Erases the specified elements from the container.
     Invalidates iterators and references at or after the point of the erase,
@@ -491,16 +470,16 @@ public:
     //Removes the element at pos.
     iterator erase (iterator pos)
     {
-        std::copy(pos + 1, end()--, pos);
-        this->_Base::_alloc.destroy(end() + 1);
+        std::copy(pos + 1, V_end()--, pos);
+        this->_Base::_alloc.destroy(V_end() + 1);
         return pos;
     };
 
     //Removes the elements in the range [first, last).
     iterator erase (iterator first, iterator last)
     {
-        this->_Base::_alloc.destroy(std::copy(last, end(), first), end());
-        end() = end() - (last - first);
+        this->_Base::_alloc.destroy(std::copy(last, V_end(), first), V_end());
+        V_end() = V_end() - (last - first);
         return first;
     };
 
@@ -521,10 +500,10 @@ public:
      */
     void push_back (const value_type& value)
     {
-        if (this->end() != this->V_end())
-            this->_Base::_alloc.construct(end()++, value);
+        if (V_end() != V_end())
+            _Base::_alloc.construct(V_end()++, value);
         else
-            insert(this->end(), value);
+            insert(V_end(), value);
     };
 
     /*Removes the last element of the container.
@@ -533,8 +512,8 @@ public:
      iterator, are invalidated.*/
     void pop_back()
     {
-        iterator tmp = end()--;
-        this->_Base::_alloc.destroy(tmp);
+        iterator tmp = V_end()--;
+        _Base::_alloc.destroy(tmp);
     };
 
     /*Resizes the container to contain count elements.
@@ -546,9 +525,9 @@ public:
     void resize (size_type count, T value = T())
     {
         if (count < size())
-            erase(begin() + count, end());
+            erase(V_begin() + count, V_end());
         else
-            insert(end(), count - size(), value);
+            insert(V_end(), count - size(), value);
     };
 
     /*
@@ -558,12 +537,65 @@ public:
      * past-the-end iterator is invalidated.*/
     void swap (vector& other)
     {
-        std::swap(this->begin(), other.begin());
-        std::swap(this->end(), other.end());
-        std::swap(this->V_end(), other.V_end());
+        std::swap(V_begin(), other.V_begin());
+        std::swap(V_end(), other.V_end());
+        std::swap(V_end(), other.V_end());
     };
 
-//private:
+private:
+    /*calcule the new size for reserve*/
+    size_t New_size(iterator begin, iterator end, size_t count)
+    {
+        size_t new_size = (V_end() - V_begin() != 0) ? 2 * (V_end() - V_begin()) : 1;
+        if ((V_end() - V_begin()) + count >= new_size)
+            New_size(begin, end, count - new_size);
+        return new_size;
+    }
+
+        template <class InputIt>
+        void init_rang (InputIt first, InputIt last, std::input_iterator_tag)
+        {
+            std::cout<< "in input iterator constructor"<<std::endl;
+            // for ( ; first != last; ++first)
+            // push_back(*first);//call de copy constructor
+        }
+
+        /*   Given the distance between first and last as N ,
+        if first and last are both forward, bidirectional or random-access iterators,
+        the copy constructor of T is only called N  times, and
+        no reallocation occurs.*/
+        template <class InputIt>
+        void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag)
+        {
+            std::cout<< "in random iterator constructor"<<std::endl;
+            V_begin() = this->_Base::_alloc.allocate(last - first);
+            V_end() = V_begin() + (last - first);
+            std::memmove(V_begin(), first,
+                         static_cast<std::size_t>(last - first) * sizeof(value_type));
+            V_finish() = V_begin() + (last - first);
+        }
+
+        /*
+         This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
+         if InputIt is an integral type.*/
+        template <class Integral>
+        void init_InputIt (Integral  first, Integral last, true_type)
+        {
+            std::cout<< "in integral haha iterator constructor"<<std::endl;
+            V_begin() = this->_alloc.allocate(static_cast<size_type >(first));
+            V_finish() = init(V_begin(), static_cast<size_type >(first), static_cast<value_type >(last));
+            V_end() = V_begin() + static_cast<size_type >(first);
+        }
+
+        /*define the iterator tag*/
+        template <class InputIt>
+        void init_InputIt (InputIt  first, InputIt last, false_type)
+        {
+//        this->_Base::_ptr_start = this->_alloc.allocate((last - first) * sizeof(T));
+//        this->_Base::_ptr_end = this->_Base::_ptr_start + (last -first);
+            init_rang(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+        }
+    /*swap two iterator */
 //    iterator swap_it(iterator& It1, iterator& It2)
 //    {
 //        iterator  *tmp = It1;
@@ -588,7 +620,7 @@ bool operator==( const std::vector<T,Alloc>& lhs,
                  const std::vector<T,Alloc>& rhs )
 {
     if (lhs.size() == rhs.size())
-        return equal(lhs.begin(), lhs.end(), rhs.begin());
+        return equal(lhs.V_begin(), lhs.V_end(), rhs.V_begin());
     return false;
 };
 
@@ -603,8 +635,8 @@ template< class T, class Alloc >
 bool operator<( const std::vector<T,Alloc>& lhs,
                 const std::vector<T,Alloc>& rhs )
 {
-    return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                            rhs.begin(), rhs.end());
+    return ft::lexicographical_compare(lhs.V_begin(), lhs.V_end(),
+                            rhs.V_begin(), rhs.V_end());
 };
 
 template< class T, class Alloc >
