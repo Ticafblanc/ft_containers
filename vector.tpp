@@ -416,6 +416,8 @@ public:
     template <class InputIt>
     iterator    insert  (const_iterator pos, InputIt first, InputIt last)
      {
+         init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+
         size_type offset = position - begin();
         InputIterator tmp = first;
         difference_type n = 0;
@@ -552,49 +554,28 @@ private:
         return new_size;
     }
 
-        template <class InputIt>
-        void init_rang (InputIt first, InputIt last, std::input_iterator_tag)
-        {
-            std::cout<< "in input iterator constructor"<<std::endl;
-            // for ( ; first != last; ++first)
-            // push_back(*first);//call de copy constructor
-        }
+    /*forward the pos and the first to last*/
+    template <class InputIt>
+    void init_rang (const_iterator pos, InputIt first, InputIt last, std::input_iterator_tag)
+    {
+        iterator mem_first = first;
+        for ( size_t F_pos = 0; first != last; ++F_pos, ++first)
+            insert(pos + F_pos, *first);//voir si manage de la destruction de la class original
+    }
 
-        /*   Given the distance between first and last as N ,
-        if first and last are both forward, bidirectional or random-access iterators,
-        the copy constructor of T is only called N  times, and
-        no reallocation occurs.*/
-        template <class InputIt>
-        void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag)
-        {
-            std::cout<< "in random iterator constructor"<<std::endl;
-            V_begin() = this->_Base::_alloc.allocate(last - first);
-            V_end() = V_begin() + (last - first);
-            std::memmove(V_begin(), first,
-                         static_cast<std::size_t>(last - first) * sizeof(value_type));
-            V_finish() = V_begin() + (last - first);
-        }
+    /*allocate memory and copy the valeu*/
+    template <class InputIt>
+    void init_rang (const_iterator pos, InputIt first, InputIt last, std::random_access_iterator_tag)
+    {
+        if ((V_finish() - V_begin()) + (last - first) + 1 >= V_end() - V_begin())
+            reserve(New_size (begin(), end(), static_cast<size_t>(last - first)));
+        V_begin() = this->_Base::_alloc.allocate(last - first);
+        V_end() = V_begin() + (last - first);
+        std::memmove(V_begin(), first,
+                     static_cast<std::size_t>(last - first) * sizeof(value_type));
+        V_finish() = V_begin() + (last - first);
+    }
 
-        /*
-         This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
-         if InputIt is an integral type.*/
-        template <class Integral>
-        void init_InputIt (Integral  first, Integral last, true_type)
-        {
-            std::cout<< "in integral haha iterator constructor"<<std::endl;
-            V_begin() = this->_alloc.allocate(static_cast<size_type >(first));
-            V_finish() = init(V_begin(), static_cast<size_type >(first), static_cast<value_type >(last));
-            V_end() = V_begin() + static_cast<size_type >(first);
-        }
-
-        /*define the iterator tag*/
-        template <class InputIt>
-        void init_InputIt (InputIt  first, InputIt last, false_type)
-        {
-//        this->_Base::_ptr_start = this->_alloc.allocate((last - first) * sizeof(T));
-//        this->_Base::_ptr_end = this->_Base::_ptr_start + (last -first);
-            init_rang(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
-        }
     /*swap two iterator */
 //    iterator swap_it(iterator& It1, iterator& It2)
 //    {
