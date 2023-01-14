@@ -96,7 +96,7 @@ Allocator	-	An allocator that is used to acquire/release memory and to construct
  (since C++20) if Allocator::value_type is not the same as T.*/
 
 template <class T, class Allocator = std::allocator<T> >
-class vector : protected Vector_base<T, Allocator> {
+class vector : private Vector_base<T, Allocator> {
 
 private:
     typedef Vector_base<T, Allocator>                                           _Base;
@@ -116,8 +116,8 @@ public:
     typedef const value_type&                                                   const_reference;
     typedef typename _Base::allocator_type::pointer                             pointer;
     typedef typename _Base::allocator_type::const_pointer                       const_pointer;
-    typedef value_type*                                                         iterator;
-    typedef const value_type*                                                   const_iterator;
+    typedef pointer                                                             iterator;
+    typedef const_pointer                                                       const_iterator;
     typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>                                const_reverse_iterator;
 
@@ -230,41 +230,130 @@ private:
     }
 
 
+    template <class InputIterator>
+    void assign (InputIterator first, InputIterator last,
+                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
+        clear();
+        InputIterator tmp = first;
+        difference_type n = 0;
+
+        while (tmp != last) {
+            n++;
+            tmp++;
+        }
+
+        reserve(n);
+        insert(begin(), first, last);
+    };
+    /*Replaces the contents with copies of those in the range [first, last).
+     * The behavior is undefined if either argument is an iterator into *this.
+     * This overload has the same effect as overload (1) if InputIt is an integral type. */
+    template< class InputIt >
+    void assign( InputIt first, InputIt last )
+    {
+        init_input_assign()
+
+    }
+
+    /*Replaces the contents of the container.
+     *Replaces the contents with count copies of value value*/
+    void            assign( size_type count, const T& value )
+    {
+        resize(count);
+        insert(V_begin(), value);
+    }
+
+    /*Returns the allocator associated with the container. */
+    allocator_type  get_allocator() const { return allocator_type; };//test par heritage
+
+private:
+
+    template< class InputIt , class ft::enable_if<!ft::is_integral<InputIterator>::value>::type>
+    void assign( InputIt first, InputIt last )
+    {
+
+    }
+
+
 /*
-*=============================================================
-*|                     Element Access                        |
-*=============================================================
+*====================================================================================
+*|                                   Element Access                                 |
+*====================================================================================
 */
+    /*Returns a reference to the element at specified location pos,
+     * with bounds checking.If pos is not within the range of the container,
+     * an exception of type std::out_of_range is thrown. */
+    reference       at(size_type pos)
+    {
+        check_size(pos);
+        return V_begin()[n];
+    };
+    const_reference at(size_type pos) const
+    {
+        check_size(pos);
+        return V_begin()[n];
+    };
 
+    /*Returns a reference to the element at specified location pos.
+     * No bounds checking is performed.*/
+    reference       operator[] (size_type pos)          { return *(begin() + pos); };
+    const_reference operator[] (size_type pos) const    { return *(begin() + pos); };
 
+    /*Returns a reference to the first element in the container.
+     * Calling front on an empty container is undefined.*/
+    reference       front()         { return *begin(); };
+    const_reference front() const   { return *beging(); };
+
+    /*Returns a reference to the last element in the container.
+     * Calling back on an empty container causes undefined behavior. */
+    reference       back()          { return *(end()- 1); };
+    const_reference back() const    { return *(end()- 1); };
+
+    /*Returns pointer to the underlying array serving as element storage. The pointer
+     * is such that range [data(); data()+size()) is always a valid range, even if the
+     * container is empty (data() is not dereferenceable in that case).*/
+    T*          data()      {begin()};
+    const T*    data() const{begin()};
+
+private:
+
+    /*std::out_of_range if !(pos < size())*/
+    void        check_size(std::size_t pos)
+    {
+        if (!(pos < size()))
+            throw std::out_of_range("ft::vector")
+    }
+}
 
 /*
-*=============================================================
-*|                     Iterator                              |
-*=============================================================
+*====================================================================================
+*|                                      Iterator                                    |
+*====================================================================================
 */
 
 public:
-    iterator begin()              { return this->_Base::_ptr_start; };
-    const_iterator begin() const  { return this->_Base::_ptr_start; };
-    iterator end()                { return this->_Base::_ptr_finish; };
-    const_iterator end() const    { return this->_Base::_ptr_finish; };
 
-    reverse_iterator rbegin()             { return end(); };
-    reverse_iterator rend()               { return begin(); };
-    const_reverse_iterator rbegin() const { return end(); };
-    const_reverse_iterator rend() const   { return begin(); };
+    iterator        begin()         { return this->_Base::_ptr_start; };
+    const_iterator  begin() const   { return this->_Base::_ptr_start; };
+    iterator        end()           { return this->_Base::_ptr_end; };
+    const_iterator  end()   const   { return this->_Base::_ptr_end; };
+
+    reverse_iterator        rbegin()            { return end(); };
+    reverse_iterator        rend()              { return begin(); };
+    const_reverse_iterator  rbegin()    const   { return end(); };
+    const_reverse_iterator  rend()      const   { return begin(); };
 
 private:
+
     iterator& V_start()              { return this->_Base::_ptr_start; };
     iterator& V_finish()             { return this->_Base::_ptr_finish; };
     iterator& V_end()                { return this->_Base::_ptr_end; };
 
 
 /*
-*=============================================================
-*|                     Capacity                              |
-*=============================================================
+*====================================================================================
+*|                                     Capacity                                     |
+*====================================================================================
 */
 
 public:
@@ -272,75 +361,28 @@ public:
     /*Checks if the container has no elements, i.e. whether begin() == end().*/
     bool        empty()     const   { return V_start() == V_finish(); };
 
-    /*Returns the number of elements in the container, i.e. std::distance(begin(), end()).*/
+    /*Returns the number of elements in the container,
+     * i.e. std::distance(begin(), end()).*/
     size_type   size()      const   { return V_finish() - V_start(); };
 
-    /*Returns the maximum number of elements the container is able to hold due to system or library implementation
-     * limitations, i.e. std::distance(begin(), end()) for the largest container.*/
-    size_type   max_size()  const   { return std::numeric_limits<size_type>::max() / sizeof(value_type); };
+    /*Returns the maximum number of elements the container is able to
+     * hold due to system or library implementation limitations, i.e.
+     * std::distance(begin(), end()) for the largest container.*/
+    size_type   max_size()  const
+    { return std::numeric_limits<size_type>::max() / sizeof(value_type); };
 
-
-
-
-
-//
-
-//
-//    reference operator[] (size_type n) { return container_[n]; };
-//    const_reference operator[] (size_type n) const { return container_[n]; };
-//
-//    reference at (size_type n) {
-//        if (n >= size_) {
-//            std::stringstream ss;
-//            ss << "vector";
-//            throw std::out_of_range(ss.str().c_str());
-//        }
-//        return container_[n];
-//    };
-//    const_reference at (size_type n) const {
-//        if (n >= size_) {
-//            std::stringstream ss;
-//            ss << "vector";
-//            throw std::out_of_range(ss.str().c_str());
-//        }
-//        return container_[n];
-//    };
-//
-//    reference front() { return container_[0]; };
-//    const_reference front() const { return container_[0]; };
-//
-//    reference back() { return container_[size_ - 1]; };
-//    const_reference back() const { return container_[size_ - 1]; };
-//
-//    template <class InputIterator>
-//    void assign (InputIterator first, InputIterator last,
-//                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
-//        clear();
-//        InputIterator tmp = first;
-//        difference_type n = 0;
-//
-//        while (tmp != last) {
-//            n++;
-//            tmp++;
-//        }
-//
-//        reserve(n);
-//        insert(begin(), first, last);
-//    };
-//
-//    void assign (size_type n, const value_type& val) {
-//        clear();
-//        reserve(n);
-//        insert(begin(), n, val);
-//    };
-
-    /* increase the capacity of the vector (the total number of elements that the vector can hold without requiring
-       * reallocation) to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(),
-       * new storage is allocated, otherwise the function does nothing.
-       * reserve() does not change the size of the vector.
-       * if new_cap is greater than capacity(), all iterators, including the past-the-end iterator, and all references
-       * to the elements are invalidated. Otherwise, no iterators or references are invalidated*/
-    void reserve (size_type new_cap) {
+    /* increase the capacity of the vector (the total number of elements
+     * that the vector can hold without requiring
+     * reallocation) to a value that's greater or equal to new_cap. If
+     * new_cap is greater than the current capacity(),
+     * new storage is allocated, otherwise the function does nothing.
+     * reserve() does not change the size of the vector.
+     * if new_cap is greater than capacity(), all iterators, including
+     * the past-the-end iterator, and all references
+     * to the elements are invalidated. Otherwise, no iterators or
+     * references are invalidated*/
+    void        reserve(size_type new_cap)
+    {
      if (capacity() < new_cap)
      {
          const  size_t save_size = size();
@@ -357,25 +399,28 @@ public:
          }
          catch
             this->_Base::_alloc.desallocate(V_new_start, new_cap);
-
     };
 
-    /*Returns the number of elements that the container has currently allocated space for.*/
-    size_type   capacity()  const   { return static_cast<size_type>(V_end() - V_start()); };
+    /*Returns the number of elements that the container has currently
+     * allocated space for.*/
+    size_type   capacity()  const
+    { return static_cast<size_type>(V_end() - V_start()); };
 
 /*
-*=============================================================
-*|                     Modifiers                             |
-*=============================================================
+*====================================================================================
+*|                                    Modifiers                                     |
+*====================================================================================
 */
 
+
 public:
+
     /*Erases all elements from the container. After this call, size() returns zero.
      * Invalidates any references, pointers, or iterators referring to contained elements.
      * Any past-the-end iterators are also invalidated.
      * Leaves the capacity() of the vector unchanged (note: the standard's restriction on
      * the changes to capacity is in the specification of vector::reserve, see [1])*/
-    void clear() { erase(V_start(), V_end()); };
+    void            clear() { erase(V_start(), V_end()); };
 
     /*
      * Causes reallocation if the new size() is greater than the old capacity().
@@ -389,7 +434,7 @@ public:
      * CopyInsertable or std::is_nothrow_move_constructible<T>::value is true, there
      * are no effects (strong exception guarantee).
      */
-    iterator    insert  ( const_iterator pos, const T& value )
+    iterator        insert( const_iterator pos, const T& value )
     {
         size_type Save_pos = pos - begin();
         if ((V_finish() - V_start()) + 1 >= V_end() - V_start())
@@ -401,7 +446,7 @@ public:
     };
 
     /*inserts count copies of the value before pos.*/
-    iterator    insert  ( const_iterator pos, size_type count, const T& value )
+    iterator        insert( const_iterator pos, size_type count, const T& value )
     {
         size_type Save_pos = pos - begin();
         if ((V_finish() - V_start()) + count + 1 >= V_end() - V_start())
@@ -414,7 +459,7 @@ public:
 
     /*inserts elements from range [first, last) before pos.*/
     template <class InputIt>
-    iterator    insert  (const_iterator pos, InputIt first, InputIt last)
+    iterator        insert(const_iterator pos, InputIt first, InputIt last)
      {
         init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
         return (first == last) ? pos: begin() + pos;
@@ -441,7 +486,7 @@ public:
 
     If [first, last) is an empty range, then last is returned.*/
     //Removes the element at pos.
-    iterator erase (iterator pos)
+    iterator        erase(iterator pos)
     {
         std::copy(pos + 1, V_end()--, pos);
         this->_Base::_alloc.destroy(V_end() + 1);
@@ -449,7 +494,7 @@ public:
     };
 
     //Removes the elements in the range [first, last).
-    iterator erase (iterator first, iterator last)
+    iterator        erase(iterator first, iterator last)
     {
         this->_Base::_alloc.destroy(std::copy(last, V_end(), first), V_end());
         V_end() = V_end() - (last - first);
@@ -471,7 +516,7 @@ public:
     -T must meet the requirements of CopyInsertable in order to use overload (1).
     -T must meet the requirements of MoveInsertable in order to use overload (2).
      */
-    void push_back (const value_type& value)
+    void        push_back(const value_type& value)
     {
         if (V_end() != V_end())
             _Base::_alloc.construct(V_end()++, value);
@@ -483,7 +528,7 @@ public:
     Calling pop_back on an empty container results in undefined behavior.
     Iterators and references to the last element, as well as the end()
      iterator, are invalidated.*/
-    void pop_back()
+    void        pop_back()
     {
         iterator tmp = V_end()--;
         _Base::_alloc.destroy(tmp);
@@ -495,12 +540,10 @@ public:
     If the current size is less than count,
     1) additional default-inserted elements are appended
     2) additional copies of value are appended.*/
-    void resize (size_type count, T value = T())
+    void        resize(size_type count, T value = T())
     {
-        if (count < size())
-            erase(V_start() + count, V_end());
-        else
-            insert(V_end(), count - size(), value);
+        resize(count);
+        insert( (V_finish() + 1), value );
     };
 
     /*
@@ -508,7 +551,7 @@ public:
      * Does not invoke any move, copy, or swap operations on individual
      * elements.All iterators and references remain valid. The
      * past-the-end iterator is invalidated.*/
-    void swap (vector& other)
+    void        swap(vector& other)
     {
         std::swap(V_start(), other.V_start());
         std::swap(V_end(), other.V_end());
@@ -516,6 +559,7 @@ public:
     };
 
 private:
+
     /*calcule the new size for reserve*/
     size_t New_size(iterator begin, iterator end, size_t count)
     {
@@ -546,6 +590,15 @@ private:
         V_finish() = V_start() + (last - first);
     }
 
+    /*resize the container only*/
+    void resize (size_type count)
+    {
+        if (count < size())
+            erase(V_start() + count, V_end());
+        else
+            reserve(count);
+    };
+
     /*swap two iterator */
 //    iterator swap_it(iterator& It1, iterator& It2)
 //    {
@@ -558,9 +611,9 @@ private:
 };// end of class vector
 
 /*
-*=============================================================
-*|                     Non Membre fonction                   |
-*=============================================================
+*====================================================================================
+*|                                 Non Membre fonction                              |
+*====================================================================================
 */
 
 /*Checks if the contents of lhs and rhs are equal,

@@ -52,8 +52,8 @@ int main(){
 
 //    int i1 = 200;
 //    int i2= 45;
-//    ft::vector<int>             ft_integrl(200, 45);
-//    std::vector<int>             std_integral(200, 45);
+    ft::vector<int>             ft_integrl(200, 45);
+    std::vector<int>             std_integral(200, 45);
 //    ft::vector<int>             ft_integralv(i1, i2);
 //    std::vector<int>             std_integralv(i1, i2);
 //    std::vector<int>            ft_input = std::vector<int >(it, it + 200);
