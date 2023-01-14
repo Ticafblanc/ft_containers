@@ -20,7 +20,7 @@
 #include <iterator>
 //std::deque
 #include <deque>
-//std::allocator
+//std::allocator, std::uninitialised_copy
 # include <memory>
 //std::mememove
 #include <cstring>

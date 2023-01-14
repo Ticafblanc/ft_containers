@@ -27,7 +27,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 template <class T, class Allocator>
 class Vector_base {
 
-
 public:
     typedef Allocator                                                           allocator_type;
 
@@ -127,7 +126,7 @@ public:
 *|                     Member Fonction                       |
 *=============================================================
 */
-
+public:
         /*Default constructor. Constructs an empty container with a default-constructed allocator.*/
     vector() : _Base(){}
 
@@ -137,7 +136,7 @@ public:
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
                     : _Base(count, alloc) {
-        V_finish() = init<value_type *, size_type, T>(V_begin(), count, value);
+        V_finish() = init<value_type *, size_type, T>(V_start(), count, value);
     }
 
     /* Constructs the container with the contents of the range [first, last).
@@ -167,18 +166,18 @@ public:
         return *this;
     };
 
-    ~vector () { _Base::_alloc.destroy(V_begin()); };
+    ~vector () { _Base::_alloc.destroy(V_start()); };
 
 private:
 
     /*struct initialise by meta*/
     /*init vector */
     template <class Iter, class Size, class iT>
-    inline Iter init (Iter ptr, Size count, const iT& value)
+    inline iterator init (Iter ptr, Size count, const iT& value)
     {
         for (size_t i = 0; i < count; i++, ++ptr)
         {
-            *ptr = value;
+            *ptr = value + i + 1;
         }
         return ptr;
     }
@@ -202,11 +201,11 @@ private:
     void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag)
     {
         std::cout<< "in random iterator constructor"<<std::endl;
-        V_begin() = this->_Base::_alloc.allocate(last - first);
-        V_end() = V_begin() + (last - first);
-        std::memmove(V_begin(), first,
+        V_start() = this->_Base::_alloc.allocate(last - first);
+        V_end() = V_start() + (last - first);
+        std::memmove(V_start(), first,
                      static_cast<std::size_t>(last - first) * sizeof(value_type));
-        V_finish() = V_begin() + (last - first);
+        V_finish() = V_start() + (last - first);
     }
 
     /*
@@ -216,9 +215,9 @@ private:
     void init_InputIt (Integral  first, Integral last, true_type)
     {
         std::cout<< "in integral haha iterator constructor"<<std::endl;
-        V_begin() = this->_alloc.allocate(static_cast<size_type >(first));
-        V_finish() = init(V_begin(), static_cast<size_type >(first), static_cast<value_type >(last));
-        V_end() = V_begin() + static_cast<size_type >(first);
+        V_start() = this->_alloc.allocate(static_cast<size_type >(first));
+        V_finish() = init(V_start(), static_cast<size_type >(first), static_cast<value_type >(last));
+        V_end() = V_start() + static_cast<size_type >(first);
     }
 
     /*define the iterator tag*/
@@ -246,7 +245,6 @@ private:
 */
 
 public:
-
     iterator begin()              { return this->_Base::_ptr_start; };
     const_iterator begin() const  { return this->_Base::_ptr_start; };
     iterator end()                { return this->_Base::_ptr_finish; };
@@ -258,12 +256,10 @@ public:
     const_reverse_iterator rend() const   { return begin(); };
 
 private:
-    iterator V_begin()              { return &this->_Base::_ptr_start; };
-    const_iterator V_begin() const  { return &this->_Base::_ptr_start; };
-    iterator V_finish()             { return &this->_Base::_ptr_finish; };
-    const_iterator V_finish() const { return &this->_Base::_ptr_finish; };
-    iterator V_end()                { return &this->_Base::_ptr_end; };
-    const_iterator V_end() const    { return &this->_Base::_ptr_end; };
+    iterator& V_start()              { return this->_Base::_ptr_start; };
+    iterator& V_finish()             { return this->_Base::_ptr_finish; };
+    iterator& V_end()                { return this->_Base::_ptr_end; };
+
 
 /*
 *=============================================================
@@ -274,43 +270,18 @@ private:
 public:
 
     /*Checks if the container has no elements, i.e. whether begin() == end().*/
-    bool        empty()     const   { return V_begin() == V_finish(); };
+    bool        empty()     const   { return V_start() == V_finish(); };
 
     /*Returns the number of elements in the container, i.e. std::distance(begin(), end()).*/
-    size_type   size()      const   { return V_finish() - V_begin(); };
+    size_type   size()      const   { return V_finish() - V_start(); };
 
     /*Returns the maximum number of elements the container is able to hold due to system or library implementation
      * limitations, i.e. std::distance(begin(), end()) for the largest container.*/
     size_type   max_size()  const   { return std::numeric_limits<size_type>::max() / sizeof(value_type); };
 
-     /* increase the capacity of the vector (the total number of elements that the vector can hold without requiring
-     * reallocation) to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(),
-     * new storage is allocated, otherwise the function does nothing.
-     * reserve() does not change the size of the vector.
-     * if new_cap is greater than capacity(), all iterators, including the past-the-end iterator, and all references
-     * to the elements are invalidated. Otherwise, no iterators or references are invalidated*/
-//    void reserve (size_type new_cap) {
-//         if (capacity() < new_cap)
-//         {
-//             iterator   tmp = this->_Base::_alloc.allocate(new_cap);
-//
-//             v.__construct_at_end(this->begin(), this->end());
-//             swap(__v);
-//             invalidate_all_iterators();
-//         }
-//        value_type *new_container = alloc_.allocate(new_cap);
-//
-//        for (size_type i = 0; i < size_; i++) {
-//            alloc_.construct(&new_container[i], container_[i]);
-//            alloc_.destroy(&container_[i]);
-//        }
-//        alloc_.deallocate(container_, capacity_);
-//        capacity_ = new_cap;
-//        container_ = new_container;
-//    };
 
-    /*Returns the number of elements that the container has currently allocated space for.*/
-    size_type   capacity()  const   { return static_cast<size_type>(V_end() - V_begin()); };
+
+
 
 //
 
@@ -363,9 +334,34 @@ public:
 //        insert(begin(), n, val);
 //    };
 
+    /* increase the capacity of the vector (the total number of elements that the vector can hold without requiring
+       * reallocation) to a value that's greater or equal to new_cap. If new_cap is greater than the current capacity(),
+       * new storage is allocated, otherwise the function does nothing.
+       * reserve() does not change the size of the vector.
+       * if new_cap is greater than capacity(), all iterators, including the past-the-end iterator, and all references
+       * to the elements are invalidated. Otherwise, no iterators or references are invalidated*/
+    void reserve (size_type new_cap) {
+     if (capacity() < new_cap)
+     {
+         const  size_t save_size = size();
+         const  size_t save_capacity = capacity();
+         iterator   V_new_start = this->_Base::_alloc.allocate(new_cap);
+         try
+         {
+             std::unitialized_copy(V_start(), V_finish(), V_new_start);
+             this->_Base::_alloc.destroy(V_start(), V_finish());
+             this->_Base::_alloc.desallocate(V_start(), capacity);
+             V_start() = V_new_start;
+             V_finish() = V_new_start + save_sise;
+             V_end() = V_new_start + new_cap;
+         }
+         catch
+            this->_Base::_alloc.desallocate(V_new_start, new_cap);
 
+    };
 
-
+    /*Returns the number of elements that the container has currently allocated space for.*/
+    size_type   capacity()  const   { return static_cast<size_type>(V_end() - V_start()); };
 
 /*
 *=============================================================
@@ -379,7 +375,7 @@ public:
      * Any past-the-end iterators are also invalidated.
      * Leaves the capacity() of the vector unchanged (note: the standard's restriction on
      * the changes to capacity is in the specification of vector::reserve, see [1])*/
-    void clear() { erase(V_begin(), V_end()); };
+    void clear() { erase(V_start(), V_end()); };
 
     /*
      * Causes reallocation if the new size() is greater than the old capacity().
@@ -396,19 +392,19 @@ public:
     iterator    insert  ( const_iterator pos, const T& value )
     {
         size_type Save_pos = pos - begin();
-        if ((V_finish() - V_begin()) + 1 >= V_end() - V_begin())
-            reserve(New_size(V_begin(), V_end(), 1));
+        if ((V_finish() - V_start()) + 1 >= V_end() - V_start())
+            reserve(New_size(V_start(), V_end(), 1));
         std::copy_backward(pos , V_end(), pos + 1);
         this->_Base::_alloc.construct(pos, value);
         V_finish()++;
-        return V_begin() + Save_pos;
+        return V_start() + Save_pos;
     };
 
     /*inserts count copies of the value before pos.*/
     iterator    insert  ( const_iterator pos, size_type count, const T& value )
     {
         size_type Save_pos = pos - begin();
-        if ((V_finish() - V_begin()) + count + 1 >= V_end() - V_begin())
+        if ((V_finish() - V_start()) + count + 1 >= V_end() - V_start())
             reserve(New_size (begin(), end(), count));
         std::copy_backward(pos , end(), pos + 1);
         this->_Base::_alloc.construct(pos, value);
@@ -502,7 +498,7 @@ public:
     void resize (size_type count, T value = T())
     {
         if (count < size())
-            erase(V_begin() + count, V_end());
+            erase(V_start() + count, V_end());
         else
             insert(V_end(), count - size(), value);
     };
@@ -514,7 +510,7 @@ public:
      * past-the-end iterator is invalidated.*/
     void swap (vector& other)
     {
-        std::swap(V_begin(), other.V_begin());
+        std::swap(V_start(), other.V_start());
         std::swap(V_end(), other.V_end());
         std::swap(V_end(), other.V_end());
     };
@@ -523,8 +519,8 @@ private:
     /*calcule the new size for reserve*/
     size_t New_size(iterator begin, iterator end, size_t count)
     {
-        size_t new_size = (V_end() - V_begin() != 0) ? 2 * (V_end() - V_begin()) : 1;
-        if ((V_end() - V_begin()) + count >= new_size)
+        size_t new_size = (V_end() - V_start() != 0) ? 2 * (V_end() - V_start()) : 1;
+        if ((V_end() - V_start()) + count >= new_size)
             New_size(begin, end, count - new_size);
         return new_size;
     }
@@ -542,12 +538,12 @@ private:
     template <class InputIt>
     void init_rang (const_iterator pos, InputIt first, InputIt last, std::random_access_iterator_tag)
     {
-        if ((V_finish() - V_begin()) + (last - first) + 1 >= V_end() - V_begin())
+        if ((V_finish() - V_start()) + (last - first) + 1 >= V_end() - V_start())
             reserve(New_size (begin(), end(), static_cast<size_t>(last - first)));
-        V_end() = V_begin() + (last - first);
-        std::memmove(V_begin(), first,
+        V_end() = V_start() + (last - first);
+        std::memmove(V_start(), first,
                      static_cast<std::size_t>(last - first) * sizeof(value_type));
-        V_finish() = V_begin() + (last - first);
+        V_finish() = V_start() + (last - first);
     }
 
     /*swap two iterator */
@@ -575,7 +571,7 @@ bool operator==( const std::vector<T,Alloc>& lhs,
                  const std::vector<T,Alloc>& rhs )
 {
     if (lhs.size() == rhs.size())
-        return equal(lhs.V_begin(), lhs.V_end(), rhs.V_begin());
+        return equal(lhs.V_start(), lhs.V_end(), rhs.V_start());
     return false;
 };
 
@@ -590,8 +586,8 @@ template< class T, class Alloc >
 bool operator<( const std::vector<T,Alloc>& lhs,
                 const std::vector<T,Alloc>& rhs )
 {
-    return ft::lexicographical_compare(lhs.V_begin(), lhs.V_end(),
-                            rhs.V_begin(), rhs.V_end());
+    return ft::lexicographical_compare(lhs.V_start(), lhs.V_end(),
+                            rhs.V_start(), rhs.V_end());
 };
 
 template< class T, class Alloc >
@@ -609,28 +605,6 @@ bool operator>=( const std::vector<T,Alloc>& lhs,
 //template <class T>
 //void swap (vector<T>& x, vector<T>& y) { x.swap(y); };//a valider
 
-/*  Specializations
-The standard library provides a specialization of std::vector for the type bool, which may be optimized for space
- efficiency.
-
- std::vector<bool>
- std::vector<bool> is a possibly space-efficient specialization of std::vector for the type bool.
-The manner in which std::vector<bool> is made space efficient (as well as whether it is optimized at all) is
- implementation defined. One potential optimization involves coalescing vector elements such that each element
- occupies a single bit instead of sizeof(bool) bytes.
-std::vector<bool> behaves similarly to std::vector, but in order to be space efficient, it:
-Does not necessarily store its elements as a contiguous array.
-Exposes class std::vector<bool>::reference as a method of accessing individual bits. In particular, objects of
- this class are returned by operator[] by value.
-Does not use std::allocator_traits::construct to construct bit values.
-Does not guarantee that different elements in the same container can be modified concurrently by different threads.*/
-
-//    template <class Allocator>
-//    class vector<bool, Allocator>{
-//        typedef bool                                    value_type;
-//        typedef Allocator                               Allocator_type;
-//        typedef
-//    };
 
 __FT_CONTAINERS_END_NAMESPACE
 
