@@ -35,9 +35,10 @@ public:
     Vector_base(const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0) {}
 
     Vector_base(size_t count, const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0){
-        _ptr_start = (count == 0) ? 0 : static_cast<T*>(_alloc.allocate(count * sizeof(T)));
+        _ptr_start = (count == 0) ? 0 : static_cast<T*>(_alloc.allocate(count));
         _ptr_finish = _ptr_start;
         _ptr_end = _ptr_start + count;
+        std::cout << count << std::endl;
     }
 
     ~Vector_base() {
@@ -100,6 +101,7 @@ class vector : private Vector_base<T, Allocator> {
 
 private:
     typedef Vector_base<T, Allocator>                                           _Base;
+    typedef vector<T, Allocator>                                                _Vector;
 
 /*
 *=============================================================
@@ -116,16 +118,18 @@ public:
     typedef const value_type&                                                   const_reference;
     typedef typename _Base::allocator_type::pointer                             pointer;
     typedef typename _Base::allocator_type::const_pointer                       const_pointer;
-    typedef pointer                                                             iterator;
-    typedef const_pointer                                                       const_iterator;
+    typedef value_type*                                                         iterator;
+    typedef const value_type*                                                   const_iterator;
     typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>                                const_reverse_iterator;
+
 
 /*
 *=============================================================
 *|                     Member Fonction                       |
 *=============================================================
 */
+
 public:
         /*Default constructor. Constructs an empty container with a default-constructed allocator.*/
     vector() : _Base(){}
@@ -135,9 +139,7 @@ public:
 
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
-                    : _Base(count, alloc) {
-        V_finish() = init<value_type *, size_type, T>(V_start(), count, value);
-    }
+                    : _Base(count, alloc) { V_finish() = insert(begin(), count, value); };
 
     /* Constructs the container with the contents of the range [first, last).
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
@@ -146,152 +148,109 @@ public:
     template <class InputIt>
     vector(InputIt first, InputIt last,
            const allocator_type& alloc = allocator_type()) : _Base(alloc)
-    {
-        init_InputIt(first, last, typename ft::is_integral<InputIt>::type());
-    };
+    { init_InputIt(first, last, typename ft::is_integral<InputIt>::type()); };
 
-//    vector(const vector& x) {
-//        container_ = NULL;
-//        alloc = x.alloc;
-//        size_ = 0;
-//        capacity_ = 0;
-//        assign(x.begin(), x.end());
-//    };
+    vector( const _Vector& other ) : _Base(other._Base::_alloc)
+    { assign(other.begin(), other.end()); };
 
-    vector& operator= (const vector& x)
+    ~vector() { _Base::_alloc.destroy(V_start()); };
+
+    /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
+    _Vector&        operator=( const vector& other )
     {
-        if (&x == this)
-            return *this;
-        assign(x.begin(), x.end());
+        if (&other != this)
+            assign(other.begin(), other.end());
         return *this;
     };
 
-    ~vector () { _Base::_alloc.destroy(V_start()); };
+    /*Replaces the contents of the container.
+    *Replaces the contents with count copies of value value*/
+    void            assign( size_type count, const value_type& value )
+    {
+        _resize(count);
+        insert(V_start(), value);
+    };
+
+    /*Replaces the contents with copies of those in the range [first, last).
+     * The behavior is undefined if either argument is an iterator into *this.
+     * This overload has the same effect as overload (1) if InputIt is an integral type. */
+    template< class InputIt>
+    void            assign( InputIt first, InputIt last ) { assign_Input(first, last); };
+
+    /*Returns the allocator associated with the container. */
+    allocator_type  get_allocator() const { return allocator_type(); };//test par heritage
 
 private:
 
-    /*struct initialise by meta*/
-    /*init vector */
-    template <class Iter, class Size, class iT>
-    inline iterator init (Iter ptr, Size count, const iT& value)
-    {
-        for (size_t i = 0; i < count; i++, ++ptr)
-        {
-            *ptr = value + i + 1;
-        }
-        return ptr;
-    }
+    template<class InputIt>
+    void    assign_Input(  InputIt first,
+                           typename ft::enable_if<!ft::is_integral<InputIt>::type::value, InputIt>::type last)
+    { clear(); init_rang(first, last, typename ft::iterator_traits<InputIt>::iterator_category(), 1); };
+
+    template< class Integral >
+    void    assign_Input(  Integral first,
+                           typename ft::enable_if<ft::is_integral<Integral>::type::value, Integral>::type last)
+    { assign(static_cast<size_type>(first), static_cast<value_type>(last)); };
 
     /* otherwise (first and last are just input iterators),
     the copy constructor of T is called O(N) times, and
     reallocation occurs O(log N) times.*/
     template <class InputIt>
-    void init_rang (InputIt first, InputIt last, std::input_iterator_tag)
+    void init_rang (InputIt first, InputIt last, std::input_iterator_tag, int flag)
     {
         std::cout<< "in input iterator constructor"<<std::endl;
-       // for ( ; first != last; ++first)
-           // push_back(*first);//call de copy constructor
-    }
+        for ( ; first != last; ++first)
+            push_back(*first);//call de copy constructor
+    };
 
     /*   Given the distance between first and last as N ,
     if first and last are both forward, bidirectional or random-access iterators,
     the copy constructor of T is only called N  times, and
     no reallocation occurs.*/
     template <class InputIt>
-    void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag)
+    void init_rang (InputIt first, InputIt last, std::random_access_iterator_tag, int flag)
     {
-        std::cout<< "in random iterator constructor"<<std::endl;
-        V_start() = this->_Base::_alloc.allocate(last - first);
-        V_end() = V_start() + (last - first);
-        std::memmove(V_start(), first,
-                     static_cast<std::size_t>(last - first) * sizeof(value_type));
+        _resize(last - first);
+        if (flag)
+            insert(V_start(), first, last);
+        else
+            std::memmove(V_start(), first,
+                         static_cast<std::size_t>(last - first) * sizeof(value_type));
         V_finish() = V_start() + (last - first);
-    }
+    };
 
     /*
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
      if InputIt is an integral type.*/
     template <class Integral>
     void init_InputIt (Integral  first, Integral last, true_type)
-    {
-        std::cout<< "in integral haha iterator constructor"<<std::endl;
-        V_start() = this->_alloc.allocate(static_cast<size_type >(first));
-        V_finish() = init(V_start(), static_cast<size_type >(first), static_cast<value_type >(last));
-        V_end() = V_start() + static_cast<size_type >(first);
-    }
+    { insert(V_start(), static_cast<size_type >(first), static_cast<value_type >(last)); };
 
     /*define the iterator tag*/
     template <class InputIt>
     void init_InputIt (InputIt  first, InputIt last, false_type)
-    {
-//        this->_Base::_ptr_start = this->_alloc.allocate((last - first) * sizeof(T));
-//        this->_Base::_ptr_end = this->_Base::_ptr_start + (last -first);
-        init_rang(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
-    }
-
-
-    template <class InputIterator>
-    void assign (InputIterator first, InputIterator last,
-                 typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type * = 0) {
-        clear();
-        InputIterator tmp = first;
-        difference_type n = 0;
-
-        while (tmp != last) {
-            n++;
-            tmp++;
-        }
-
-        reserve(n);
-        insert(begin(), first, last);
-    };
-    /*Replaces the contents with copies of those in the range [first, last).
-     * The behavior is undefined if either argument is an iterator into *this.
-     * This overload has the same effect as overload (1) if InputIt is an integral type. */
-    template< class InputIt >
-    void assign( InputIt first, InputIt last )
-    {
-        init_input_assign()
-
-    }
-
-    /*Replaces the contents of the container.
-     *Replaces the contents with count copies of value value*/
-    void            assign( size_type count, const T& value )
-    {
-        resize(count);
-        insert(V_begin(), value);
-    }
-
-    /*Returns the allocator associated with the container. */
-    allocator_type  get_allocator() const { return allocator_type; };//test par heritage
-
-private:
-
-    template< class InputIt , class ft::enable_if<!ft::is_integral<InputIterator>::value>::type>
-    void assign( InputIt first, InputIt last )
-    {
-
-    }
-
+    { init_rang(first, last, typename ft::iterator_traits<InputIt>::iterator_category(), 0); };
 
 /*
 *====================================================================================
 *|                                   Element Access                                 |
 *====================================================================================
 */
+
+public:
+
     /*Returns a reference to the element at specified location pos,
      * with bounds checking.If pos is not within the range of the container,
      * an exception of type std::out_of_range is thrown. */
     reference       at(size_type pos)
     {
         check_size(pos);
-        return V_begin()[n];
+        return V_start()[pos];
     };
     const_reference at(size_type pos) const
     {
         check_size(pos);
-        return V_begin()[n];
+        return V_start()[pos];
     };
 
     /*Returns a reference to the element at specified location pos.
@@ -301,19 +260,19 @@ private:
 
     /*Returns a reference to the first element in the container.
      * Calling front on an empty container is undefined.*/
-    reference       front()         { return *begin(); };
-    const_reference front() const   { return *beging(); };
+    reference       front()         { return *V_start(); };
+    const_reference front() const   { return *V_start(); };
 
     /*Returns a reference to the last element in the container.
      * Calling back on an empty container causes undefined behavior. */
-    reference       back()          { return *(end()- 1); };
-    const_reference back() const    { return *(end()- 1); };
+    reference       back()          { return *(V_end()- 1); };
+    const_reference back() const    { return *(V_end()- 1); };
 
     /*Returns pointer to the underlying array serving as element storage. The pointer
      * is such that range [data(); data()+size()) is always a valid range, even if the
      * container is empty (data() is not dereferenceable in that case).*/
-    T*          data()      {begin()};
-    const T*    data() const{begin()};
+    T*          data()              { V_start(); };
+    const T*    data() const        { V_start(); };
 
 private:
 
@@ -321,9 +280,9 @@ private:
     void        check_size(std::size_t pos)
     {
         if (!(pos < size()))
-            throw std::out_of_range("ft::vector")
-    }
-}
+            throw std::out_of_range("ft::vector");
+    };
+
 
 /*
 *====================================================================================
@@ -345,9 +304,12 @@ public:
 
 private:
 
-    iterator& V_start()              { return this->_Base::_ptr_start; };
-    iterator& V_finish()             { return this->_Base::_ptr_finish; };
-    iterator& V_end()                { return this->_Base::_ptr_end; };
+    iterator&       V_start()       { return this->_Base::_ptr_start; };
+    iterator&       V_finish()      { return this->_Base::_ptr_finish; };
+    iterator&       V_end()         { return this->_Base::_ptr_end; };
+    iterator        finish()        { return this->_Base::_ptr_finish; };
+    const_iterator  finish()   const{ return this->_Base::_ptr_finish; };
+
 
 
 /*
@@ -363,7 +325,7 @@ public:
 
     /*Returns the number of elements in the container,
      * i.e. std::distance(begin(), end()).*/
-    size_type   size()      const   { return V_finish() - V_start(); };
+    size_type   size()      const   { return finish() - begin(); };
 
     /*Returns the maximum number of elements the container is able to
      * hold due to system or library implementation limitations, i.e.
@@ -383,28 +345,36 @@ public:
      * references are invalidated*/
     void        reserve(size_type new_cap)
     {
-     if (capacity() < new_cap)
-     {
-         const  size_t save_size = size();
-         const  size_t save_capacity = capacity();
-         iterator   V_new_start = this->_Base::_alloc.allocate(new_cap);
-         try
-         {
-             std::unitialized_copy(V_start(), V_finish(), V_new_start);
-             this->_Base::_alloc.destroy(V_start(), V_finish());
-             this->_Base::_alloc.desallocate(V_start(), capacity);
-             V_start() = V_new_start;
-             V_finish() = V_new_start + save_sise;
-             V_end() = V_new_start + new_cap;
-         }
-         catch
-            this->_Base::_alloc.desallocate(V_new_start, new_cap);
+        if (max_size() > new_cap)
+        {
+            const size_t save_size = size();
+            const size_t save_capacity = capacity() - 1;
+            iterator V_new_start;
+            try
+            {
+                V_new_start = this->_Base::_alloc.allocate(new_cap);
+                std::uninitialized_copy(V_start(), V_finish(), V_new_start);
+                clear();
+                //this->_Base::_alloc.deallocate(V_start(), 0);
+                V_start() = V_new_start;
+                V_finish() = V_new_start + save_size;
+                V_end() = V_new_start + new_cap;
+
+            }
+            catch (std::bad_alloc &e)
+            {
+                this->_Base::_alloc.deallocate(V_new_start, new_cap);
+            }
+        }
+        else
+            throw std::length_error("ft::vector");
+
     };
 
     /*Returns the number of elements that the container has currently
      * allocated space for.*/
     size_type   capacity()  const
-    { return static_cast<size_type>(V_end() - V_start()); };
+    { return static_cast<size_type>(end() - begin()); };
 
 /*
 *====================================================================================
@@ -420,7 +390,7 @@ public:
      * Any past-the-end iterators are also invalidated.
      * Leaves the capacity() of the vector unchanged (note: the standard's restriction on
      * the changes to capacity is in the specification of vector::reserve, see [1])*/
-    void            clear() { erase(V_start(), V_end()); };
+    void            clear(){ erase(V_start(), V_finish()); };
 
     /*
      * Causes reallocation if the new size() is greater than the old capacity().
@@ -436,33 +406,38 @@ public:
      */
     iterator        insert( const_iterator pos, const T& value )
     {
-        size_type Save_pos = pos - begin();
-        if ((V_finish() - V_start()) + 1 >= V_end() - V_start())
-            reserve(New_size(V_start(), V_end(), 1));
-        std::copy_backward(pos , V_end(), pos + 1);
+        size_type St = 1;
+        iterator rIt = insert( pos, St, value );
         this->_Base::_alloc.construct(pos, value);
         V_finish()++;
-        return V_start() + Save_pos;
+        return rIt;
     };
 
     /*inserts count copies of the value before pos.*/
     iterator        insert( const_iterator pos, size_type count, const T& value )
     {
+        iterator M_pos = const_cast<iterator>(pos);
         size_type Save_pos = pos - begin();
         if ((V_finish() - V_start()) + count + 1 >= V_end() - V_start())
             reserve(New_size (begin(), end(), count));
-        std::copy_backward(pos , end(), pos + 1);
-        this->_Base::_alloc.construct(pos, value);
+//        std::cout << "size = " << M_pos - finish() << std::endl;
+//        if (M_pos != finish())
+        std::copy_backward(M_pos, finish(), finish() + count);
+//        std::cout<<"coucou"<<std::endl;
+
+        for(size_type St = 0; St != count + count; ++St, ++pos)
+            this->_Base::_alloc.construct(pos, value);
         V_finish()++;
-        return (count == 0)? pos: begin() + Save_pos;
+        return const_cast<iterator>((count == 0)? pos : V_start() + Save_pos);
     };
 
     /*inserts elements from range [first, last) before pos.*/
     template <class InputIt>
     iterator        insert(const_iterator pos, InputIt first, InputIt last)
-     {
-        init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
-        return (first == last) ? pos: begin() + pos;
+    {
+        size_type Save_pos = pos - begin();
+        //init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+        return const_cast<iterator>((first == last) ? pos : V_start() + Save_pos);
     };
 
     /*Erases the specified elements from the container.
@@ -488,16 +463,18 @@ public:
     //Removes the element at pos.
     iterator        erase(iterator pos)
     {
-        std::copy(pos + 1, V_end()--, pos);
-        this->_Base::_alloc.destroy(V_end() + 1);
+        std::copy(pos + 1, V_finish()--, pos);
+        this->_Base::_alloc.destroy(V_finish() + 1);
         return pos;
     };
 
     //Removes the elements in the range [first, last).
     iterator        erase(iterator first, iterator last)
     {
-        this->_Base::_alloc.destroy(std::copy(last, V_end(), first), V_end());
-        V_end() = V_end() - (last - first);
+        iterator        It = std::copy(last, V_finish(), first);
+        for(; It != V_finish(); ++It)
+            this->_Base::_alloc.destroy(It);
+        V_finish() = V_finish() - (last - first);
         return first;
     };
 
@@ -542,7 +519,7 @@ public:
     2) additional copies of value are appended.*/
     void        resize(size_type count, T value = T())
     {
-        resize(count);
+        _resize(count);
         insert( (V_finish() + 1), value );
     };
 
@@ -566,6 +543,7 @@ private:
         size_t new_size = (V_end() - V_start() != 0) ? 2 * (V_end() - V_start()) : 1;
         if ((V_end() - V_start()) + count >= new_size)
             New_size(begin, end, count - new_size);
+        std::cout << "new size = " << new_size << std::endl;
         return new_size;
     }
 
@@ -591,7 +569,7 @@ private:
     }
 
     /*resize the container only*/
-    void resize (size_type count)
+    void    _resize(size_type count)
     {
         if (count < size())
             erase(V_start() + count, V_end());
