@@ -104,9 +104,9 @@ private:
     typedef vector<T, Allocator>                                                _Vector;
 
 /*
-*=============================================================
-*|                     Member Type                           |
-*=============================================================
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
 */
 
 public:
@@ -123,11 +123,10 @@ public:
     typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>                                const_reverse_iterator;
 
-
 /*
-*=============================================================
-*|                     Member Fonction                       |
-*=============================================================
+*====================================================================================
+*|                                  Member Fonction                                 |
+*====================================================================================
 */
 
 public:
@@ -139,7 +138,7 @@ public:
 
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
-                    : _Base(count, alloc) { V_finish() = insert(begin(), count, value); };
+                    : _Base(count, alloc) { insert(begin(), count, value); };
 
     /* Constructs the container with the contents of the range [first, last).
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
@@ -360,6 +359,7 @@ public:
                 V_finish() = V_new_start + save_size;
                 V_end() = V_new_start + new_cap;
 
+
             }
             catch (std::bad_alloc &e)
             {
@@ -416,18 +416,14 @@ public:
     /*inserts count copies of the value before pos.*/
     iterator        insert( const_iterator pos, size_type count, const T& value )
     {
-        iterator M_pos = const_cast<iterator>(pos);
         size_type Save_pos = pos - begin();
-        if ((V_finish() - V_start()) + count + 1 >= V_end() - V_start())
+        if ((finish() - begin()) + count + 1 >= end() - begin())
             reserve(New_size (begin(), end(), count));
-//        std::cout << "size = " << M_pos - finish() << std::endl;
-//        if (M_pos != finish())
-        std::copy_backward(M_pos, finish(), finish() + count);
-//        std::cout<<"coucou"<<std::endl;
-
-        for(size_type St = 0; St != count + count; ++St, ++pos)
+        std::copy_backward(const_cast<iterator>(pos), V_finish(), V_finish() + count);
+        for(size_type St = 0; St < count ; ++St, ++pos, ++V_finish())
             this->_Base::_alloc.construct(pos, value);
-        V_finish()++;
+        std::cout <<"capacity" << capacity() << std::endl;
+        std::cout << "size  = "<< size() << std::endl;
         return const_cast<iterator>((count == 0)? pos : V_start() + Save_pos);
     };
 
@@ -471,6 +467,7 @@ public:
     //Removes the elements in the range [first, last).
     iterator        erase(iterator first, iterator last)
     {
+        std::cout << "in erase" <<std::endl;
         iterator        It = std::copy(last, V_finish(), first);
         for(; It != V_finish(); ++It)
             this->_Base::_alloc.destroy(It);
@@ -572,7 +569,7 @@ private:
     void    _resize(size_type count)
     {
         if (count < size())
-            erase(V_start() + count, V_end());
+            erase(V_start() + count - 1, V_end());
         else
             reserve(count);
     };
