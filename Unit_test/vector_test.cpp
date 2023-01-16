@@ -15,23 +15,30 @@
 #include <map>
 #include <iostream>
 #include <iterator>
+#include "../stack.tpp"
 
 int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-    ft::vector<int>            vft;
-    ft::vector<int>            aft(std::allocator<int>);
-    size_t s = 99;
+
+//    ft::vector<int>            vft;
+//    ft::vector<int>            aft(std::allocator<int>);
+    size_t s = 98;
     int    i = 0;
     std::vector<int>            stft(s);
     ft::vector<int>            stft2(s, i);
+    std::vector<int>::iterator         it;
+//    std::vector<int>            stft(34, 45);
+//    std::vector<int>::iterator It = stft.begin() + 1;
+//    std::vector<int>::iterator Id = stft.end() - 1;
 //    ft::vector<int>::iterator it = stft2.begin();
 //    ft::vector<int>::iterator it2 = stft2.end();
 //    ft::vector<int>             itconst(it, it2);
 //    ft::vector<int>             copyconstruct(itconst);
 //    stft = itconst;
-    std::cout <<"befor  "<< stft2.size() << "\n" << stft2.capacity()<< std::endl;
-    stft2.assign(s, i);
-    std::cout <<"afer"<< stft2.size()<< "\n" << stft2.capacity()<<std::endl;
+    //std::cout <<"befor  "<< stft2.size() << "\n" << stft2.capacity()<< std::endl;
+    stft2.assign(34, 45);
+    //__COUT__<< "\nsize = " <<  stft2.size() << "\ncapacity = " << stft2.capacity()  __CENDL__
+    //std::cout <<"afer"<< stft2.size()<< "\n" << stft2.capacity()<<std::endl;
 //    ft.assign(9, 90);
 //    ft2.assign(fit, fit2);
 //    ft.assign(s, c);

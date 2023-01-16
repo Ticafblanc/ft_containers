@@ -40,7 +40,7 @@ Template parameters
 The standard containers std::vector, std::deque and std::list satisfy these requirements. By default, if no container
  class is specified for a particular stack class instantiation, the standard container std::deque is*/
 
-template<class T, class Container = std::deque<T> >
+template<class T, class Container = std::vector<T> >
 class stack
 {
 public:
@@ -53,6 +53,13 @@ public:
     //Copy-constructs the underlying container c with the contents of cont.
     // This is also the default constructor. (until C++11)
     explicit stack( const Container& cont = Container()) : c(cont) {}
+
+    /* Copy constructor. The adaptor is copy-constructed with the contents of other.c. */
+    stack( const stack& other ) : c(other.c)
+    {
+        if (other.size() > 0)
+            *this = other;
+    }
 
     //Destructs the stack. The destructors of the elements are called and the used storage is deallocated. Note,
     // that if the elements are pointers, the pointed-to objects are not destroyed.
@@ -89,6 +96,24 @@ public:
     //Removes the top element from the stack. Effectively calls c.pop_back()
     void pop() { c.pop_back(); }
 
+    template< class t, class C >
+    friend bool operator==( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
+    template< class t, class C >
+    friend bool operator!=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
+    template< class t, class C >
+    friend bool operator<( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
+    template< class t, class C >
+    friend bool operator<=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
+    template< class t, class C >
+    friend bool operator>=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
+    template< class t, class C >
+    friend bool operator>( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
+
 protected:
     //the underlying container
     Container c;
@@ -104,59 +129,62 @@ protected:
 //true if the corresponding comparison yields true, false otherwise.
 
 template< class T, class Container >
-bool operator==( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c == rhs.c; }
 
 template< class T, class Container >
-bool operator!=( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator!=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c != rhs.c; }
 
 template< class T, class Container >
-bool operator<( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator<( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c < rhs.c; }
 
 template< class T, class Container >
-bool operator<=( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator<=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c <= rhs.c; }
 
 template< class T, class Container >
-bool operator>( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator>( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c > rhs.c; }
 
 template< class T, class Container >
-bool operator>=( const stack<T,Container>& lhs, const stack<T,Container>& rhs )
+inline bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
 { return lhs.c >= rhs.c; }
 
 //Mutant stack add Iterator fonction
 
-template<typename T>
-class MutantStack : public stack<T>
-{
-public:
-    MutantStack() {}
-    MutantStack(const MutantStack<T>& src) { *this = src; }
-    MutantStack<T>& operator=(const MutantStack<T>& rhs)
-    {
-        this->c = rhs.c;
-        return *this;
-    }
-    ~MutantStack() {}
-
-    typedef typename stack<T>::container_type::iterator                 iterator;
+//template<typename T>
+//class MutantStack : public stack<T>
+//{
+//public:
+//    MutantStack() {}
+//    MutantStack(const MutantStack<T>& src) { *this = src; }
+//    MutantStack<T>& operator=(const MutantStack<T>& rhs)
+//    {
+//        this->c = rhs.c;
+//        return *this;
+//    }
+//    ~MutantStack() {}
+//
+//    typedef typename stack<T>::container_type::iterator                 iterator;
 //    typedef typename stack<T>::container_type::const_iterator           const_iterator;
 //    typedef typename stack<T>::container_type::reverse_iterator         reverse_iterator;
 //    typedef typename stack<T>::container_type::const_reverse_iterator   const_reverse_iterator;
-
-    iterator begin() { return this->c.begin(); }
-    iterator end() { return this->c.end(); }
-    //const_iterator cbegin() { return this->c.begin(); }//c++11
-    //const_iterator cend() { return this->c.end(); }//c++11
-    //reverse_iterator rbegin() { return this->c.begin(); }//c++11
-    //reverse_iterator rend() { return this->c.end(); }//c++11
-    //const_reverse_iterator crbegin() { return this->c.begin(); }//c++11
-    //const_reverse_iterator crend() { return this->c.end(); }//c++11
-};
+//
+//    iterator begin() { return this->c.begin(); }
+//    iterator end() { return this->c.end(); }
+//    //const_iterator cbegin() { return this->c.begin(); }//c++11
+//    //const_iterator cend() { return this->c.end(); }//c++11
+//    //reverse_iterator rbegin() { return this->c.begin(); }//c++11
+//    //reverse_iterator rend() { return this->c.end(); }//c++11
+//    //const_reverse_iterator crbegin() { return this->c.begin(); }//c++11
+//    //const_reverse_iterator crend() { return this->c.end(); }//c++11
+//};
 
 __FT_CONTAINERS_END_NAMESPACE
+
+
+
 
 #endif //STACK_TPP

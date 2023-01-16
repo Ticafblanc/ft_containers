@@ -14,20 +14,83 @@
 
     //#include stdlib specific
 //std::ptrdiff_t
-#include <cstddef>
+# include <cstddef>
 //std::random_access_iterator_tag
 //std::iterator
-#include <iterator>
+# include <iterator>
 //std::deque
-#include <deque>
+# include <deque>
 //std::allocator, std::uninitialised_copy
 # include <memory>
 //std::mememove
-#include <cstring>
+# include <cstring>
 //std::swap std::copy
-#include <algorithm>
+# include <algorithm>
+//std::numeric_limits<>
+# include <limits>
 
-//# include <limits>// a voir si add to tmp
+/* Print debug */
+
+size_t    count = 0;
+
+#define __COUT__    std::cout
+#define __CENDL__   << std::endl;
+#define __CE__      ;
+#define __NFILE__   << "\nFile name = " << __FILE_NAME__
+#define __NLINE__   << "\nLine = " << __LINE__
+#define __INFUN__   << "\n" << count << " -> Get in fonction = "<<__PRETTY_FUNCTION__
+#define __OUTFUN__  << "\n" << count++ << " -> Get out in fonction = "<<__PRETTY_FUNCTION__
+#define __SIZE__    << "\nSize = " << size()
+#define __CAPA__    << "\nCapacity = " << capacity()
+
+/* Non members */
+#if 0
+    #define __INFONM__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __CE__
+#else
+    #define __INFONM__ ;
+#endif
+
+/* Modifier */
+#if 0
+    #define __INFOMO__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __SIZE__ __CAPA__ __CE__
+    #define __INFOMONL__ __COUT__ __OUTFUN__ __NLINE__ __SIZE__ __CAPA__ __CENDL__
+#else
+    #define __INFOMO__ ;
+    #define __INFOMONL__ ;
+#endif
+
+/* capacity */
+#if 0
+    #define __INFOCA__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __SIZE__ __CAPA__ __CE__
+    #define __INFOCANL__ __COUT__ __OUTFUN__ __NLINE__ __SIZE__ __CAPA__ __CENDL__
+#else
+    #define __INFOCA__ ;
+    #define __INFOCANL__ ;
+#endif
+
+/* Iterator */
+#if 0
+    #define __INFOIT__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __CE__
+#else
+    #define __INFOIT__ ;
+#endif
+
+/* Eemant acces */
+#if 0
+    #define __INFOEA__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __CE__
+#else
+    #define __INFOEA__ ;
+#endif
+
+/* menber Fonction */
+#if 0
+    #define __INFOMF__ __COUT__ __NFILE__ __INFUN__ __NLINE__ __SIZE__ __CAPA__ __CE__
+    #define __INFOMFNL__ __COUT__ __OUTFUN__ __NLINE__ __SIZE__ __CAPA__ __CENDL__
+#else
+    #define __INFOMF__ ;
+    #define __INFOMFNL__ ;
+#endif
+
 
 #ifndef FT_CONTAINERS_FT_CONTAINERS_HPP
 # define FT_CONTAINERS_FT_CONTAINERS_HPP

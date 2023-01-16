@@ -34,9 +34,8 @@ std::enable_if can be used in many forms, including:
     as a class template or function template parameter
 
 The behavior of a program that adds specializations for enable_if is undefined.*/
-struct true_type { static const bool value = true; };
 
-struct false_type { static const bool value = false; };
+
 
 template<bool B, class T = void>
 struct enable_if {};
@@ -56,42 +55,53 @@ The behavior of a program that adds specializations for is_integral or is_integr
 Template parameters
 T 	- 	a type to check */
 
+typedef     std::integral_constant<bool, true>      true_type;
+typedef 	std::integral_constant<bool, false>     false_type;
 
 template <typename>
-struct is_integral { typedef false_type type; };
+struct is_integral : false_type {};
 
 template <>
-struct is_integral<bool> {  typedef true_type type; };
+struct is_integral<bool> : true_type {};
 
 template <>
-struct is_integral<char> { typedef true_type type; };
+struct is_integral<char> : true_type {};
 
 template <>
-struct is_integral<short> { typedef true_type type; };
+struct is_integral<char16_t> : true_type {};
 
 template <>
-struct is_integral<int> { typedef true_type type; };
+struct is_integral<wchar_t> : true_type {};
 
 template <>
-struct is_integral<long> { typedef true_type type; };
+struct is_integral<short> : true_type {};
 
 template <>
-struct is_integral<long long> { typedef true_type type; };
+struct is_integral<int> : true_type {};
 
 template <>
-struct is_integral<unsigned char> { typedef true_type type; };
+struct is_integral<long> : true_type {};
 
 template <>
-struct is_integral<unsigned short> { typedef true_type type; };
+struct is_integral<long long> : true_type {};
 
 template <>
-struct is_integral<unsigned int> { typedef true_type type; };
+struct is_integral<signed char> : true_type {};
 
 template <>
-struct is_integral<unsigned long> { typedef true_type type; };
+struct is_integral<unsigned char> : true_type {};
 
 template <>
-struct is_integral<unsigned long long> { typedef true_type type; };
+struct is_integral<unsigned short> : true_type {};
+
+template <>
+struct is_integral<unsigned int> : true_type {};
+
+template <>
+struct is_integral<unsigned long> : true_type {};
+
+template <>
+struct is_integral<unsigned long long> : true_type {};
 
 //supplement
 
