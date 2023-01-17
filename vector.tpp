@@ -40,11 +40,7 @@ public:
         _ptr_end = _ptr_start + count;
     }
 
-    ~Vector_base() {
-        if ((_ptr_end - _ptr_start) != 0) {
-            _alloc.deallocate(_ptr_start, (_ptr_end - _ptr_start));
-        }
-    }
+    ~Vector_base() {_alloc.deallocate(_ptr_start, (_ptr_end - _ptr_start)); };
 
     /*Returns the allocator associated with the container.*/
     allocator_type get_allocator() const { return allocator_type(); }
@@ -146,18 +142,22 @@ public:
     template <class InputIt>
     vector(InputIt first, InputIt last,
            const allocator_type& alloc = allocator_type()) : _Base(alloc)
-    {__INFOMF__ select_Input(first, last, 0);/*, typename ft::is_integral<InputIt>::type()); */__INFOMFNL__};
+    {__INFOMF__ select_Input(first, last, 0); };
 
     vector( const _Vector& other ) : _Base(other._Base::_alloc)
     {__INFOMF__ assign(other.begin(), other.end()); __INFOMFNL__};
 
-    ~vector() {__INFOMF__ _Base::_alloc.destroy(V_start()); };
+    ~vector()
+    {__INFOMF__
+        for(iterator It = V_start(); It != V_end(); ++It)
+            _Base::_alloc.destroy(V_start());
+    };
 
     /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
-    _Vector&        operator=( const vector& other )
+    _Vector&        operator=( const _Vector& other )
     {__INFOMF__
         if (&other != this)
-            assign(other.begin(), other.end());
+            assign(other.begin(), other.end() - 1);
         __INFOMFNL__
         return *this;
     };
@@ -189,7 +189,7 @@ private:
      * if InputIt is an integral type for constructor*/
     template< class Integral >
     void    select_Input(  Integral first,
-                           typename ft::enable_if<ft::is_integral<Integral>::type::value, Integral>::type last,
+                           typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last,
                            int flag)
     {__INFOMF__ assign(static_cast<size_type>(first), static_cast<value_type>(last)); __INFOMFNL__};
 
@@ -200,7 +200,7 @@ private:
     void    select_Input(  typename iterator_traits<typename ft::enable_if
                             <ft::is_random_access_iterator
                             <typename ft::iterator_traits
-                            <typename ft::enable_if<!ft::is_integral<InputIt>::type::value, InputIt>::type
+                            <typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type
                             >::iterator_category>::value, InputIt>::type>::pointer first,
                             InputIt last, int flag)
     {__INFOMF__
@@ -222,7 +222,7 @@ private:
     void    select_Input(  typename iterator_traits<typename ft::enable_if
                             <ft::is_input_iterator
                             <typename ft::iterator_traits
-                            <typename ft::enable_if<!ft::is_integral<InputIt>::type::value, InputIt>::type
+                            <typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type
                             >::iterator_category>::value, InputIt>::type>::pointer first,
                             InputIt last, int flag)
     {__INFOMF__
@@ -340,6 +340,8 @@ public:
      * references are invalidated*/
     void        reserve(size_type new_cap)
     {__INFOCA__
+//        std::cout << capacity() << " " << size() << std::endl;
+
         if (max_size() > new_cap)
         {
             const std::size_t save_size = size();
@@ -363,13 +365,15 @@ public:
         }
         else
             throw std::length_error("ft::vector");
+//        std::cout << capacity() << " " << size() << std::endl;
+
         __INFOCANL__
     };
 
     /*Returns the number of elements that the container has currently
      * allocated space for.*/
     size_type   capacity()  const
-    {__INFOCA__ return static_cast<size_type>(end() - begin()); };
+    {__INFOCA__ return static_cast<size_type>((Vc_end() - 1) - Vc_start()); };
 
 /*
 *====================================================================================
@@ -403,7 +407,9 @@ public:
     {__INFOMO__
         size_type St = 1;
         iterator rIt = insert( pos, St, value );
+//        std::cout <<*pos << " "<<pos << std::endl;
         this->_Base::_alloc.construct(pos, value);
+//        std::cout <<*pos <<pos << std::endl;
         V_finish()++;
         __INFOMONL__
         return rIt;
@@ -489,10 +495,10 @@ public:
      */
     void        push_back(const value_type& value)
     {__INFOMO__
-        if (V_end() != V_end())
-            _Base::_alloc.construct(V_end()++, value);
+        if (size() < capacity())
+            _Base::_alloc.construct(V_finish()++, value);
         else
-            insert(V_end(), value);
+            insert(V_finish(), value);
         __INFOMONL__
     };
 
@@ -571,10 +577,12 @@ private:
     /*resize the container only*/
     void    _resize(size_type count)
     {__INFOMO__
-        if (count < size())
+        if (count < size()) {
             erase(V_start() + count - 1, V_end());
-        else
+        }
+        else {
             reserve(count);
+        }
         __INFOMONL__
     };
 
