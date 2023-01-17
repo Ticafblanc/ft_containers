@@ -34,7 +34,7 @@ public:
     /*Solved allocator conflic*/
     Vector_base(const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0) {}
 
-    Vector_base(size_t count, const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0){
+    Vector_base(std::size_t count, const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0){
         _ptr_start = (count == 0) ? 0 : _alloc.allocate(count);
         _ptr_finish = _ptr_start;
         _ptr_end = _ptr_start + count;
@@ -166,7 +166,7 @@ public:
     *Replaces the contents with count copies of value value*/
     void            assign( size_type count, const value_type& value )
     {__INFOMF__
-        _resize(count);
+        resize(count);
         erase(V_start(), V_finish());
         insert(V_start(),count, value);
         __INFOMFNL__
@@ -204,12 +204,12 @@ private:
                             >::iterator_category>::value, InputIt>::type>::pointer first,
                             InputIt last, int flag)
     {__INFOMF__
-        _resize(last - first);
+        resize(last - first);
         erase(V_start(), V_finish());
         if (flag)
             insert(V_start(), first, last);
         else
-            std::memmove(begin(), first,
+            std::memmove(V_start(), first,
                          static_cast<size_type>(last - first));// * sizeof(value_type));
         V_finish() = V_start() + (last - first);
     __INFOMFNL__};
@@ -227,7 +227,7 @@ private:
                             InputIt last, int flag)
     {__INFOMF__
         for ( ; first != last; ++first)
-            push_back(*first);//call de copy constructor
+            push_back(*first);
              __INFOMFNL__
     };
 
@@ -284,7 +284,7 @@ private:
     value_type*     Vc_end()    const   {__INFOIT__ return this->_Base::_ptr_end; };
 
     /*std::out_of_range if !(pos < size())*/
-    void        check_size(std::size_t pos)
+    void        check_size(size_type pos)
     {__INFOEA__
         if (!(pos < size()))
             throw std::out_of_range("ft::vector");
@@ -340,12 +340,10 @@ public:
      * references are invalidated*/
     void        reserve(size_type new_cap)
     {__INFOCA__
-//        std::cout << capacity() << " " << size() << std::endl;
-
         if (max_size() > new_cap)
         {
-            const std::size_t save_size = size();
-            const std::size_t save_capacity = capacity() - 1;
+            const size_type save_size = size();
+            const size_type save_capacity = capacity() - 1;
             iterator V_new_start;
             try
             {
@@ -365,15 +363,13 @@ public:
         }
         else
             throw std::length_error("ft::vector");
-//        std::cout << capacity() << " " << size() << std::endl;
-
         __INFOCANL__
     };
 
     /*Returns the number of elements that the container has currently
      * allocated space for.*/
     size_type   capacity()  const
-    {__INFOCA__ return static_cast<size_type>((Vc_end() - 1) - Vc_start()); };
+    {__INFOCA__ return static_cast<size_type>(Vc_end() - Vc_start()); };
 
 /*
 *====================================================================================
@@ -419,8 +415,8 @@ public:
     iterator        insert( const_iterator pos, size_type count, const T& value )
     {__INFOMO__
         size_type Save_pos = pos - begin();
-        if (count - capacity() < 0 )
-            reserve(New_size (begin(), end(), count));
+        if (count > capacity())
+            reserve(New_size (V_finish(), V_end(), count));
         std::copy_backward(const_cast<iterator>(pos), V_finish(), V_finish() + count);
         for(size_type St = 0; St < count ; ++St, ++pos, ++V_finish())
             this->_Base::_alloc.construct(pos, value);
@@ -432,37 +428,78 @@ public:
     template <class InputIt>
     iterator        insert(const_iterator pos, InputIt first, InputIt last)
     {__INFOMO__
-        size_type Save_pos = pos - begin();
-        //init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+        size_type Save_pos = pos - V_finish();
+        init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
         __INFOMONL__
         return const_cast<iterator>((first == last) ? pos : V_start() + Save_pos);
     };
 
-    /*Erases the specified elements from the container.
-    Invalidates iterators and references at or after the point of the erase,
-     including the end() iterator.
-    The iterator pos must be valid and dereferenceable. Thus the end() iterator
-     (which is valid, but is not dereferenceable) cannot be used as a value for pos.
-    The  iterator first does not need to be dereferenceable if first == last:
-    erasing an empty range is a no-op.
+private:
 
-    Para   meters
-    pos	-	iterator to the element to remove
-    first, last	-	range of elements to remove
-    Type requirements
-    -T must meet the requirements of MoveAssignable.
-    Return value
-    Iterator following the last removed element.
+    /*calcule the new size for reserve*/
+    size_type New_size(iterator _begin, iterator _end, size_type count)
+    {__INFOMO__
+        size_type new_size = (end() - begin() != 0) ? 2 * (end() - begin()) : 1;
+        if ((end() - begin()) + count >= new_size)
+            return New_size(_begin, _end, count - new_size);
+        __INFOMONL__
+        return new_size;
+    }
 
-    If pos refers to the last element, then the end() iterator is returned.
-    If last == end() prior to removal, then the updated end() iterator is returned.
+    /*forward the pos and the first to last*/
+    template <class InputIt>
+    void init_rang (const_iterator pos, InputIt first, InputIt last, std::input_iterator_tag)
+    {__INFOMO__
+        iterator mem_first = first;
+        for ( size_type F_pos = 0; first != last; ++F_pos, ++first)
+            insert(pos + F_pos, *first);//voir si manage de la destruction de la class original
+        __INFOMONL__
+    }
 
-    If [first, last) is an empty range, then last is returned.*/
+    /*allocate memory and copy the valeu*/
+    template <class InputIt>
+    void init_rang (const_iterator pos, InputIt first, InputIt last, std::random_access_iterator_tag)
+    {__INFOMO__
+        if (size() + (last - first) >= capacity())
+            reserve(New_size (V_start(), V_end(), static_cast<size_type>(last - first)));
+        V_end() = V_start() + (last - first);
+        std::memmove(V_start(), first,
+                     static_cast<size_type>(last - first) * sizeof(value_type));
+        V_finish() = V_start() + (last - first);
+        __INFOMONL__
+    }
+
+public:
+
+        /*Erases the specified elements from the container.
+        Invalidates iterators and references at or after the point of the erase,
+         including the end() iterator.
+        The iterator pos must be valid and dereferenceable. Thus the end() iterator
+         (which is valid, but is not dereferenceable) cannot be used as a value for pos.
+        The  iterator first does not need to be dereferenceable if first == last:
+        erasing an empty range is a no-op.
+
+        Para   meters
+        pos	-	iterator to the element to remove
+        first, last	-	range of elements to remove
+        Type requirements
+        -T must meet the requirements of MoveAssignable.
+        Return value
+        Iterator following the last removed element.
+
+        If pos refers to the last element, then the end() iterator is returned.
+        If last == end() prior to removal, then the updated end() iterator is returned.
+
+        If [first, last) is an empty range, then last is returned.*/
     //Removes the element at pos.
     iterator        erase(iterator pos)
     {__INFOMO__
-        std::copy(pos + 1, V_finish()--, pos);
-        this->_Base::_alloc.destroy(V_finish() + 1);
+        if (pos != V_finish()) {
+            std::copy(pos + 1, V_finish()--, pos);
+            this->_Base::_alloc.destroy(V_finish() + 1);
+        }
+        else
+            this->_Base::_alloc.destroy(V_finish());
         __INFOMONL__
         return pos;
     };
@@ -521,8 +558,14 @@ public:
     2) additional copies of value are appended.*/
     void        resize(size_type count, T value = T())
     {__INFOMO__
-        _resize(count);
-        insert( (V_finish() + 1), value );
+        if (count < size()) {
+            erase(V_start() + count, V_end());
+        }
+        else if (count > size()){
+            reserve(count);
+            insert( V_finish(), value );
+        }
+
         __INFOMONL__
     };
 
@@ -538,61 +581,6 @@ public:
         std::swap(V_end(), other.V_end());
         __INFOMONL__
     };
-
-private:
-
-    /*calcule the new size for reserve*/
-    size_t New_size(iterator _begin, iterator _end, size_t count)
-    {__INFOMO__
-        size_t new_size = (end() - begin() != 0) ? 2 * (end() - begin()) : 1;
-        if ((end() - begin()) + count >= new_size)
-            return New_size(_begin, _end, count - new_size);
-        __INFOMONL__
-        return new_size;
-    }
-
-    /*forward the pos and the first to last*/
-    template <class InputIt>
-    void init_rang (const_iterator pos, InputIt first, InputIt last, std::input_iterator_tag)
-    {__INFOMO__
-        iterator mem_first = first;
-        for ( size_t F_pos = 0; first != last; ++F_pos, ++first)
-            insert(pos + F_pos, *first);//voir si manage de la destruction de la class original
-        __INFOMONL__
-    }
-
-    /*allocate memory and copy the valeu*/
-    template <class InputIt>
-    void init_rang (const_iterator pos, InputIt first, InputIt last, std::random_access_iterator_tag)
-    {__INFOMO__
-        if ((V_finish() - V_start()) + (last - first) + 1 >= V_end() - V_start())
-            reserve(New_size (begin(), end(), static_cast<size_t>(last - first)));
-        V_end() = V_start() + (last - first);
-        std::memmove(V_start(), first,
-                     static_cast<std::size_t>(last - first) * sizeof(value_type));
-        V_finish() = V_start() + (last - first);
-        __INFOMONL__
-    }
-
-    /*resize the container only*/
-    void    _resize(size_type count)
-    {__INFOMO__
-        if (count < size()) {
-            erase(V_start() + count - 1, V_end());
-        }
-        else {
-            reserve(count);
-        }
-        __INFOMONL__
-    };
-
-public:
-
-    template< class t, class Alloc >
-    friend bool operator==( const std::vector<t,Alloc>& lhs, const std::vector<t,Alloc>& rhs );
-
-    template< class t, class Alloc >
-    friend bool operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs );
 
 
 };// end of class vector
