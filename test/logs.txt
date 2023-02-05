@@ -1,0 +1,42 @@
+In file included from ../vector_tests/operator >=.cpp:1:
+In file included from ../vector_tests/../system/system_methods.ipp:2:
+In file included from ../vector_tests/../system/lib.hpp:30:
+../vector_tests/../system/Alloc.hpp:55:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
+template <class _Up, class... _Args>
+                          ^
+../vector_tests/../system/Alloc.hpp:58:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
+        construct(_Up* __p, _Args&&... __args)
+                                 ^
+../vector_tests/../system/Alloc.hpp:164:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
+template <class _Up, class... _Args>
+                          ^
+../vector_tests/../system/Alloc.hpp:167:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
+        construct(_Up* __p, _Args&&... __args)
+                                 ^
+4 warnings generated.
+ed.
+ated.
+/rend().cpp:1:
+In file included from ../vector_tests/../system/system_methods.ipp:2:
+In file included from ../vector_tests/../system/lib.hpp:28:
+In file included from ../vector_tests/../system/../../config.hpp:3:
+../vector_tests/../../../vector.tpp:261:72: error: no viable conversion from returned value of type 'ft::vector<int>::iterator' (aka 'int *') to function return type 'ft::vector<int>::reverse_iterator' (aka 'reverse_iterator<int *>')
+    reverse_iterator        rend()                  {__INFOIT__ return begin(); };
+                                                                       ^~~~~~~
+../vector_tests/rend().cpp:20:26: note: in instantiation of member function 'ft::vector<int>::rend' requested here
+    v.push_back(*(vector.rend() - 1));
+                         ^
+../vector_tests/rend().cpp:28:57: note: in instantiation of function template specialization 'rend_test<int>' requested here
+    exit(run_vector_unit_test<int>("rend()", rend_test, rend_test));
+                                                        ^
+../vector_tests/../system/../../../iterator.tpp:189:7: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'ft::vector<int>::iterator' (aka 'int *') to 'const ft::reverse_iterator<int *> &' for 1st argument
+class reverse_iterator : public std::iterator<typename iterator_traits<Iter>::iterator_category,
+      ^
+../vector_tests/../system/../../../iterator.tpp:224:5: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'int *'
+    reverse_iterator (const reverse_iterator<U>& other) : current(other.base()) {}
+    ^
+../vector_tests/../system/../../../iterator.tpp:219:14: note: explicit constructor is not a candidate
+    explicit reverse_iterator (iterator_type x) : current(x) {}
+             ^
+4 warnings and 1 error generated.
+r generated.
