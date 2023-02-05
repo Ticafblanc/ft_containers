@@ -156,5 +156,5 @@ Project Link: [https://github.com/Ticafblanc/ft_container](https://github.com/Ti
 [license-shield]: https://img.shields.io/github/license/Ticafblanc/42-cursus_get_next_line.svg?style=for-the-badge
 [license-url]: https://github.com/Ticafblanc/42-cursus_get_next_line/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/in/matthis-doquocbao-a4a381192?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3Bqur1a8wNS0OuvMWTRXIihA%3D%3D
+[linkedin-url]: https://www.linkedin.com/in/matthis-doquocbao-a4a381192?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_viewBase_contact_details%3Bqur1a8wNS0OuvMWTRXIihA%3D%3D
 <!--[product-screenshot]: Images/cpp_logo.png-->

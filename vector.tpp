@@ -6,7 +6,7 @@
 #    By: mdoquocb <mdoquocb@student.42quebec.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/12/27 21:56:15 by mdoquocb          #+#    #+#              #
-#    Updated: 2022/12/27 21:56:18 by mdoquocb         ###   ########.fr        #
+#    Updated: 2023/01/29 18:27:02 by mdoquocb         ###   ########.ca        #
 #                                                                              #
 # *************************************************************************** */
 
@@ -25,30 +25,30 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
 /* Private base classe manage Allocator*/
 template <class T, class Allocator>
-class Vector_base {
+class VectorBase {
 
 public:
     typedef Allocator                                                           allocator_type;
 
-    Vector_base() : _ptr_start(0), _ptr_finish(0), _ptr_end(0) {}
+    VectorBase() : _ptr_begin(0), _ptr_end(0), _ptr_end_of_alloc(0) {}
     /*Solved allocator conflic*/
-    Vector_base(const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0) {}
+    explicit VectorBase(const Allocator&) : _ptr_begin(0), _ptr_end(0), _ptr_end_of_alloc(0) {}
 
-    Vector_base(std::size_t count, const Allocator&) : _ptr_start(0), _ptr_finish(0), _ptr_end(0){
-        _ptr_start = (count == 0) ? 0 : _alloc.allocate(count);
-        _ptr_finish = _ptr_start;
-        _ptr_end = _ptr_start + count;
+    explicit VectorBase(std::size_t count, const Allocator&) : _ptr_begin(0), _ptr_end(0), _ptr_end_of_alloc(0){
+        _ptr_begin = (count == 0) ? 0 : _alloc.allocate(count);
+        _ptr_end = _ptr_begin;
+        _ptr_end_of_alloc = _ptr_begin + count;
     }
 
-    ~Vector_base() {_alloc.deallocate(_ptr_start, (_ptr_end - _ptr_start)); };
+    ~VectorBase() {
+        _alloc.deallocate(_ptr_begin, (_ptr_end_of_alloc - _ptr_begin));
+    };
 
-    /*Returns the allocator associated with the container.*/
-    allocator_type get_allocator() const { return allocator_type(); }
 
 protected:
-    T* _ptr_start;
-    T* _ptr_finish;
+    T* _ptr_begin;
     T* _ptr_end;
+    T* _ptr_end_of_alloc;
     allocator_type _alloc;
 
 };
@@ -92,11 +92,11 @@ Allocator	-	An allocator that is used to acquire/release memory and to construct
  (since C++20) if Allocator::value_type is not the same as T.*/
 
 template <class T, class Allocator = std::allocator<T> >
-class vector : private Vector_base<T, Allocator> {
+class vector : private VectorBase<T, Allocator> {
 
 private:
-    typedef Vector_base<T, Allocator>                                           _Base;
-    typedef vector<T, Allocator>                                                _Vector;
+    typedef VectorBase<T, Allocator>                                           Base;
+    typedef vector<T, Allocator>                                                Vector;
 
 /*
 *====================================================================================
@@ -106,13 +106,13 @@ private:
 
 public:
     typedef T                                                                   value_type;
-    typedef typename _Base::allocator_type                                      allocator_type;
+    typedef typename Base::allocator_type                                       allocator_type;
     typedef std::size_t                                                         size_type;
     typedef std::ptrdiff_t                                                      difference_type;
     typedef value_type&                                                         reference;
     typedef const value_type&                                                   const_reference;
-    typedef typename _Base::allocator_type::pointer                             pointer;
-    typedef typename _Base::allocator_type::const_pointer                       const_pointer;
+    typedef typename Base::allocator_type::pointer                              pointer;
+    typedef typename Base::allocator_type::const_pointer                        const_pointer;
     typedef value_type*                                                         iterator;
     typedef const value_type*                                                   const_iterator;
     typedef ft::reverse_iterator<iterator>                                      reverse_iterator;
@@ -126,14 +126,14 @@ public:
 
 public:
         /*Default constructor. Constructs an empty container with a default-constructed allocator.*/
-    vector() : _Base(){__INFOMF__}
+    vector() : Base(){__INFOMF__}
 
     /*Constructs an empty container with the given allocator alloc*/
-    explicit vector(const Allocator& alloc )  : _Base(alloc){__INFOMF__}
+    explicit vector(const Allocator& alloc )  : Base(alloc){__INFOMF__}
 
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
-                    : _Base(count, alloc) {__INFOMF__ insert(static_cast<iterator>(V_start()), count, value); __INFOMFNL__};
+                    : Base(count, alloc) {__INFOMF__ insert(count, value); __INFOMFNL__};
 
     /* Constructs the container with the contents of the range [first, last).
      This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a)
@@ -141,24 +141,23 @@ public:
      */
     template <class InputIt>
     vector(InputIt first, InputIt last,
-           const allocator_type& alloc = allocator_type()) : _Base(alloc)
-    {__INFOMF__ select_Input(first, last, 0); };
+           const allocator_type& alloc = allocator_type()) : Base(alloc)
+    {__INFOMF__ Select_Input( begin(), first, last ); __INFOMFNL__ };
 
-    vector( const _Vector& other ) : _Base(other._Base::_alloc)
-    {__INFOMF__ assign(other.begin(), other.end()); __INFOMFNL__};
+    vector( const Vector& other ) : Base(other.Base::_alloc)
+    {__INFOMF__ assign(other.begin(), other.end()); __INFOMFNL__ };
 
     ~vector()
-    {__INFOMF__
-        for(iterator It = V_start(); It != V_end(); ++It)
-            _Base::_alloc.destroy(V_start());
-    };
+    {__INFOMF__ clear(); __INFOMFNL__};
 
     /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
-    _Vector&        operator=( const _Vector& other )
+    Vector&        operator=( const Vector& other )
     {__INFOMF__
+
         if (&other != this)
-            assign(other.begin(), other.end() - 1);
-        __INFOMFNL__
+            assign(other.begin(), other.end());
+
+    __INFOMFNL__
         return *this;
     };
 
@@ -166,70 +165,26 @@ public:
     *Replaces the contents with count copies of value value*/
     void            assign( size_type count, const value_type& value )
     {__INFOMF__
-        resize(count);
-        erase(V_start(), V_finish());
-        insert(V_start(),count, value);
-        __INFOMFNL__
+        clear();
+        insert(begin(),count, value);
+    __INFOMFNL__
     };
 
     /*Replaces the contents with copies of those in the range [first, last).
      * The behavior is undefined if either argument is an iterator into *this.
      * This overload has the same effect as overload (1) if InputIt is an integral type. */
     template< class InputIt>
-    void            assign( InputIt first, InputIt last ) {__INFOMF__ select_Input(first, last, 1); __INFOMFNL__};
-
-    /*Returns the allocator associated with the container. */
-    allocator_type  get_allocator() const {__INFOMF__ return allocator_type(); };//test par heritage
-
-private:
-
-    /*
-     * This constructor has the same effect as
-     * vector(static_cast<size_type>(first),static_cast<value_type>(last), a)
-     * if InputIt is an integral type for constructor*/
-    template< class Integral >
-    void    select_Input(  Integral first,
-                           typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last,
-                           int flag)
-    {__INFOMF__ assign(static_cast<size_type>(first), static_cast<value_type>(last)); __INFOMFNL__};
-
-    /* otherwise (first and last are just input iterators),
-    the copy constructor of T is called O(N) times, and
-    reallocation occurs O(log N) times.*/
-    template< class InputIt >
-    void    select_Input(  typename iterator_traits<typename ft::enable_if
-                            <ft::is_random_access_iterator
-                            <typename ft::iterator_traits
-                            <typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type
-                            >::iterator_category>::value, InputIt>::type>::pointer first,
-                            InputIt last, int flag)
+    void            assign( InputIt first, InputIt last )
     {__INFOMF__
-        resize(last - first);
-        erase(V_start(), V_finish());
-        if (flag)
-            insert(V_start(), first, last);
-        else
-            std::memmove(V_start(), first,
-                         static_cast<size_type>(last - first));// * sizeof(value_type));
-        V_finish() = V_start() + (last - first);
+
+        clear();
+        Select_Input( begin(), first, last );
+
     __INFOMFNL__};
 
-    /*   Given the distance between first and last as N ,
-    if first and last are both forward, bidirectional or random-access iterators,
-    the copy constructor of T is only called N  times, and
-    no reallocation occurs.*/
-    template< class InputIt >
-    void    select_Input(  typename iterator_traits<typename ft::enable_if
-                            <ft::is_input_iterator
-                            <typename ft::iterator_traits
-                            <typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type
-                            >::iterator_category>::value, InputIt>::type>::pointer first,
-                            InputIt last, int flag)
-    {__INFOMF__
-        for ( ; first != last; ++first)
-            push_back(*first);
-             __INFOMFNL__
-    };
+    /*Returns the allocator associated with the container. */
+    allocator_type  get_allocator() const {__INFOMF__ allocator_type(); };//test par heritage
+
 
 /*
 *====================================================================================
@@ -244,50 +199,50 @@ public:
      * an exception of type std::out_of_range is thrown. */
     reference       at(size_type pos)
     {__INFOEA__
+
         check_size(pos);
-        return V_start()[pos];
+        return begin()[pos];
+
     };
+
     const_reference at(size_type pos) const
     {__INFOEA__
+
         check_size(pos);
-        return V_start()[pos];
+        return begin()[pos];
+
     };
 
     /*Returns a reference to the element at specified location pos.
      * No bounds checking is performed.*/
-    reference       operator[] (size_type pos)          {__INFOEA__ return *(begin() + pos); };
-    const_reference operator[] (size_type pos) const    {__INFOEA__ return *(begin() + pos); };
+    reference       operator[] (size_type pos)          {__INFOEA__ return at(pos); };
+    const_reference operator[] (size_type pos) const    {__INFOEA__ return at(pos); };
 
     /*Returns a reference to the first element in the container.
      * Calling front on an empty container is undefined.*/
-    reference       front()         {__INFOEA__ return *V_start(); };
-    const_reference front() const   {__INFOEA__ return *V_start(); };
+    reference       front()         {__INFOEA__ return *begin(); };
+    const_reference front() const   {__INFOEA__ return *begin(); };
 
     /*Returns a reference to the last element in the container.
      * Calling back on an empty container causes undefined behavior. */
-    reference       back()          {__INFOEA__ return *(V_end()- 1); };
-    const_reference back() const    {__INFOEA__ return *(V_end()- 1); };
+    reference       back()          {__INFOEA__ return *(end()- 1); };
+    const_reference back() const    {__INFOEA__ return *(end()- 1); };
 
     /*Returns pointer to the underlying array serving as element storage. The pointer
      * is such that range [data(); data()+size()) is always a valid range, even if the
      * container is empty (data() is not dereferenceable in that case).*/
-    T*          data()              {__INFOEA__ V_start(); };
-    const T*    data() const        {__INFOEA__ V_start(); };
+    T*          data()              {__INFOEA__ begin(); };
+    const T*    data() const        {__INFOEA__ begin(); };
 
 private:
-
-    value_type*&    V_start()       {__INFOIT__ return this->_Base::_ptr_start; };
-    value_type*&    V_finish()      {__INFOIT__ return this->_Base::_ptr_finish; };
-    value_type*&    V_end()         {__INFOIT__ return this->_Base::_ptr_end; };
-    value_type*     Vc_start()  const   {__INFOIT__ return this->_Base::_ptr_start; };
-    value_type*     Vc_finish() const   {__INFOIT__ return this->_Base::_ptr_finish; };
-    value_type*     Vc_end()    const   {__INFOIT__ return this->_Base::_ptr_end; };
 
     /*std::out_of_range if !(pos < size())*/
     void        check_size(size_type pos)
     {__INFOEA__
+
         if (!(pos < size()))
             throw std::out_of_range("ft::vector");
+
     };
 
 /*
@@ -298,14 +253,22 @@ private:
 
 public:
 
-    iterator                begin()             {__INFOIT__ return this->_Base::_ptr_start; };
-    const_iterator          begin()     const   {__INFOIT__ return this->_Base::_ptr_start; };
-    iterator                end()               {__INFOIT__ return this->_Base::_ptr_end; };
+    iterator                begin()                 {__INFOIT__ return this->Base::_ptr_begin; };
+    const_iterator          begin()         const   {__INFOIT__ return this->Base::_ptr_begin; };
+    iterator                end()                   {__INFOIT__ return this->Base::_ptr_end; };
+    const_iterator          end()           const   {__INFOIT__ return this->Base::_ptr_end;; };
+    reverse_iterator        rbegin()                {__INFOIT__ return end(); };
+    reverse_iterator        rend()                  {__INFOIT__ return begin(); };
+    const_reverse_iterator  rbegin()        const   {__INFOIT__ return end(); };
+    const_reverse_iterator  rend()          const   {__INFOIT__ return begin(); };
 
-    const_iterator          end()       const   {__INFOIT__ return this->_Base::_ptr_end; };
-    reverse_iterator        rbegin()            {__INFOIT__ return end(); };
-    reverse_iterator        rend()              {__INFOIT__ return begin(); };
-    const_reverse_iterator  rbegin()    const   {__INFOIT__ return end(); };
+private:
+
+    iterator&               Rbegin()                {__INFOIT__ return this->Base::_ptr_begin; };
+    iterator&               Rend_of_alloc()         {__INFOIT__ return this->Base::_ptr_end_of_alloc; };
+    iterator&               Rend()                  {__INFOIT__ return this->Base::_ptr_end; };
+    iterator                end_of_alloc()          {__INFOIT__ return this->Base::_ptr_end_of_alloc; };
+    const_iterator          end_of_alloc()  const   {__INFOIT__ return this->Base::_ptr_end_of_alloc; };
 
 /*
 *====================================================================================
@@ -316,11 +279,11 @@ public:
 public:
 
     /*Checks if the container has no elements, i.e. whether begin() == end().*/
-    bool        empty()     const   {__INFOCA__ return V_start() == V_finish(); };
+    bool        empty()     const   {__INFOCA__ return begin() == end(); };
 
     /*Returns the number of elements in the container,
      * i.e. std::distance(begin(), end()).*/
-    size_type   size()      const   {__INFOCA__ return (Vc_finish() - Vc_start()); };
+    size_type   size()      const   {__INFOCA__ return (end() - begin()); };
 
     /*Returns the maximum number of elements the container is able to
      * hold due to system or library implementation limitations, i.e.
@@ -340,36 +303,43 @@ public:
      * references are invalidated*/
     void        reserve(size_type new_cap)
     {__INFOCA__
+
+
         if (max_size() > new_cap)
         {
-            const size_type save_size = size();
-            const size_type save_capacity = capacity() - 1;
-            iterator V_new_start;
-            try
+            if ( new_cap > capacity() )
             {
-                V_new_start = this->_Base::_alloc.allocate(new_cap);
-                std::uninitialized_copy(V_start(), V_finish(), V_new_start);
-                clear();
-                //this->_Base::_alloc.deallocate(V_start(), 0);
-                V_start() = V_new_start;
-                V_finish() = V_new_start + save_size;
-                V_end() = V_new_start + new_cap;
 
-            }
-            catch (std::bad_alloc &e)
-            {
-                this->_Base::_alloc.deallocate(V_new_start, new_cap);
+                const size_type save_size = size();
+                iterator V_new_start;
+                try
+                {
+
+                    V_new_start = this->Base::_alloc.allocate(new_cap);
+                    std::uninitialized_copy(begin(), end_of_alloc(), V_new_start);
+                    clear();
+                    this->Base::_alloc.deallocate(begin(), capacity());
+                    Rbegin() = V_new_start;
+                    Rend() = V_new_start + save_size;
+                    Rend_of_alloc() = V_new_start + new_cap;
+
+                }
+                catch (std::bad_alloc &e)
+                {
+                    this->Base::_alloc.deallocate(V_new_start, new_cap);
+                }
             }
         }
         else
             throw std::length_error("ft::vector");
+
         __INFOCANL__
     };
 
     /*Returns the number of elements that the container has currently
      * allocated space for.*/
     size_type   capacity()  const
-    {__INFOCA__ return static_cast<size_type>(Vc_end() - Vc_start()); };
+    {__INFOCA__ return static_cast<size_type>(end_of_alloc() - begin()); };
 
 /*
 *====================================================================================
@@ -385,7 +355,7 @@ public:
      * Any past-the-end iterators are also invalidated.
      * Leaves the capacity() of the vector unchanged (note: the standard's restriction on
      * the changes to capacity is in the specification of vector::reserve, see [1])*/
-    void            clear(){__INFOMO__ erase(V_start(), V_finish()); __INFOMONL__};
+    void            clear(){__INFOMO__ erase(begin(), end()); __INFOMONL__};
 
     /*
      * Causes reallocation if the new size() is greater than the old capacity().
@@ -400,117 +370,169 @@ public:
      * are no effects (strong exception guarantee).
      */
     iterator        insert( const_iterator pos, const T& value )
-    {__INFOMO__
-        size_type St = 1;
-        iterator rIt = insert( pos, St, value );
-//        std::cout <<*pos << " "<<pos << std::endl;
-        this->_Base::_alloc.construct(pos, value);
-//        std::cout <<*pos <<pos << std::endl;
-        V_finish()++;
-        __INFOMONL__
-        return rIt;
-    };
+    {__INFOMO__ return insert( pos, 1, value );  };
 
     /*inserts count copies of the value before pos.*/
     iterator        insert( const_iterator pos, size_type count, const T& value )
     {__INFOMO__
-        size_type Save_pos = pos - begin();
-        if (count > capacity())
-            reserve(New_size (V_finish(), V_end(), count));
-        std::copy_backward(const_cast<iterator>(pos), V_finish(), V_finish() + count);
-        for(size_type St = 0; St < count ; ++St, ++pos, ++V_finish())
-            this->_Base::_alloc.construct(pos, value);
+
+        iterator Pos = const_cast<iterator>(pos);
+//        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
+
+        To_Make_Place(Pos, count);
+//        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
+
+        for(size_type St = 0; St < count ; ++St, ++Pos) {
+            this->Base::_alloc.construct(Pos, value);
+        }
         __INFOMONL__
-        return const_cast<iterator>((count == 0)? pos : V_start() + Save_pos);
+        return (count == 0)? const_cast<iterator>(pos) : Pos;
    };
 
     /*inserts elements from range [first, last) before pos.*/
     template <class InputIt>
     iterator        insert(const_iterator pos, InputIt first, InputIt last)
     {__INFOMO__
-        size_type Save_pos = pos - V_finish();
-        init_rang(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+
+        size_type Save_pos = pos - begin();
+        Select_Input(pos, first, last);
+
         __INFOMONL__
-        return const_cast<iterator>((first == last) ? pos : V_start() + Save_pos);
+        return (first == last) ? const_cast<iterator>(pos) : begin() + Save_pos;
     };
 
 private:
 
+    /*make place to put value in*/
+    void      To_Make_Place(iterator& Pos, size_type count)
+    {
+
+        if (size() + count > capacity()){
+            size_type Save_pos = Pos - begin();
+            reserve(New_size (count));
+            Pos = begin() + Save_pos;
+        }
+        if ((end_of_alloc() - Pos) > 0)//si comportement identique
+            std::copy_backward(Pos, end(), end() + count);
+        Rend() += count;
+    };
+
     /*calcule the new size for reserve*/
-    size_type New_size(iterator _begin, iterator _end, size_type count)
+    size_type New_size( size_type count )
     {__INFOMO__
-        size_type new_size = (end() - begin() != 0) ? 2 * (end() - begin()) : 1;
-        if ((end() - begin()) + count >= new_size)
-            return New_size(_begin, _end, count - new_size);
+
+        size_type new_size = (capacity() != 0) ? 2 * capacity() : count;
+        while (capacity() + count > new_size)
+            new_size += 2 * new_size;
+
         __INFOMONL__
         return new_size;
-    }
+    };
 
-    /*forward the pos and the first to last*/
-    template <class InputIt>
-    void init_rang (const_iterator pos, InputIt first, InputIt last, std::input_iterator_tag)
-    {__INFOMO__
-        iterator mem_first = first;
-        for ( size_type F_pos = 0; first != last; ++F_pos, ++first)
-            insert(pos + F_pos, *first);//voir si manage de la destruction de la class original
-        __INFOMONL__
-    }
 
-    /*allocate memory and copy the valeu*/
+    /*
+     * This constructor has the same effect as
+     * vector/insert(static_cast<size_type>(first),static_cast<value_type>(last)
+     * if InputIt is an integral type for constructor/insert*/
+    template< class Integral >
+    void        Select_Input(  const_iterator pos, Integral first,
+                           typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last)
+    {__INFOMF__
+//            std::cout <<"coucou" << first << std::endl;
+            insert(pos, static_cast<size_type>(first), static_cast<const value_type>(last));
+
+
+    __INFOMFNL__};
+
+    /*   Given the distance between first and last as N ,
+    if first and last are both forward, bidirectional or random-access iterators,
+    the copy constructor of T is only called N  times, and
+    no reallocation occurs.*/
     template <class InputIt>
-    void init_rang (const_iterator pos, InputIt first, InputIt last, std::random_access_iterator_tag)
-    {__INFOMO__
-        if (size() + (last - first) >= capacity())
-            reserve(New_size (V_start(), V_end(), static_cast<size_type>(last - first)));
-        V_end() = V_start() + (last - first);
-        std::memmove(V_start(), first,
-                     static_cast<size_type>(last - first) * sizeof(value_type));
-        V_finish() = V_start() + (last - first);
-        __INFOMONL__
-    }
+    void        Select_Input(   const_iterator pos,
+                                typename ft::enable_if<ft::is_random_access_iterator
+                                    <typename ft::iterator_traits_if
+                                    <InputIt, !is_integral
+                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                                InputIt last)
+    {__INFOMF__
+
+        iterator Pos = const_cast<iterator>(pos);
+        To_Make_Place(Pos, static_cast<size_type>(size() + (last - first)));
+        std::copy(first, last, Pos);
+
+
+    __INFOMFNL__};
+
+    /* otherwise (first and last are just input iterators),
+      the copy constructor of T is called O(N) times, and
+      reallocation occurs O(log N) times.*/
+    template< class InputIt >
+    void        Select_Input(   const_iterator pos,
+                                typename ft::enable_if<ft::is_input_iterator
+                                   <typename ft::iterator_traits_if
+                                   <InputIt, !ft::is_integral
+                                   <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                                InputIt last)
+    {__INFOMF__
+
+        (void)pos;
+        for ( ; first != last; ++first)
+            push_back(*first);
+
+    __INFOMFNL__};
+
+
 
 public:
 
-        /*Erases the specified elements from the container.
-        Invalidates iterators and references at or after the point of the erase,
-         including the end() iterator.
-        The iterator pos must be valid and dereferenceable. Thus the end() iterator
-         (which is valid, but is not dereferenceable) cannot be used as a value for pos.
-        The  iterator first does not need to be dereferenceable if first == last:
-        erasing an empty range is a no-op.
+    /*Erases the specified elements from the container.
+    Invalidates iterators and references at or after the point of the erase,
+     including the end() iterator.
+    The iterator pos must be valid and dereferenceable. Thus the end() iterator
+     (which is valid, but is not dereferenceable) cannot be used as a value for pos.
+    The  iterator first does not need to be dereferenceable if first == last:
+    erasing an empty range is a no-op.
 
-        Para   meters
-        pos	-	iterator to the element to remove
-        first, last	-	range of elements to remove
-        Type requirements
-        -T must meet the requirements of MoveAssignable.
-        Return value
-        Iterator following the last removed element.
+    Para   meters
+    pos	-	iterator to the element to remove
+    first, last	-	range of elements to remove
+    Type requirements
+    -T must meet the requirements of MoveAssignable.
+    Return value
+    Iterator following the last removed element.
 
-        If pos refers to the last element, then the end() iterator is returned.
-        If last == end() prior to removal, then the updated end() iterator is returned.
+    If pos refers to the last element, then the end() iterator is returned.
+    If last == end() prior to removal, then the updated end() iterator is returned.
 
-        If [first, last) is an empty range, then last is returned.*/
-    //Removes the element at pos.
+    If [first, last) is an empty range, then last is returned.*/
+    /*Removes the element at pos.*/
     iterator        erase(iterator pos)
     {__INFOMO__
-        if (pos != V_finish()) {
-            std::copy(pos + 1, V_finish()--, pos);
-            this->_Base::_alloc.destroy(V_finish() + 1);
+        if (pos != end()) {
+            std::copy(pos + 1, Rend()--, pos);
+            this->Base::_alloc.destroy(end() + 1);
         }
         else
-            this->_Base::_alloc.destroy(V_finish());
+            this->Base::_alloc.destroy(end_of_alloc());
         __INFOMONL__
         return pos;
     };
 
-    //Removes the elements in the range [first, last).
+    /*Removes the elements in the range [first, last).*/
     iterator        erase(iterator first, iterator last)
     {__INFOMO__
-        iterator        It = std::copy(last, V_finish(), first);
-        for(; It != V_finish(); ++It)
-            this->_Base::_alloc.destroy(It);
-        V_finish() = V_finish() - (last - first);
+
+        if ( first && last && (last - first) > 0 )
+        {
+            iterator  B = begin();
+            if ( (end() - last) > 0 )
+                B = std::copy(last, end_of_alloc(), first);
+            for(; B != end(); ++B)
+                this->Base::_alloc.destroy(B);
+            Rend() = end() - (last - first);
+        }
+
         __INFOMONL__
         return first;
     };
@@ -532,23 +554,23 @@ public:
      */
     void        push_back(const value_type& value)
     {__INFOMO__
+
         if (size() < capacity())
-            _Base::_alloc.construct(V_finish()++, value);
+        {
+            Rend()++;
+            this->Base::_alloc.construct(end() - 1, value);
+        }
         else
-            insert(V_finish(), value);
-        __INFOMONL__
-    };
+            insert(end(), 1, value);
+
+    __INFOMONL__ };
 
     /*Removes the last element of the container.
     Calling pop_back on an empty container results in undefined behavior.
     Iterators and references to the last element, as well as the end()
      iterator, are invalidated.*/
     void        pop_back()
-    {__INFOMO__
-        iterator tmp = V_end()--;
-        _Base::_alloc.destroy(tmp);
-        __INFOMONL__
-    };
+    {__INFOMO__ erase(end()); __INFOMONL__ };
 
     /*Resizes the container to contain count elements.
     If the current size is greater than count, the container is reduced
@@ -558,13 +580,14 @@ public:
     2) additional copies of value are appended.*/
     void        resize(size_type count, T value = T())
     {__INFOMO__
-        if (count < size()) {
-            erase(V_start() + count, V_end());
-        }
-        else if (count > size()){
-            reserve(count);
-            insert( V_finish(), value );
-        }
+        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
+
+        if (count < size())
+            erase(begin() + count, end());
+        else if (count > size())
+            insert( end(), count - size(), value );
+        std::cout << "\n"<<size() << std::endl;
+
 
         __INFOMONL__
     };
@@ -576,12 +599,13 @@ public:
      * past-the-end iterator is invalidated.*/
     void        swap(vector& other)
     {__INFOMO__
-        std::swap(V_start(), other.V_start());
-        std::swap(V_end(), other.V_end());
-        std::swap(V_end(), other.V_end());
+
+        std::swap(Rbegin(), other.Rbegin());
+        std::swap(Rend(), other.Rend());
+        std::swap(Rend_of_alloc(), other.Rend_of_alloc());
+
         __INFOMONL__
     };
-
 
 };// end of class vector
 
@@ -595,11 +619,11 @@ public:
  * that is, they have the same number of elements and each element
  * in lhs compares equal with the element in rhs at the same position.*/
 template< class T, class Alloc >
-inline bool operator==( const ft::vector<T,Alloc>& lhs,
+inline bool operator== ( const ft::vector<T,Alloc>& lhs,
                  const ft::vector<T,Alloc>& rhs )
 {__INFONM__
     if (lhs.size() == rhs.size())
-        return equal(lhs.V_start(), lhs.V_end(), rhs.V_start());
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
     return false;
 };
 
@@ -614,8 +638,8 @@ template< class T, class Alloc >
 inline bool operator<( const ft::vector<T,Alloc>& lhs,
                 const ft::vector<T,Alloc>& rhs )
 {__INFONM__
-    return ft::lexicographical_compare(lhs.V_start(), lhs.V_end(),
-                            rhs.V_start(), rhs.V_end());
+    return ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                            rhs.begin(), rhs.end());
 };
 
 template< class T, class Alloc >
@@ -629,9 +653,6 @@ inline bool operator>( const ft::vector<T,Alloc>& lhs,
 template< class T, class Alloc >
 inline bool operator>=( const ft::vector<T,Alloc>& lhs,
                  const ft::vector<T,Alloc>& rhs ) {__INFONM__ return !(lhs < rhs); };
-
-//template <class T>
-//void swap (vector<T>& x, vector<T>& y) { x.swap(y); };//a valider
 
 
 __FT_CONTAINERS_END_NAMESPACE

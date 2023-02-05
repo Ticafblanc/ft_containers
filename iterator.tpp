@@ -160,6 +160,18 @@ struct iterator_traits <const T*> {
     typedef std::random_access_iterator_tag iterator_category;
 };
 
+template <class T, bool B>
+struct iterator_traits_if {};
+
+template <class T>
+struct iterator_traits_if< T, true> : public iterator_traits<T> { };
+
+template <class T>
+struct iterator_traits_if< T*, true> : public iterator_traits<T*> { };
+
+template <class T>
+struct iterator_traits_if< const T*, true> : public iterator_traits<const T*> { };
+
     //ft::reverse_iterator https://en.cppreference.com/w/cpp/iterator/reverse_iterator
 
 /*std::reverse_iterator is an iterator adaptor that reverses the direction of a given iterator, which must be at
@@ -242,7 +254,7 @@ public:
     // Equivalent to return std::addressof(operator*());.
     pointer operator->() const{ return std::addressof(operator*()); }
 //    pointer operator->() const {
-//        iterator_type	tmp(this->_base_iterator);
+//        iterator_type	tmp(this->Base_iterator);
 //        tmp--;
 //        return(tmp.operator->());
 //        // return &(operator*());
@@ -295,7 +307,7 @@ public:
 
     reverse_iterator& operator-= (difference_type n)
     {
-        this->_base_iterator += n;
+        this->Base_iterator += n;
         return(*this);
     }
 

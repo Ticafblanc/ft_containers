@@ -12,6 +12,7 @@
 
 #include "Unit_test.hpp"
 #include <vector>
+#include <set>
 #include <map>
 #include <iostream>
 #include <iterator>
@@ -20,23 +21,60 @@
 int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
-//    ft::vector<int>            vft;
+    ft::vector<int>         s;
+//    std::cout << s.capacity() << std::endl;
+//    s.reserve(50);
+//    std::cout << s.capacity() <<std::endl;
+
 //    ft::vector<int>            aft(std::allocator<int>);
-    size_t s = 98;
-    int    i = 0;
-    std::vector<int>            stft(s);
-    ft::vector<int>            stft2(s, i);
-    std::vector<int>::iterator         it;
-//    std::vector<int>            stft(34, 45);
-//    std::vector<int>::iterator It = stft.begin() + 1;
-//    std::vector<int>::iterator Id = stft.end() - 1;
+//    size_t st = 98;
+//    int    i = 1;
+//    std::vector<int>            s1(st,i);
+//    std::cout << s1.size() << " " << s1.capacity() <<std::endl;
+//    s1 = s;
+//    /*s1.push_back(3);*/
+//    std::cout << s1.size() << " " << s1.capacity() << std::endl;
+
+
+//
+//    i = 2;
+//    std::vector<int>            s2(s,i);
+//    std::vector<int>::iterator Is2 = s2.begin();
+//    std::vector<int>::iterator Its2 = s2.end();
+//    for(; Is1 != Its1; ++Is1)
+//        std::cout << *Is1 << std::endl;
+//    s2.insert(s2.begin(),Is1, Its1);
+//    for(; Is2 != Its2; ++Is2)
+//        std::cout << "2:"<< *Is2 << std::endl;
+//    for(; Is1 != Its1; ++Is1)
+//        std::cout << "1:"<< *Is1 << std::endl;
+//    s1.insert(s1.begin(),s2.begin(), s2.begin() + 10);
+//
+//    std::cout << s1.size() <<" "<< s2.size()<<std::endl;
+//    std::cout << s1.capacity() <<" "<< s2.capacity()<<std::endl;
+//    s1.assign(20, 34);
+//    s1.resize(30);
+//    std::vector<int>::iterator Is1 = s1.begin();
+//    std::vector<int>::iterator Its1 = s1.end();
+//    std::cout << s1.size() <<" "<< s2.size()<<std::endl;
+//    std::cout << s1.capacity() <<" "<< s2.capacity()<<std::endl;
+//    for(; Is1 != Its1; ++Is1)
+//        std::cout << "1:"<< *Is1 << std::endl;
+
+
+//    ft::vector<int>            stft2(s, i);
+//    ft::vector<int>            stft3(34, 45);
+
+
+
 //    ft::vector<int>::iterator it = stft2.begin();
 //    ft::vector<int>::iterator it2 = stft2.end();
-//    ft::vector<int>             itconst(it, it2);
+//    ft::vector<int>           itconst(s);
+//    ft::vector<int>             itcons(It, Id);
 //    ft::vector<int>             copyconstruct(itconst);
 //    stft = itconst;
     //std::cout <<"befor  "<< stft2.size() << "\n" << stft2.capacity()<< std::endl;
-    stft2.assign(34, 45);
+//    stft2.assign(34, 45);
     //__COUT__<< "\nsize = " <<  stft2.size() << "\ncapacity = " << stft2.capacity()  __CENDL__
     //std::cout <<"afer"<< stft2.size()<< "\n" << stft2.capacity()<<std::endl;
 //    ft.assign(9, 90);

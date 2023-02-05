@@ -13,6 +13,7 @@
 #pragma once
 
 #include "ft_containers.hpp"
+#include "vector.tpp"
 
 #ifndef FT_CONTAINERS_STACK_TPP
 # define FT_CONTAINERS_STACK_TPP
