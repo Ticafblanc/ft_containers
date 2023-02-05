@@ -29,7 +29,7 @@ std::vector<int> constructor_test(std::stack<T> stk) {
 template <class T>
 std::vector<int> constructor_test(_stack<T> stk) {
 	std::vector<int> v;
-	std::vector<int> deque;
+	ft::vector<int> deque;
 	for (int i = 0; i < 100 * _ratio; ++i)
 		deque.push_back(i);
 	for (int i = 100 * _ratio; i < 200 * _ratio; ++i)

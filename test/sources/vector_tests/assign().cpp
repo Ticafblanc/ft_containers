@@ -3,7 +3,6 @@
 
 template <typename T>
 std::vector<int> assign_test(std::vector<T> vector) {
-    std::cout <<std::endl;
     std::vector<int> v;
     std::vector<int> tmp, tmp2;
     vector.assign(3, 3);
@@ -11,17 +10,14 @@ std::vector<int> assign_test(std::vector<T> vector) {
     tmp2.assign(4 * _ratio, 1);
     g_start1 = timer();
     vector.assign(tmp.begin(), tmp.end());
-
     v.push_back(vector[1]);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-//    std::cout <<"befor_vec"<< vector.capacity() << vector.size()<<std::endl;
     vector.assign(tmp2.begin(), tmp2.end());
-//    std::cout <<"after_vec"<< vector.capacity() << vector.size()<<std::endl;
     g_end1 = timer();
     v.push_back(vector[444]);
     v.push_back(vector.size());
-    //v.push_back(vector.capacity());
+    v.push_back(vector.capacity());
     return v;
 }
 
@@ -37,13 +33,11 @@ std::vector<int> assign_test(_vector<T> vector) {
     v.push_back(vector[1]);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-//    std::cout <<"befor_moi"<< vector.capacity()<<vector.size()<<std::endl;
     vector.assign(tmp2.begin(), tmp2.end());
-//    std::cout <<"after_moi"<< vector.capacity()<<vector.size()<<std::endl;
     g_end2 = timer();
     v.push_back(vector[444]);
     v.push_back(vector.size());
-    //v.push_back(vector.capacity());tester not true
+    v.push_back(vector.capacity());
     return v;
 }
 

@@ -12,11 +12,11 @@ std::vector<int> iterator_test(std::vector<T> vector) {
     v.push_back(*(++it));
     v.push_back(*(--it));
     v.push_back(*(it + 1));
-//    it += 1;
-//    v.push_back(*(it - 1));
-//    it -= 1;
-//    v.push_back(*it);
-//    g_end1 = timer();
+    it += 1;
+    v.push_back(*(it - 1));
+    it -= 1;
+    v.push_back(*it);
+    g_end1 = timer();
     return v;
 }
 
@@ -31,11 +31,11 @@ std::vector<int> iterator_test(_vector<T> vector) {
     v.push_back(*(++it));
     v.push_back(*(--it));
     v.push_back(*(it + 1));
-//    it += 1;
-//    v.push_back(*(it - 1));
-//    it -= 1;
-//    v.push_back(*it);
-//    g_end2 = timer();
+    it += 1;
+    v.push_back(*(it - 1));
+    it -= 1;
+    v.push_back(*it);
+    g_end2 = timer();
     return v;
 }
 

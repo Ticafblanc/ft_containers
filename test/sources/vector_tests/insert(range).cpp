@@ -42,7 +42,6 @@ std::vector<int> insert_test_3(std::vector<T> vector) {
     v.push_back(vector[3]);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-
     std::unique_ptr<B> k2(new B(3));
     std::unique_ptr<B> k3(new B(4));
     std::unique_ptr<B> k4(new B(-1));
@@ -74,6 +73,7 @@ std::vector<int> insert_test_3(_vector<T> vector) {
     v.push_back(vector.size());
     v.push_back(vector.capacity());
 
+
     std::unique_ptr<B> k2(new B(3));
     std::unique_ptr<B> k3(new B(4));
     std::unique_ptr<B> k4(new B(-1));
@@ -83,7 +83,8 @@ std::vector<int> insert_test_3(_vector<T> vector) {
     v1.push_back(&(*k2));
     v1.push_back(&(*k3));
     v1.push_back(&(*k4));
-    try { vv.insert(vv.begin(), v1.begin(), v1.end()); }
+    try { vv.insert(vv.begin(), v1.begin(), v1.end());
+    }
     catch (...) {
         v.push_back(vv.size());
         v.push_back(vv.capacity());

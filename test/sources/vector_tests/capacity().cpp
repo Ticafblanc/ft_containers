@@ -5,10 +5,8 @@ template <typename T>
 std::vector<int> capacity_test(std::vector<T> vector) {
     std::vector<int> v;
     vector.assign(1200 * _ratio, 1);
-    std::cout << v.capacity() << std::endl;
     g_start1 = timer();
     v.push_back(vector.capacity());
-//    std::cout <<" \n cap"<< v.capacity() << std::endl;
     g_end1 = timer();
     return v;
 }
@@ -19,7 +17,6 @@ std::vector<int> capacity_test(_vector<T> vector) {
     vector.assign(1200 * _ratio, 1);
     g_start2 = timer();
     v.push_back(vector.capacity());
-//    std::cout <<" \n cap"<< v.capacity() << std::endl;
     g_end2 = timer();
     return v;
 }

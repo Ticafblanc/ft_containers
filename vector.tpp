@@ -142,7 +142,7 @@ public:
     template <class InputIt>
     vector(InputIt first, InputIt last,
            const allocator_type& alloc = allocator_type()) : Base(alloc)
-    {__INFOMF__ Select_Input( begin(), first, last ); __INFOMFNL__ };
+    {__INFOMF__ Select_Input( begin(), first, last, static_cast<size_type>(last - first)); __INFOMFNL__ };
 
     vector( const Vector& other ) : Base(other.Base::_alloc)
     {__INFOMF__ assign(other.begin(), other.end()); __INFOMFNL__ };
@@ -178,7 +178,7 @@ public:
     {__INFOMF__
 
         clear();
-        Select_Input( begin(), first, last );
+        Select_Input( begin(), first, last, last - first );
 
     __INFOMFNL__};
 
@@ -257,10 +257,10 @@ public:
     const_iterator          begin()         const   {__INFOIT__ return this->Base::_ptr_begin; };
     iterator                end()                   {__INFOIT__ return this->Base::_ptr_end; };
     const_iterator          end()           const   {__INFOIT__ return this->Base::_ptr_end;; };
-    reverse_iterator        rbegin()                {__INFOIT__ return end(); };
-    reverse_iterator        rend()                  {__INFOIT__ return begin(); };
-    const_reverse_iterator  rbegin()        const   {__INFOIT__ return end(); };
-    const_reverse_iterator  rend()          const   {__INFOIT__ return begin(); };
+    reverse_iterator        rbegin()                {__INFOIT__ return reverse_iterator (end()); };
+    reverse_iterator        rend()                  {__INFOIT__ return reverse_iterator (begin()); };
+    const_reverse_iterator  rbegin()        const   {__INFOIT__ return reverse_iterator (end()); };
+    const_reverse_iterator  rend()          const   {__INFOIT__ return reverse_iterator (begin()); };
 
 private:
 
@@ -370,18 +370,20 @@ public:
      * are no effects (strong exception guarantee).
      */
     iterator        insert( const_iterator pos, const T& value )
-    {__INFOMO__ return insert( pos, 1, value );  };
+    {__INFOMO__
+
+        iterator Pos = const_cast<iterator>(pos);
+        To_Make_Place(Pos, 1, 0);
+        this->Base::_alloc.construct(Pos, value);
+        return Pos;
+    };
 
     /*inserts count copies of the value before pos.*/
     iterator        insert( const_iterator pos, size_type count, const T& value )
     {__INFOMO__
 
         iterator Pos = const_cast<iterator>(pos);
-//        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
-
-        To_Make_Place(Pos, count);
-//        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
-
+        To_Make_Place(Pos, count, count + size());
         for(size_type St = 0; St < count ; ++St, ++Pos) {
             this->Base::_alloc.construct(Pos, value);
         }
@@ -395,7 +397,7 @@ public:
     {__INFOMO__
 
         size_type Save_pos = pos - begin();
-        Select_Input(pos, first, last);
+        Select_Input(pos, first, last, 0);
 
         __INFOMONL__
         return (first == last) ? const_cast<iterator>(pos) : begin() + Save_pos;
@@ -404,12 +406,12 @@ public:
 private:
 
     /*make place to put value in*/
-    void      To_Make_Place(iterator& Pos, size_type count)
+    void      To_Make_Place(iterator& Pos, size_type count, size_type SpecSize)
     {
 
         if (size() + count > capacity()){
             size_type Save_pos = Pos - begin();
-            reserve(New_size (count));
+            reserve((SpecSize != 0) ? SpecSize : New_size (count));
             Pos = begin() + Save_pos;
         }
         if ((end_of_alloc() - Pos) > 0)//si comportement identique
@@ -436,9 +438,9 @@ private:
      * if InputIt is an integral type for constructor/insert*/
     template< class Integral >
     void        Select_Input(  const_iterator pos, Integral first,
-                           typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last)
+                           typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last,
+                           size_type SpecSize)
     {__INFOMF__
-//            std::cout <<"coucou" << first << std::endl;
             insert(pos, static_cast<size_type>(first), static_cast<const value_type>(last));
 
 
@@ -454,13 +456,23 @@ private:
                                     <typename ft::iterator_traits_if
                                     <InputIt, !is_integral
                                     <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                                InputIt last)
+                                InputIt last, size_type SpecSize)
     {__INFOMF__
 
+        size_type oldCap = capacity();
+        size_type oldSiz = size();
         iterator Pos = const_cast<iterator>(pos);
-        To_Make_Place(Pos, static_cast<size_type>(size() + (last - first)));
-        std::copy(first, last, Pos);
-
+        To_Make_Place(Pos, static_cast<size_type>(last - first), SpecSize);
+        try{
+            std::uninitialized_copy(first, last, Pos);
+        }
+        catch (...)
+        {
+            std::copy_backward(Pos + static_cast<size_type>(last - first), end_of_alloc(), Pos);
+            Rend() = begin() + oldSiz;
+            Rend_of_alloc() = begin() + oldCap;
+            throw;
+        }
 
     __INFOMFNL__};
 
@@ -473,10 +485,10 @@ private:
                                    <typename ft::iterator_traits_if
                                    <InputIt, !ft::is_integral
                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                                InputIt last)
+                                InputIt last, size_type SpecSize)
     {__INFOMF__
 
-        (void)pos;
+        (void)pos; (void)SpecSize;
         for ( ; first != last; ++first)
             push_back(*first);
 
@@ -509,12 +521,10 @@ public:
     /*Removes the element at pos.*/
     iterator        erase(iterator pos)
     {__INFOMO__
-        if (pos != end()) {
-            std::copy(pos + 1, Rend()--, pos);
-            this->Base::_alloc.destroy(end() + 1);
-        }
-        else
-            this->Base::_alloc.destroy(end_of_alloc());
+        if (pos != end())
+            std::copy(pos + 1, end(), pos);
+        this->Base::_alloc.destroy(--Rend() + 1);
+
         __INFOMONL__
         return pos;
     };
@@ -555,13 +565,9 @@ public:
     void        push_back(const value_type& value)
     {__INFOMO__
 
-        if (size() < capacity())
-        {
-            Rend()++;
-            this->Base::_alloc.construct(end() - 1, value);
-        }
-        else
-            insert(end(), 1, value);
+        if (size() >= capacity())
+            reserve(New_size (1));
+        this->Base::_alloc.construct(++Rend() - 1, value);
 
     __INFOMONL__ };
 
@@ -580,14 +586,14 @@ public:
     2) additional copies of value are appended.*/
     void        resize(size_type count, T value = T())
     {__INFOMO__
-        std::cout << "\n"<<size() <<"\n" <<count<< std::endl;
 
         if (count < size())
             erase(begin() + count, end());
-        else if (count > size())
+        else if (count > size()){
+            if (count > capacity())
+                reserve(New_size (count- size()));
             insert( end(), count - size(), value );
-        std::cout << "\n"<<size() << std::endl;
-
+        }
 
         __INFOMONL__
     };
@@ -600,9 +606,9 @@ public:
     void        swap(vector& other)
     {__INFOMO__
 
+        std::swap(Rend_of_alloc(), other.Rend_of_alloc());
         std::swap(Rbegin(), other.Rbegin());
         std::swap(Rend(), other.Rend());
-        std::swap(Rend_of_alloc(), other.Rend_of_alloc());
 
         __INFOMONL__
     };
@@ -654,7 +660,12 @@ template< class T, class Alloc >
 inline bool operator>=( const ft::vector<T,Alloc>& lhs,
                  const ft::vector<T,Alloc>& rhs ) {__INFONM__ return !(lhs < rhs); };
 
-
 __FT_CONTAINERS_END_NAMESPACE
+
+namespace std {
+    template<class T, class Alloc>
+    inline void swap(ft::vector <T, Alloc> &lhs, ft::vector <T, Alloc> &rhs)
+    {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
+}
 
 #endif //VECTOR_TPP

@@ -5,17 +5,13 @@ template <typename T>
 std::vector<int> insert_test_2(std::vector<T> vector) {
     std::vector<int> v;
     vector.assign(1000, 1);
-//    std::cout <<  "1 "<< vector.capacity()  << " "  << vector.size()<< std::endl;
-
     g_start1 = timer();
     vector.insert(vector.end() - 50, 4200 * _ratio , 2);
-//    std::cout <<  "1 "<< vector.capacity()  << " "  << vector.size()<< std::endl;
-
     g_end1 = timer();
     v.push_back(vector[2121]);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-//    std::cout <<  "1 "<< vector.capacity()  << " "  << vector.size()<< std::endl;
+
     return v;
 }
 
@@ -23,17 +19,12 @@ template <typename T>
 std::vector<int> insert_test_2(_vector<T> vector) {
     std::vector<int> v;
     vector.assign(1000, 1);
-//    std::cout <<  "2 "<< vector.capacity()  << " "  << vector.size()<< std::endl;
-
     g_start2 = timer();
     vector.insert(vector.end() - 50, 4200 * _ratio , 2);
-//    std::cout <<  "2 "<< vector.capacity()  << " "  << vector.size()<< std::endl;
-
     g_end2 = timer();
     v.push_back(vector[2121]);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-//    std::cout <<  "2 "<< vector.capacity() << " "  << vector.size()<< std::endl;
 
     return v;
 }

@@ -10,18 +10,12 @@ std::vector<int> resize_test(std::vector<T> vector) {
     vector.reserve(5000 * _ratio);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity() << " si = " << vector.size()<<std::endl;
-
     vector.resize(7000 * _ratio);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity() << " si = " << vector.size()<<std::endl;
-    std::cout << 15300 * _ratio<<std::endl;
-
     vector.resize(15300 * _ratio, T());
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity()<< " si = " << vector.size() <<std::endl;
     v.push_back(vector[65]);
     g_end1 = timer();
     return v;
@@ -36,18 +30,12 @@ std::vector<int> resize_test(_vector<T> vector) {
     vector.reserve(5000 * _ratio);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity() << " si = " << vector.size()<<std::endl;
-
     vector.resize(7000 * _ratio);
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity() << " si = " << vector.size()<<std::endl;
-
     vector.resize(15300 * _ratio, T());
     v.push_back(vector.size());
     v.push_back(vector.capacity());
-    std::cout << "cap = "<< vector.capacity() << " si = " << vector.size()<<std::endl;
-
     v.push_back(vector[65]);
     g_end2 = timer();
     return v;

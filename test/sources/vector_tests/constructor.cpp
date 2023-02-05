@@ -2,7 +2,7 @@
 #include "__service.ipp"
 
 template <typename T>
-std::vector<int> constructor_test(std::vector<T> vector) {std::cout << std::endl;
+std::vector<int> constructor_test(std::vector<T> vector) {
     std::vector<int> v;
     std::vector<int> tmp0(vector);
     std::vector<int> tmp(1000 * _ratio, 4), tmp2(1000 * _ratio, 5);
