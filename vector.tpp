@@ -17,7 +17,6 @@
 #include "type_traits.tpp"
 #include "algorithm.tpp"
 
-
 #ifndef FT_CONTAINERS_VECTOR_TPP
 # define FT_CONTAINERS_VECTOR_TPP
 
@@ -52,6 +51,7 @@ protected:
     allocator_type _alloc;
 
 };
+
 /*The elements are stored contiguously, which means that elements can be accessed not only through iterators, but also
  using offsets to regular pointers to elements. This means that a pointer to an element of a vector may be passed to
  any function that expects a pointer to an element of an array.
@@ -95,7 +95,7 @@ template <class T, class Allocator = std::allocator<T> >
 class vector : private VectorBase<T, Allocator> {
 
 private:
-    typedef VectorBase<T, Allocator>                                           Base;
+    typedef VectorBase<T, Allocator>                                            Base;
     typedef vector<T, Allocator>                                                Vector;
 
 /*
