@@ -1,7 +1,7 @@
 /* *************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    stack.tpp                                          :+:      :+:    :+:    #
+#    set.tpp                                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: mdoquocb <mdoquocb@student.42quebec.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
@@ -13,174 +13,16 @@
 #pragma once
 
 #include "ft_containers.hpp"
-#include "vector.tpp"
 
-#ifndef FT_CONTAINERS_STACK_TPP
-# define FT_CONTAINERS_STACK_TPP
+#ifndef FT_CONTAINERS_SET_TPP
+# define FT_CONTAINERS_SET_TPP
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
-    //ft::stack https://en.cppreference.com/w/cpp/container/stack
+template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
+class set{
 
-/*The std::stack class is a container adaptor that gives the programmer the functionality of a stack - specifically,
- * a LIFO (last-in, first-out) data structure.
-
-The class template acts as a wrapper to the underlying container - only a specific set of functions is provided. The
- stack pushes and pops the element from the back of the underlying container, known as the top of the stack.
-Template parameters
-    T 	- 	The type of the stored elements. The behavior is undefined if T is not the same type as Container::value_type.
- (since C++17)
-    Container 	- 	The type of the underlying container to use to store the elements. The container must satisfy the
-
- requirements of SequenceContainer. Additionally, it must provide the following functions with the usual semantics:
-
-    back()
-    push_back()
-    pop_back()
-The standard containers std::vector, std::deque and std::list satisfy these requirements. By default, if no container
- class is specified for a particular stack class instantiation, the standard container std::deque is*/
-
-template<class T, class Container = ft::vector<T> >
-class stack
-{
-public:
-    typedef Container                            container_type ;
-    typedef typename Container::value_type       value_type ;
-    typedef typename Container::size_type        size_type;
-    typedef typename Container::reference        reference;
-    typedef typename Container::const_reference  const_reference;
-
-    //Copy-constructs the underlying container c with the contents of cont.
-    // This is also the default constructor. (until C++11)
-    explicit stack( const Container& cont = Container()) : c(cont) {}
-
-    /* Copy constructor. The adaptor is copy-constructed with the contents of other.c. */
-    stack( const stack& other ) : c(other.c)
-    {
-        if (other.size() > 0)
-            *this = other;
-    }
-
-    //Destructs the stack. The destructors of the elements are called and the used storage is deallocated. Note,
-    // that if the elements are pointers, the pointed-to objects are not destroyed.
-    ~stack() {}
-
-    /*Copy assignment operator. Replaces the contents with a copy of the contents of other.
-    // Effectively calls c = other.c;*/
-    stack& operator=( const stack& other )
-    {
-        c = other.c;
-        return *this;
-    }
-
-    //Returns reference to the top element in the stack. This is the most recently pushed element.
-    // This element will be removed on a call to pop(). Effectively calls c.back().
-    reference top() { return c.back(); }
-    const_reference top() const { return c.back(); }
-
-    //Checks if the underlying container has no elements, i.e. whether c.empty().
-    //return true if the underlying container is empty, false otherwise
-    bool empty() const { return c.empty(); }
-
-    //Returns the number of elements in the underlying container, that is, c.size().
-    size_type size() const { return c.size(); }
-
-    //Pushes the given element value to the top of the stack.
-    //Effectively calls c.push_back(value)
-    //Parameters
-    //value 	- 	the value of the element to push
-    //Return value
-    //(void)
-    void push(const value_type& value) { c.push_back(value); }
-
-    //Removes the top element from the stack. Effectively calls c.pop_back()
-    void pop() { c.pop_back(); }
-
-    template< class t, class C >
-    friend bool operator==( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-    template< class t, class C >
-    friend bool operator!=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-    template< class t, class C >
-    friend bool operator<( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-    template< class t, class C >
-    friend bool operator<=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-    template< class t, class C >
-    friend bool operator>=( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-    template< class t, class C >
-    friend bool operator>( const ft::stack<t,C>& lhs, const ft::stack<t,C>& rhs );
-
-protected:
-    //the underlying container
-    Container c;
 };
-
-//Compares the contents of the underlying containers of two container adaptors. The comparison is done by applying
-// the corresponding operator to the underlying containers.
-//Parameters
-//lhs, rhs 	- 	container adaptors whose contents to compare
-//-
-//T must meet the requirements of EqualityComparable.
-//Return value
-//true if the corresponding comparison yields true, false otherwise.
-
-template< class T, class Container >
-inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c == rhs.c; }
-
-template< class T, class Container >
-inline bool operator!=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c != rhs.c; }
-
-template< class T, class Container >
-inline bool operator<( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c < rhs.c; }
-
-template< class T, class Container >
-inline bool operator<=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c <= rhs.c; }
-
-template< class T, class Container >
-inline bool operator>( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c > rhs.c; }
-
-template< class T, class Container >
-inline bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-{ return lhs.c >= rhs.c; }
-
-//Mutant stack add Iterator fonction
-
-//template<typename T>
-//class MutantStack : public stack<T>
-//{
-//public:
-//    MutantStack() {}
-//    MutantStack(const MutantStack<T>& src) { *this = src; }
-//    MutantStack<T>& operator=(const MutantStack<T>& rhs)
-//    {
-//        this->c = rhs.c;
-//        return *this;
-//    }
-//    ~MutantStack() {}
-//
-//    typedef typename stack<T>::container_type::iterator                 iterator;
-//    typedef typename stack<T>::container_type::const_iterator           const_iterator;
-//    typedef typename stack<T>::container_type::reverse_iterator         reverse_iterator;
-//    typedef typename stack<T>::container_type::const_reverse_iterator   const_reverse_iterator;
-//
-//    iterator begin() { return this->c.begin(); }
-//    iterator end() { return this->c.end(); }
-//    //const_iterator cbegin() { return this->c.begin(); }//c++11
-//    //const_iterator cend() { return this->c.end(); }//c++11
-//    //reverse_iterator rbegin() { return this->c.begin(); }//c++11
-//    //reverse_iterator rend() { return this->c.end(); }//c++11
-//    //const_reverse_iterator crbegin() { return this->c.begin(); }//c++11
-//    //const_reverse_iterator crend() { return this->c.end(); }//c++11
-//};
 
 __FT_CONTAINERS_END_NAMESPACE
 
