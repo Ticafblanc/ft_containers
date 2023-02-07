@@ -14,12 +14,31 @@
 
 #include "ft_containers.hpp"
 #include "red_black_tree.tpp"
+#include "vector.tpp"
 #include "utility.tpp"
 
 #ifndef FT_CONTAINERS_MAP_TPP
 # define FT_CONTAINERS_MAP_TPP
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
+
+template< class Key, class T, class Compare, class Allocator >
+class mapBase : ft::vector<Node<Key, T> >{
+
+private:
+    typedef mapBase< Key, T, Compare, Allocator >                         self;
+    typedef ft::vector<Node<Key, T> >                                     Base;
+
+public:
+    mapBase() : Base(){}
+    /*Solved allocator conflict*/
+    explicit mapBase(const Allocator& alloc) : Base(alloc) {}
+
+    ~mapBase() {};
+
+private:
+    Compare Comp;
+};
 
     //ft::map
 /*std::map is a sorted associative container that contains key-value pairs with unique keys.
@@ -33,10 +52,11 @@ Everywhere the standard library uses the Compare requirements, uniqueness is det
 
 template< class Key, class T, class Compare = std::less<Key>,
         class Allocator = std::allocator<pair<const Key, T> > >
-class map : private red_black_tree< Key, Compare, Allocator, T > {
+class map : private mapBase< Key, T, Compare, Allocator >{
 
 private:
-    typedef red_black_tree< Key, Compare, Allocator, void >                         Base;
+    typedef mapBase< Key, T, Compare, Allocator >                         Base;
+    typedef map< Key, T, Compare, Allocator >                             Self;
 
 /*
 *====================================================================================
@@ -46,61 +66,76 @@ private:
 
 public:
 
+    typedef Key                                                     key_types;
+    typedef T                                                       mapped_type;
+    typedef ft::pair<const key_types, mapped_type>                  value_type;
+    typedef std::size_t                                             size_type;
+    typedef std::ptrdiff_t                                          difference_type;
+    typedef Compare                                                 key_compare;
+    typedef value_type&                                             reference;
+    typedef const value_type&                                       const_reference;
+    typedef Allocator                                               allocator_type;
+    typedef typename Allocator::pointer                             pointer;
+    typedef typename Allocator::const_pointer                       const_pointer;
+    typedef value_type*                                             iterator;
+    typedef const value_type*                                       const_iterator;
+    typedef ft::reverse_iterator<iterator>                          reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>                    const_reverse_iterator;
 
+/*
+*====================================================================================
+*|                                  Member classes                                  |
+*====================================================================================
+*/
+
+public:
+
+    /*class value_compare https://en.cppreference.com/w/cpp/container/map/value_compare
+     * std::map::value_compare is a function object that compares objects of type std::map::value_type
+     * (key-value pairs) by comparing of the first components of the pairs.*/
+    class value_compare : public std::binary_function<value_type, value_type, bool>{
+    protected:
+        Compare comp;
+        explicit value_compare(Compare c) : comp(c) {};
+
+    public:
+        bool operator()(const value_type& lhs, const value_type& rhs) const
+        {return comp(lhs.first, rhs.first);}
+    };
+
+/*
+*====================================================================================
+*|                                  Member Fonction                                 |
+*====================================================================================
+*/
+
+    /*Parameters
+       alloc 	- 	allocator to use for all memory allocations of this container
+       comp 	- 	comparison function object to use for all comparisons of keys
+       first, last 	- 	the range to copy the elements from
+       other 	- 	another container to be used as source to initialize the elements of the container with
+       init 	- 	initializer list to initialize the elements of the container with
+       Type requirements
+       -
+       InputIt must meet the requirements of LegacyInputIterator.
+       -
+       Compare must meet the requirements of Compare.
+       -
+       Allocator must meet the requirements of Allocator.
+       Complexity
+       1-3) Constant
+       4-5) N log(N) where N = std::distance(first, last) in general, linear in N if the range is already sorted by
+        value_comp().
+       6-7) Linear in size of other
+       8-9) Constant. If alloc is given and alloc != other.get_allocator(), then linear.
+       10-11) N log(N) where N = init.size() in general, linear in N if init is already sorted by value_comp().
+       Exceptions
+       Calls to Allocator::allocate may throw.*/
+
+    /*1-3 Constructs an empty container.*/
+    map() : Base() {}
 };
 
-
-//    typedef const value_type&                                                           const_reference;
-//    typedef typename allocator_type::pointer                                            pointer;
-//    typedef typename allocator_type::const_pointer                                      const_pointer;
-//    typedef typename ft::map_iterator<std::bidirectional_iterator_tag, value_type>      iterator;
-//    typedef typename ft::map_iterator<std::bidirectional_iterator_tag, value_type>      const_iterator;
-//    typedef typename ft::reverse_iterator<iterator>                                     reverse_iterator;
-//    typedef typename ft::reverse_iterator<const_iterator>                               const_reverse_iterator;
-//
-//
-//    class value_compare : public std::binary_function<value_type, value_type, bool>{
-//            //class value_compare https://en.cppreference.com/w/cpp/container/map/value_compare
-//        //std::map::value_compare is a function object that compares objects of type std::map::value_type
-//        // (key-value pairs) by comparing of the first components of the pairs.
-//
-//    protected:
-//        //the stored comparator
-//        Compare comp;
-//        value_compare(Compare c) : comp(c) {};
-//
-//    public:
-//        bool operator()(const value_type& lhs, const value_type& rhs) const
-//        {return comp(lhs.first, rhs.first);}
-//    };
-//
-//    /*Parameters
-//    alloc 	- 	allocator to use for all memory allocations of this container
-//    comp 	- 	comparison function object to use for all comparisons of keys
-//    first, last 	- 	the range to copy the elements from
-//    other 	- 	another container to be used as source to initialize the elements of the container with
-//    init 	- 	initializer list to initialize the elements of the container with
-//    Type requirements
-//    -
-//    InputIt must meet the requirements of LegacyInputIterator.
-//    -
-//    Compare must meet the requirements of Compare.
-//    -
-//    Allocator must meet the requirements of Allocator.
-//    Complexity
-//    1-3) Constant
-//    4-5) N log(N) where N = std::distance(first, last) in general, linear in N if the range is already sorted by
-//     value_comp().
-//    6-7) Linear in size of other
-//    8-9) Constant. If alloc is given and alloc != other.get_allocator(), then linear.
-//    10-11) N log(N) where N = init.size() in general, linear in N if init is already sorted by value_comp().
-//    Exceptions
-//
-//    Calls to Allocator::allocate may throw.*/
-//
-//    //1-3 Constructs an empty container.
-//    map() : red_black_tree<pair<const Key, T> > () {}
-//
 //    explicit map( const Compare& comp, const Allocator& alloc = Allocator() )
 //                    : red_black_tree<pair<const Key, T> > (){}
 //

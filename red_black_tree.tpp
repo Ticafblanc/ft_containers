@@ -14,6 +14,8 @@
 
 #include "ft_containers.hpp"
 #include "utility.tpp"
+#include "iterator.tpp"
+#include "vector.tpp"
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -32,86 +34,59 @@ Leaf Property: Every leaf (NIL) is black.
 Red Property: If a red node has children then, the children are always black.
 Depth Property: For each node, any simple path from this node to any of its descendant leaf
  has the same black-depth (the number of black nodes).*/
+enum Color {RED, BLACK};
 
-/* color of node */
-# define __RBT_RED 0x1
-# define __RBT_BLACK 0x2
+/* struct of Map*/
+template< class Key, class T = void >
+struct Node{
 
-/* struct of base */
-template<class key>
-struct S_Node {
+    Node(Key key, T value)
+            : _Key(key), _Value(value), _Color(RED), _LeftChild(NULL),
+              _RightChild(NULL), _Parent(NULL) {};
 
-    S_Node(S_Node *LeftChild, S_Node *RightChild,
-           S_Node *Parent, char Color, key *Key)
-            : _Key(Key), _Color(Color), _LeftChild(LeftChild),
-              _RightChild(RightChild), _Parent(Parent) {};
-
-    key *_Key;
-    char _Color;
-    S_Node *_LeftChild;
-    S_Node *_RightChild;
-    S_Node *_Parent;
+    Key     _Key;
+    T       _Value;
+    Color    _Color;
+    Node  *_LeftChild;
+    Node  *_RightChild;
+    Node  *_Parent;
 };
 
-template< class Key, class Compare, class Allocator >
-struct red_black_tree_Base{
+/* struct of set*/
+template< class Key>
+struct Node< Key >{
+
+    Node(Key key)
+            : _Key(key), _Color(RED), _LeftChild(NULL),
+              _RightChild(NULL), _Parent(NULL) {};
+
+    Key     _Key;
+    Color    _Color;
+    Node  *_LeftChild;
+    Node  *_RightChild;
+    Node  *_Parent;
+};
+/*==================================================================================*/
+
+/*red black tree of map*/
+template< class Key, class Node>
+struct RedBlackTree {
 
 private:
-    typedef red_black_tree_Base< Key, Compare, Allocator >      Self;
+    typedef RedBlackTree < Key, Node >                                      Self;
+    Node *ROOT;
 
-/*
-*====================================================================================
-*|                                     Member Type                                  |
-*====================================================================================
-*/
 
-public:
-    typedef Key                                 key_types;
-    typedef std::size_t                         size_type;
-    typedef std::ptrdiff_t                      difference_type;
-    typedef Compare                             key_compare;
-    typedef Allocator                           allocator_type;
+
 
 };
 
-template< class Key, class Compare, class Allocator, class T = void >
-struct red_black_tree :
-        public red_black_tree_Base< Key, Compare, Allocator > {
+/*==================================================================================*/
 
-private:
-    typedef red_black_tree_Base< Key, Compare, Allocator >      Base;
+/*==================================================================================*/
 
-/*
-*====================================================================================
-*|                                     Member Type Map                              |
-*====================================================================================
-*/
+/*==================================================================================*/
 
-public:
-    typedef T                                                           mapped_type;
-    typedef ft::pair<const typename Base::key_types, mapped_type>       value_type;
-    typedef value_type&                                                 reference;
-
-};
-
-template< class Key, class Compare, class Allocator >
-struct red_black_tree< Key, Compare, Allocator, void> :
-        public red_black_tree_Base< Key, Compare, Allocator >{
-
-private:
-    typedef red_black_tree_Base< Key, Compare, Allocator >              Base;
-
-/*
-*====================================================================================
-*|                                     Member Type Set                              |
-*====================================================================================
-*/
-
-public:
-    typedef typename Base::key_types                                    value_type;
-    typedef value_type&                                                 reference;
-
-};
 //    typedef Alloc           allocator_type;
 //
 //    allocator_type get_allocator() const { return allocator_type(); }
