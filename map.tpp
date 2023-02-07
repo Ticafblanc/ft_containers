@@ -31,31 +31,25 @@ Everywhere the standard library uses the Compare requirements, uniqueness is det
  (not unique) if neither compares less than the other: !comp(a, b) && !comp(b, a). */
 
 
-template< class Key, class T, class Compare, class Allocator >
-class MapBase : public red_black_tree<Key, Compare > {
-protected:
-    typedef red_black_tree<Key, Compare >                                        RBT_Base;
-};
-
 template< class Key, class T, class Compare = std::less<Key>,
         class Allocator = std::allocator<pair<const Key, T> > >
-class map : private MapBase<Key, T, Compare, Allocator > {
+class map : private red_black_tree< Key, Compare, Allocator, T > {
 
 private:
-    typedef MapBase<Key, T, Compare, Allocator >                                        Base;
-    typename RBT_BASE  name;
+    typedef red_black_tree< Key, Compare, Allocator, void >                         Base;
+
+/*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
 
 public:
-    typedef Key                                                                         key_types;
+
 
 };
-    //    typedef T                                                                           mapped_type;
-//    typedef ft::pair<const key_types , mapped_type>                                     value_type;
-//    typedef ft::id<std::size_t>::type                                                   size_type;
-//    typedef std::ptrdiff_t                                                              difference_type;
-//    typedef typename ft::id<Compare>::type                                              key_compare;
-//    typedef typename ft::id<Allocator>::type                                            allocator_type;
-//    typedef value_type&                                                                 reference;
+
+
 //    typedef const value_type&                                                           const_reference;
 //    typedef typename allocator_type::pointer                                            pointer;
 //    typedef typename allocator_type::const_pointer                                      const_pointer;

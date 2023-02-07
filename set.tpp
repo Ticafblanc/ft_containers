@@ -14,19 +14,25 @@
 
 #include "ft_containers.hpp"
 #include "red_black_tree.tpp"
-#include "utility.tpp"
 
 #ifndef FT_CONTAINERS_SET_TPP
 # define FT_CONTAINERS_SET_TPP
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
-template< class Key, class Compare, class Allocator >
-class SetBase : public red_black_tree<Key, Compare >{
-
-};
 template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-class set : private SetBase<Key, Compare, Allocator >{
+class set : private red_black_tree< Key, Compare, Allocator, void >{
+
+private:
+    typedef red_black_tree< Key, Compare, Allocator, void >                         Base;
+
+/*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
+
+public:
 
 };
 

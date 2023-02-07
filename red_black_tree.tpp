@@ -53,11 +53,63 @@ struct S_Node {
     S_Node *_Parent;
 };
 
-template< class Key, class Compare >
-struct red_black_tree{
+template< class Key, class Compare, class Allocator >
+struct red_black_tree_Base{
 
-    public:
+private:
+    typedef red_black_tree_Base< Key, Compare, Allocator >      Self;
+
+/*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
+
+public:
     typedef Key                                 key_types;
+    typedef std::size_t                         size_type;
+    typedef std::ptrdiff_t                      difference_type;
+    typedef Compare                             key_compare;
+    typedef Allocator                           allocator_type;
+
+};
+
+template< class Key, class Compare, class Allocator, class T = void >
+struct red_black_tree :
+        public red_black_tree_Base< Key, Compare, Allocator > {
+
+private:
+    typedef red_black_tree_Base< Key, Compare, Allocator >      Base;
+
+/*
+*====================================================================================
+*|                                     Member Type Map                              |
+*====================================================================================
+*/
+
+public:
+    typedef T                                                           mapped_type;
+    typedef ft::pair<const typename Base::key_types, mapped_type>       value_type;
+    typedef value_type&                                                 reference;
+
+};
+
+template< class Key, class Compare, class Allocator >
+struct red_black_tree< Key, Compare, Allocator, void> :
+        public red_black_tree_Base< Key, Compare, Allocator >{
+
+private:
+    typedef red_black_tree_Base< Key, Compare, Allocator >              Base;
+
+/*
+*====================================================================================
+*|                                     Member Type Set                              |
+*====================================================================================
+*/
+
+public:
+    typedef typename Base::key_types                                    value_type;
+    typedef value_type&                                                 reference;
 
 };
 //    typedef Alloc           allocator_type;
