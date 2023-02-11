@@ -38,6 +38,7 @@ public:
 
 private:
     Compare Comp;
+    RedBlackTree<Key, Node<Key, T> > Rbt;
 };
 
     //ft::map
@@ -134,18 +135,20 @@ public:
 
     /*1-3 Constructs an empty container.*/
     map() : Base() {}
+
+    explicit map( const Compare& comp, const Allocator& alloc = Allocator() )
+                    : Base(comp, alloc){}
+
+    /*4-5 Constructs the container with the contents of the range [first, last). If multiple elements in the range
+    have keys
+    that compare equivalent, it is unspecified which element is inserted (pending LWG2844).*/
+    template< class InputIt >
+    map( InputIt first, InputIt last, const Compare& comp = Compare(),
+         const Allocator& alloc = Allocator() ) : self_type(first, last, comp, alloc)
+    { this->insert(first, last); }//a valider quand build insert
 };
 
-//    explicit map( const Compare& comp, const Allocator& alloc = Allocator() )
-//                    : red_black_tree<pair<const Key, T> > (){}
 //
-//    //4-5 Constructs the container with the contents of the range [first, last). If multiple elements in the range
-//    // have keys
-//    // that compare equivalent, it is unspecified which element is inserted (pending LWG2844).
-//    template< class InputIt >
-//    map( InputIt first, InputIt last, const Compare& comp = Compare(),
-//         const Allocator& alloc = Allocator() ) : self_type(first, last, comp, alloc)
-//    { this->insert(first, last); }//a valider quand build insert
 //
 //    //Copy constructor. Constructs the container with the copy of the contents of other
 //    map( const map& other ) : self_type(other.key_comp(), other.get_allocator())
