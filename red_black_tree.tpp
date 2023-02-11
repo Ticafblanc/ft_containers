@@ -37,7 +37,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
 enum Color {RED, BLACK};
 
 /* struct of Map*/
-template< class Key, class T = void >
+template< class Key, class Compare, class Allocator, class T = void >
 struct Node{
 
     Node(Key key, T value)
@@ -52,35 +52,24 @@ struct Node{
     Node  *_Parent;
 };
 
-/* struct of set*/
-template< class Key >
-struct Node< Key >{
 
-    typedef Node< Key >     self;
-
-    explicit Node(Key *key) : _Key(key), _Color(RED), _LeftChild(NULL),_RightChild(NULL), _Parent(NULL) {};
-
-    ~Node(){};
-    Key     *_Key;
-    Color   _Color;
-    Node    *_LeftChild;
-    Node    *_RightChild;
-    Node    *_Parent;
-};
 /*==================================================================================*/
 
-/*red black tree of map*/
-template< class Key, class Node, class Compare, class Allocator>
-struct RedBlackTree : ft::vector< Node >, ft::vector< Key, Allocator> {
 
-private:
-    typedef Node                                            node_types;
-    typedef ft::vector< Node >                              NBase;
-    typedef ft::vector< Key, Allocator>                     KBase;
-    typedef RedBlackTree< Key, Node, Compare, Allocator>    self;
-    Compare                                                 _comp;
-    Allocator                                               _alloc;
-    node_types*                                             _root;
+
+/* struct of set*/
+template< class Key, class Compare, class Allocator >
+struct Node< Key, Compare,  Allocator >{
+
+
+    typedef Node< Key, Compare,  Allocator >     self;
+    Key         *_Key;
+    Color       _Color;
+    self        *_LeftChild;
+    self        *_RightChild;
+    self        *_Parent;
+    Allocator   *_alloc;
+    Compare     *_comp;
 
 /*
 *====================================================================================
@@ -88,7 +77,7 @@ private:
 *====================================================================================
 */
 
-public:
+
     typedef Key                                         key_types;
     typedef key_types                                   value_type;
     typedef std::size_t                                 size_type;
@@ -100,10 +89,79 @@ public:
     typedef Allocator                                   allocator_type;
     typedef typename Allocator::pointer                 pointer;
     typedef typename Allocator::const_pointer           const_pointer;
-    typedef typename NBase::iterator                    iterator;
-    typedef typename NBase::const_iterator              const_iterator;
-    typedef typename NBase::reverse_iterator            reverse_iterator;
-    typedef typename NBase::const_reverse_iterator      const_reverse_iterator;
+
+/*
+*====================================================================================
+*|                                  Member Fonction                                 |
+*====================================================================================
+*/
+
+    explicit Node(Compare comp, const Allocator& alloc) : _Key(NULL), _comp(comp), _alloc(&alloc),
+                                                _Color(RED), _LeftChild(NULL),_RightChild(NULL), _Parent(NULL){ };
+
+    explicit Node(Key key, Compare comp, const Allocator& alloc) : _comp(comp), _alloc(&alloc), _Color(RED),
+                                                _LeftChild(NULL),_RightChild(NULL), _Parent(NULL)
+    {
+        _alloc->construct(_Key, key);
+    };
+
+    ~Node()
+    {
+        _alloc->destroy(_Key);
+    };
+
+};
+
+
+/*==================================================================================*/
+
+
+/*red black tree of map*/
+template< class Key, class Node, class Compare, class Allocator >
+struct RedBlackTree {
+
+/*
+*====================================================================================
+*|                                      Iterator                                    |
+*====================================================================================
+*/
+protected:
+
+    struct RedBlackTreeIterator : public std::iterator<std::random_access_iterator_tag, Key,
+                                                        Key, const Key*, Key > {
+    public:
+        RedBlackTreeIterator(){};
+    };
+
+/*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
+
+protected:
+
+    typedef Node                                            node;
+    typedef RedBlackTree< Key, Node, Compare, Allocator>    self;
+    typedef Key                                             key_types;
+    typedef key_types                                       value_type;
+    typedef std::size_t                                     size_type;
+    typedef std::ptrdiff_t                                  difference_type;
+    typedef Compare                                         key_compare;
+    typedef key_compare                                     value_compare;
+    typedef value_type&                                     reference;
+    typedef const value_type&                               const_reference;
+    typedef Allocator                                       allocator_type;
+    typedef typename Allocator::pointer                     pointer;
+    typedef typename Allocator::const_pointer               const_pointer;
+    typedef RedBlackTreeIterator                            iterator;
+    typedef const RedBlackTreeIterator                      const_iterator;
+    typedef ft::reverse_iterator<iterator>                  reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
+    node*                                                   _root;
+    Allocator                                               _alloc;
+    Compare                                                 _comp;
+
 
 /*
 *====================================================================================
@@ -112,58 +170,60 @@ public:
 */
 
 protected:
-    RedBlackTree() : NBase(), KBase() { __INFOMF__ };
+
+    RedBlackTree() { __INFOMF__ };
 
     explicit RedBlackTree( const Compare& comp, const Allocator& alloc = Allocator() )
-                            : NBase(), KBase(alloc), _comp(comp) { __INFOMF__ };
+                            :  _comp(comp), _alloc(alloc) { __INFOMF__ };
 
     template< class InputIt >
-    RedBlackTree( InputIt first, InputIt last, const Compare& comp = Compare(),
-                  const Allocator& alloc = Allocator() )
-                  : NBase(), KBase(alloc), _comp(comp){};//assigne pointerdelte les double
+    RedBlackTree( InputIt first, InputIt last, const Compare& comp, const Allocator& alloc )
+                  :  _comp(comp), _alloc(alloc){};//assigne pointerdelte les double
 
-    RedBlackTree( const self& other ) : NBase(other.NBase), KBase(other.KBase), _root(other._root){};
+    RedBlackTree( const self& other ) : _root(other._root),
+                                    _comp(other.comp), _alloc(other.alloc){};//assigne pointerdelte les double
 
     virtual ~RedBlackTree() {};
 
     RedBlackTree& operator=( const self& other )
     {
-        NBase::operator=(other.NBase);
-        KBase::operator=(other.KBase);
-        typename NBase::size_type Sz = 0;
-
-        typename NBase::iterator tmp = NBase::begin();
-        while(tmp != NBase::end())
-        {
-            Sz =
-            tmp._Key = NBase::at(FindPos(typename NBase::iterator& pos))._Key;
-            Color   _Color;
-            Node    *_LeftChild;
-            Node    *_RightChild;
-            Node    *_Parent;
-            tmp++;
-        }
         return *this;
     };
 
-private:
+    allocator_type get_allocator() const{ return allocator_type(); }
 
-        typename NBase::size_type FindPos(typename NBase::iterator& pos)
-        {
-            return pos - NBase::begin();
-        }
+/*
+*====================================================================================
+*|                                      Iterator                                    |
+*====================================================================================
+*/
+
+public:
+
+    iterator                begin()                 {__INFOIT__ return _root->_Key; };
+    const_iterator          begin()         const   {__INFOIT__ return _root->_Key; };
+    iterator                end()                   {__INFOIT__ return _root->_Key; };
+    const_iterator          end()           const   {__INFOIT__ return _root->_Key;; };
+    reverse_iterator        rbegin()                {__INFOIT__ return reverse_iterator (end()); };
+    reverse_iterator        rend()                  {__INFOIT__ return reverse_iterator (begin()); };
+    const_reverse_iterator  rbegin()        const   {__INFOIT__ return reverse_iterator (end()); };
+    const_reverse_iterator  rend()          const   {__INFOIT__ return reverse_iterator (begin()); };
 
 
+/*
+*====================================================================================
+*|                                     Capacity                                     |
+*====================================================================================
+*/
 
+        bool        empty()     const   {__INFOCA__ return Base::empty(); };
+
+        size_type   size()      const   {__INFOCA__ return Base::size(); };
+
+        size_type   max_size()  const{__INFOCA__ return Base::max_size(); };
 
 
 };
-
-/*==================================================================================*/
-
-/*==================================================================================*/
-
-/*==================================================================================*/
 
 //    typedef Alloc           allocator_type;
 //

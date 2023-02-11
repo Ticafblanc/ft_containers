@@ -22,11 +22,35 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
 template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-class set : protected RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator> {
+class set : protected RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator > {
 
 private:
-    typedef RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator >       Base;
-    typedef set< Key, Compare, Allocator >                             Self;
+    typedef RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator >    Base;
+    typedef set< Key, Compare, Allocator >                                              Self;
+
+
+    /*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
+
+public:
+    typedef Key                                         key_types;
+    typedef key_types                                   value_type;
+    typedef std::size_t                                 size_type;
+    typedef std::ptrdiff_t                              difference_type;
+    typedef Compare                                     key_compare;
+    typedef key_compare                                 value_compare;
+    typedef value_type&                                 reference;
+    typedef const value_type&                           const_reference;
+    typedef Allocator                                   allocator_type;
+    typedef typename Allocator::pointer                 pointer;
+    typedef typename Allocator::const_pointer           const_pointer;
+    typedef typename Base::iterator                    iterator;
+    typedef typename Base::const_iterator              const_iterator;
+    typedef typename Base::reverse_iterator            reverse_iterator;
+    typedef typename Base::const_reverse_iterator      const_reverse_iterator;
 
 /*
 *====================================================================================
@@ -72,9 +96,9 @@ Calls to Allocator::allocate may throw.*/
 
     set& operator=( const set& other ) {};
 };
-ft::set<int>::
-ft::vector< Node<int> > tes2;
-std::set<int>::n
+ft::set<int>        tst;
+    ft::set<int>::
+
 __FT_CONTAINERS_END_NAMESPACE
 
 #endif //FT_CONTAINERS_SET_TPP
