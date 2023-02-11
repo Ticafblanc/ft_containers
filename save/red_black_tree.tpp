@@ -53,106 +53,28 @@ struct Node{
 };
 
 /* struct of set*/
-template< class Key >
+template< class Key>
 struct Node< Key >{
 
-    typedef Node< Key >     self;
+    Node(Key key)
+            : _Key(key), _Color(RED), _LeftChild(NULL),
+              _RightChild(NULL), _Parent(NULL) {};
 
-    explicit Node(Key *key) : _Key(key), _Color(RED), _LeftChild(NULL),_RightChild(NULL), _Parent(NULL) {};
-
-    ~Node(){};
-    Key     *_Key;
-    Color   _Color;
-    Node    *_LeftChild;
-    Node    *_RightChild;
-    Node    *_Parent;
+    Key     _Key;
+    Color    _Color;
+    Node  *_LeftChild;
+    Node  *_RightChild;
+    Node  *_Parent;
 };
 /*==================================================================================*/
 
 /*red black tree of map*/
-template< class Key, class Node, class Compare, class Allocator>
-struct RedBlackTree : ft::vector< Node >, ft::vector< Key, Allocator> {
+template< class Key, class Node>
+struct RedBlackTree {
 
 private:
-    typedef Node                                            node_types;
-    typedef ft::vector< Node >                              NBase;
-    typedef ft::vector< Key, Allocator>                     KBase;
-    typedef RedBlackTree< Key, Node, Compare, Allocator>    self;
-    Compare                                                 _comp;
-    Allocator                                               _alloc;
-    node_types*                                             _root;
-
-/*
-*====================================================================================
-*|                                     Member Type                                  |
-*====================================================================================
-*/
-
-public:
-    typedef Key                                         key_types;
-    typedef key_types                                   value_type;
-    typedef std::size_t                                 size_type;
-    typedef std::ptrdiff_t                              difference_type;
-    typedef Compare                                     key_compare;
-    typedef key_compare                                 value_compare;
-    typedef value_type&                                 reference;
-    typedef const value_type&                           const_reference;
-    typedef Allocator                                   allocator_type;
-    typedef typename Allocator::pointer                 pointer;
-    typedef typename Allocator::const_pointer           const_pointer;
-    typedef typename NBase::iterator                    iterator;
-    typedef typename NBase::const_iterator              const_iterator;
-    typedef typename NBase::reverse_iterator            reverse_iterator;
-    typedef typename NBase::const_reverse_iterator      const_reverse_iterator;
-
-/*
-*====================================================================================
-*|                                  Member Fonction                                 |
-*====================================================================================
-*/
-
-protected:
-    RedBlackTree() : NBase(), KBase() { __INFOMF__ };
-
-    explicit RedBlackTree( const Compare& comp, const Allocator& alloc = Allocator() )
-                            : NBase(), KBase(alloc), _comp(comp) { __INFOMF__ };
-
-    template< class InputIt >
-    RedBlackTree( InputIt first, InputIt last, const Compare& comp = Compare(),
-                  const Allocator& alloc = Allocator() )
-                  : NBase(), KBase(alloc), _comp(comp){};//assigne pointerdelte les double
-
-    RedBlackTree( const self& other ) : NBase(other.NBase), KBase(other.KBase), _root(other._root){};
-
-    virtual ~RedBlackTree() {};
-
-    RedBlackTree& operator=( const self& other )
-    {
-        NBase::operator=(other.NBase);
-        KBase::operator=(other.KBase);
-        typename NBase::size_type Sz = 0;
-
-        typename NBase::iterator tmp = NBase::begin();
-        while(tmp != NBase::end())
-        {
-            Sz =
-            tmp._Key = NBase::at(FindPos(typename NBase::iterator& pos))._Key;
-            Color   _Color;
-            Node    *_LeftChild;
-            Node    *_RightChild;
-            Node    *_Parent;
-            tmp++;
-        }
-        return *this;
-    };
-
-private:
-
-        typename NBase::size_type FindPos(typename NBase::iterator& pos)
-        {
-            return pos - NBase::begin();
-        }
-
+    typedef RedBlackTree < Key, Node >                                      Self;
+    Node *ROOT;
 
 
 

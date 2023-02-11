@@ -21,20 +21,59 @@
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
-template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-class set : protected RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator> {
+template< class Key, class Compare, class Allocator >
+class setBase : ft::vector<Node<Key> >{
 
 private:
-    typedef RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator >       Base;
+    typedef setBase< Key, Compare, Allocator >                         self;
+    typedef ft::vector<Node<Key> >                                     Base;
+
+public:
+    setBase() : Base(){}
+    /*Solved allocator conflict*/
+    explicit setBase(const Allocator& alloc) : Base(alloc) {}
+
+    ~setBase() {};
+
+private:
+    Compare Comp;
+};
+
+
+template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
+class set : private setBase< Key, Compare, Allocator >{
+
+private:
+    typedef setBase< Key, Compare, Allocator >                         Base;
     typedef set< Key, Compare, Allocator >                             Self;
+/*
+*====================================================================================
+*|                                     Member Type                                  |
+*====================================================================================
+*/
+
+public:
+    typedef Key                                         key_types;
+    typedef key_types                                   value_type;
+    typedef std::size_t                                 size_type;
+    typedef std::ptrdiff_t                              difference_type;
+    typedef Compare                                     key_compare;
+    typedef key_compare                                 value_compare;
+    typedef value_type&                                 reference;
+    typedef const value_type&                           const_reference;
+    typedef Allocator                                   allocator_type;
+    typedef typename Allocator::pointer                 pointer;
+    typedef typename Allocator::const_pointer           const_pointer;
+    typedef value_type*                                 iterator;
+    typedef const value_type*                           const_iterator;
+    typedef ft::reverse_iterator<iterator>              reverse_iterator;
+    typedef ft::reverse_iterator<const_iterator>        const_reverse_iterator;
 
 /*
 *====================================================================================
 *|                                  Member Fonction                                 |
 *====================================================================================
 */
-
-public:
 
 /*Parameters
 alloc	-	allocator to use for all memory allocations of this container
@@ -56,25 +95,10 @@ Exceptions
 Calls to Allocator::allocate may throw.*/
 
     /*1Constructs an empty container.*/
-    set() : Base() { __INFOMF__ };
+    set() : Base() {}
 
-    explicit set( const Compare& comp, const Allocator& alloc = Allocator() )
-            : Base(comp, alloc) { __INFOMF__ };
-
-    template< class InputIt >
-    set( InputIt first, InputIt last, const Compare& comp = Compare(),
-        const Allocator& alloc = Allocator() )
-        : Base(first, last, comp, alloc) { };
-
-    set( const set& other ) : Base(other) {};
-
-    virtual ~set() {};
-
-    set& operator=( const set& other ) {};
 };
-ft::set<int>::
-ft::vector< Node<int> > tes2;
-std::set<int>::n
+
 __FT_CONTAINERS_END_NAMESPACE
 
 #endif //FT_CONTAINERS_SET_TPP

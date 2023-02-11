@@ -1,7 +1,7 @@
 /* *************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    red_black_tree.tpp                                 :+:      :+:    :+:    #
+#    R_B_T.tpp                                          :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: mdoquocb <mdoquocb@student.42quebec.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
@@ -14,13 +14,12 @@
 
 #include "ft_containers.hpp"
 #include "utility.tpp"
-#include "iterator.tpp"
-#include "vector.tpp"
 
-#ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
-# define FT_CONTAINERS_RED_BLACK_TREE_TPP
+#ifndef FT_CONTAINERS_R_B_T_TPP
+# define FT_CONTAINERS_R_B_T_TPP
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
+
 
 /*https://www.programiz.com/dsa/red-black-tree
 Red-Black tree is a self-balancing binary search tree in which each node contains an extra bit for
@@ -32,228 +31,22 @@ Red/Black Property: Every node is colored, either red or black.
 Root Property: The root is black.
 Leaf Property: Every leaf (NIL) is black.
 Red Property: If a red node has children then, the children are always black.
-Depth Property: For each node, any simple path from this node to any of its descendant leaf
- has the same black-depth (the number of black nodes).*/
-enum Color {RED, BLACK};
+Depth Property: For each node, any simple path from this node to any of its descendant leaf has
+ the same black-depth (the number of black nodes).*/
 
-/* struct of Map*/
-template< class Key, class T = void >
-struct Node{
+//color of node
+# define __RBT_RED 0x1
+# define __RBT_BLACK 0x2
 
-    Node(Key key, T value)
-            : _Key(key), _Value(value), _Color(RED), _LeftChild(NULL),
-              _RightChild(NULL), _Parent(NULL) {};
+    //struct of base
+struct S_Node{
+    typedef S_Node*     Node_ptr;
+    //Each node has the following attributes:
+    char Color;
+    S_Node *leftChild;
+    S_Node *rightChild;
+    S_Node *Parent;//(except root node)
 
-    Key     _Key;
-    T       _Value;
-    Color    _Color;
-    Node  *_LeftChild;
-    Node  *_RightChild;
-    Node  *_Parent;
-};
-
-/* struct of set*/
-template< class Key >
-struct Node< Key >{
-
-    typedef Node< Key >     self;
-
-    explicit Node(Key *key) : _Key(key), _Color(RED), _LeftChild(NULL),_RightChild(NULL), _Parent(NULL) {};
-
-    ~Node(){};
-    Key     *_Key;
-    Color   _Color;
-    Node    *_LeftChild;
-    Node    *_RightChild;
-    Node    *_Parent;
-};
-/*==================================================================================*/
-
-/*red black tree of map*/
-template< class Key, class Node, class Compare, class Allocator>
-struct RedBlackTree : ft::vector< Node >, ft::vector< Key, Allocator> {
-
-private:
-    typedef Node                                            node_types;
-    typedef ft::vector< Node >                              NBase;
-    typedef ft::vector< Key, Allocator>                     KBase;
-    typedef RedBlackTree< Key, Node, Compare, Allocator>    self;
-    Compare                                                 _comp;
-    Allocator                                               _alloc;
-    node_types*                                             _root;
-
-/*
-*====================================================================================
-*|                                     Member Type                                  |
-*====================================================================================
-*/
-
-public:
-    typedef Key                                         key_types;
-    typedef key_types                                   value_type;
-    typedef std::size_t                                 size_type;
-    typedef std::ptrdiff_t                              difference_type;
-    typedef Compare                                     key_compare;
-    typedef key_compare                                 value_compare;
-    typedef value_type&                                 reference;
-    typedef const value_type&                           const_reference;
-    typedef Allocator                                   allocator_type;
-    typedef typename Allocator::pointer                 pointer;
-    typedef typename Allocator::const_pointer           const_pointer;
-    typedef typename NBase::iterator                    iterator;
-    typedef typename NBase::const_iterator              const_iterator;
-    typedef typename NBase::reverse_iterator            reverse_iterator;
-    typedef typename NBase::const_reverse_iterator      const_reverse_iterator;
-
-/*
-*====================================================================================
-*|                                  Member Fonction                                 |
-*====================================================================================
-*/
-
-protected:
-    RedBlackTree() : NBase(), KBase() { __INFOMF__ };
-
-    explicit RedBlackTree( const Compare& comp, const Allocator& alloc = Allocator() )
-                            : NBase(), KBase(alloc), _comp(comp) { __INFOMF__ };
-
-    template< class InputIt >
-    RedBlackTree( InputIt first, InputIt last, const Compare& comp = Compare(),
-                  const Allocator& alloc = Allocator() )
-                  : NBase(), KBase(alloc), _comp(comp){};//assigne pointerdelte les double
-
-    RedBlackTree( const self& other ) : NBase(other.NBase), KBase(other.KBase), _root(other._root){};
-
-    virtual ~RedBlackTree() {};
-
-    RedBlackTree& operator=( const self& other )
-    {
-        NBase::operator=(other.NBase);
-        KBase::operator=(other.KBase);
-        typename NBase::size_type Sz = 0;
-
-        typename NBase::iterator tmp = NBase::begin();
-        while(tmp != NBase::end())
-        {
-            Sz =
-            tmp._Key = NBase::at(FindPos(typename NBase::iterator& pos))._Key;
-            Color   _Color;
-            Node    *_LeftChild;
-            Node    *_RightChild;
-            Node    *_Parent;
-            tmp++;
-        }
-        return *this;
-    };
-
-private:
-
-        typename NBase::size_type FindPos(typename NBase::iterator& pos)
-        {
-            return pos - NBase::begin();
-        }
-
-
-
-
-
-};
-
-/*==================================================================================*/
-
-/*==================================================================================*/
-
-/*==================================================================================*/
-
-//    typedef Alloc           allocator_type;
-//
-//    allocator_type get_allocator() const { return allocator_type(); }
-//
-//    _Rb_tree(const allocator_type&): _M_header(0) { _M_header = _M_get_node(); }
-//
-//    ~_Rb_tree_base() { _M_put_node(_M_header); }
-//
-//protected:
-//    _Rb_tree_node<_Tp>* _M_header; // 实现的一个技巧
-//
-//    typedef simple_alloc<_Rb_tree_node<_Tp>, _Alloc> _Alloc_type;
-//
-//    _Rb_tree_node<_Tp>* _M_get_node()
-//    { return _Alloc_type::allocate(1); }
-//    void _M_put_node(_Rb_tree_node<_Tp>* __p)
-//    { _Alloc_type::deallocate(__p, 1); }
-//
-//
-//    template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<s_node<Key> > >
-//    class red_black_tree{
-//    public:
-//        typedef Key                                                                 key_type;
-//        typedef Key                                                                 value_type;
-//        typedef std::size_t                                                         size_type;
-//        typedef std::ptrdiff_t                                                      difference_type;
-//        typedef Compare                                                             key_compare;
-//        typedef Compare                                                             value_compare;
-//        typedef Allocator                                                           allocator_type;
-//        typedef value_type&                                                         reference;
-//        typedef const value_type&                                                   const_reference;
-//        typedef typename Allocator::pointer                                         pointer;
-//        typedef typename Allocator::const_pointer                                   const_pointer;
-//        typedef typename ft::tree_iterator<value_type>    iterator;
-//        typedef typename ft::map_iterator<std::bidirectional_iterator_tag, value_type>    const_iterator;
-//        typedef typename ft::reverse_iterator<iterator>                             reverse_iterator;
-//        typedef typename ft::reverse_iterator<const_iterator>                       const_reverse_iterator;
-//
-//
-//    protected:
-//        //constructor
-//        red_black_tree() : _first(NULL){}
-//        explicit red_black_tree(const Compare& comp, const Allocator& alloc = Allocator() )
-//                : _first(NULL){}// init the first pointer
-//        template< class InputIt >
-//        red_black_tree( InputIt first, InputIt last, const Compare& comp = Compare(),
-//                        const Allocator& alloc = Allocator() ) : _first(NULL)
-//        { this->insert(first, last); }
-//        red_black_tree( const red_black_tree& other ) : _first(other._first)
-//        { this->swap(other); }
-//
-//        //destructor
-//        ~red_black_tree(){}//voir pour desaloc
-//
-//        red_black_tree&     operator=(const red_black_tree& other)
-//        {
-//            this->clear();
-//            this->swap(other);
-//            return *this;
-//        }
-//
-//        allocator_type get_allocator() const {return allocator_type(); }
-//
-//        iterator begin() { return self.begin(); }
-//        const_iterator begin() const { return self.begin(); }
-//
-//        iterator end() { return self.end(); }
-//        const_iterator end() const { return self.end(); }
-//
-//        reverse_iterator rbegin() { return self.rbegin(); }
-//        const_reverse_iterator rbegin() const { return self.rbegin(); }
-//
-//        std::pair<iterator, bool> insert( const key_type& value )
-//        {
-//
-//        }
-//
-//        iterator insert( iterator pos, const key_type& value )
-//        {
-//
-//        }
-//
-//
-//
-//    private:
-//        typedef red_black_tree<Key>     self_type;
-//        s_node<key_type>                *_first;
-//
-//    };
 
 //    static Node_ptr N_minimum(Node_ptr N_ptr)
 //    {
@@ -268,11 +61,105 @@ private:
 //            N_ptr = N_ptr->rightChild;
 //        return N_ptr;
 //    }
+};
+//    //struct template
+//template<class Value_type >
+//struct S_Node_Vt : public S_Node{
+//    Value_type Vt;
 //};
 
+//template <class T, class Alloc>
+//class _Rb_tree{
+//typedef Alloc           allocator_type;
+//
+//allocator_type get_allocator() const { return allocator_type(); }
+//
+//_Rb_tree(const allocator_type&): _M_header(0) { _M_header = _M_get_node(); }
+//
+//~_Rb_tree_base() { _M_put_node(_M_header); }
+//
+//protected:
+//_Rb_tree_node<_Tp>* _M_header; // 实现的一个技巧
+//
+//typedef simple_alloc<_Rb_tree_node<_Tp>, _Alloc> _Alloc_type;
+//
+//_Rb_tree_node<_Tp>* _M_get_node()
+//{ return _Alloc_type::allocate(1); }
+//void _M_put_node(_Rb_tree_node<_Tp>* __p)
+//{ _Alloc_type::deallocate(__p, 1); }
 
-    //iterator the tree
-    //struct of base
+
+template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<s_node<Key> > >
+class red_black_tree{
+public:
+    typedef Key                                                                 key_type;
+    typedef Key                                                                 value_type;
+    typedef std::size_t                                                         size_type;
+    typedef std::ptrdiff_t                                                      difference_type;
+    typedef Compare                                                             key_compare;
+    typedef Compare                                                             value_compare;
+    typedef Allocator                                                           allocator_type;
+    typedef value_type&                                                         reference;
+    typedef const value_type&                                                   const_reference;
+    typedef typename Allocator::pointer                                         pointer;
+    typedef typename Allocator::const_pointer                                   const_pointer;
+    typedef typename ft::tree_iterator<value_type>    iterator;
+    typedef typename ft::map_iterator<std::bidirectional_iterator_tag, value_type>    const_iterator;
+    typedef typename ft::reverse_iterator<iterator>                             reverse_iterator;
+    typedef typename ft::reverse_iterator<const_iterator>                       const_reverse_iterator;
+
+
+protected:
+    //constructor
+    red_black_tree() : _first(NULL){}
+    explicit red_black_tree(const Compare& comp, const Allocator& alloc = Allocator() )
+            : _first(NULL){}// init the first pointer
+    template< class InputIt >
+    red_black_tree( InputIt first, InputIt last, const Compare& comp = Compare(),
+                    const Allocator& alloc = Allocator() ) : _first(NULL)
+    { this->insert(first, last); }
+    red_black_tree( const red_black_tree& other ) : _first(other._first)
+    { this->swap(other); }
+
+    //destructor
+    ~red_black_tree(){}//voir pour desaloc
+
+    red_black_tree&     operator=(const red_black_tree& other)
+    {
+        this->clear();
+        this->swap(other);
+        return *this;
+    }
+
+    allocator_type get_allocator() const {return allocator_type(); }
+
+    iterator begin() { return self.begin(); }
+    const_iterator begin() const { return self.begin(); }
+
+    iterator end() { return self.end(); }
+    const_iterator end() const { return self.end(); }
+
+    reverse_iterator rbegin() { return self.rbegin(); }
+    const_reverse_iterator rbegin() const { return self.rbegin(); }
+
+    std::pair<iterator, bool> insert( const key_type& value )
+    {
+
+    }
+
+    iterator insert( iterator pos, const key_type& value )
+    {
+
+    }
+
+
+
+private:
+    typedef red_black_tree<Key>     self_type;
+    s_node<key_type>                *_first;
+
+};
+
 //struct S_RB_Tree_iterator{
 //    typedef S_Node::Node_ptr                    Node_ptr;
 //    typedef std::bidirectional_iterator_tag     iterator_category;//not use
@@ -325,7 +212,7 @@ private:
 //        T_ptr = nullptr;
 //    }
 //};
-//    //struct template
+    //struct template
 //template <class Vt, class Ref, class Ptr>
 //struct S_RB_Tree_iterator_Vt : public S_RB_Tree_iterator
 //{
@@ -598,6 +485,11 @@ private:
 //    return __y;
 //}
 
-__FT_CONTAINERS_END_NAMESPACE
 
-#endif //FT_CONTAINERS_RED_BLACK_TREE_TPP
+
+
+
+
+__FT_CONTAINER_END_NAMESPACE
+
+#endif //FT_CONTAINER_RED_BLACK_TREE_TPP

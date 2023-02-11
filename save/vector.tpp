@@ -26,7 +26,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 template <class T, class Allocator>
 class VectorBase {
 
-protected:
+public:
     typedef Allocator                                                           allocator_type;
 
     VectorBase() : _ptr_begin(0), _ptr_end(0), _ptr_end_of_alloc(0) {}
@@ -40,7 +40,7 @@ protected:
     }
 
     ~VectorBase() {
-        _alloc.deallocate((_ptr_begin), (_ptr_end_of_alloc - _ptr_begin));
+        _alloc.deallocate(_ptr_begin, (_ptr_end_of_alloc - _ptr_begin));
     };
 
 
@@ -92,7 +92,7 @@ Allocator	-	An allocator that is used to acquire/release memory and to construct
  (since C++20) if Allocator::value_type is not the same as T.*/
 
 template <class T, class Allocator = std::allocator<T> >
-class vector : protected VectorBase<T, Allocator> {
+class vector : private VectorBase<T, Allocator> {
 
 private:
     typedef VectorBase<T, Allocator>                                            Base;
@@ -126,10 +126,10 @@ public:
 
 public:
         /*Default constructor. Constructs an empty container with a default-constructed allocator.*/
-    vector() : Base(){__INFOMF__};
+    vector() : Base(){__INFOMF__}
 
     /*Constructs an empty container with the given allocator alloc*/
-    explicit vector(const Allocator& alloc )  : Base(alloc){__INFOMF__};
+    explicit vector(const Allocator& alloc )  : Base(alloc){__INFOMF__}
 
     /*Constructs the container with count copies of elements with value value.*/
     explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
