@@ -15,7 +15,10 @@
 #include "ft_containers.hpp"
 #include "utility.tpp"
 #include "iterator.tpp"
-#include "vector.tpp"
+#include "type_traits.tpp"
+#include "algorithm.tpp"
+#include <set>
+//std::set
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -34,103 +37,62 @@ Leaf Property: Every leaf (NIL) is black.
 Red Property: If a red node has children then, the children are always black.
 Depth Property: For each node, any simple path from this node to any of its descendant leaf
  has the same black-depth (the number of black nodes).*/
-enum Color {RED, BLACK};
-
-/* struct of Map*/
-template< class Key, class Compare, class Allocator, class T = void >
-struct Node{
-
-    Node(Key key, T value)
-            : _Key(key), _Value(value), _Color(RED), _LeftChild(NULL),
-              _RightChild(NULL), _Parent(NULL) {};
-
-    Key     _Key;
-    T       _Value;
-    Color    _Color;
-    Node  *_LeftChild;
-    Node  *_RightChild;
-    Node  *_Parent;
-};
-
 
 /*==================================================================================*/
-
-
-
-/* struct of set*/
-template< class Key, class Compare, class Allocator >
-struct Node< Key, Compare,  Allocator >{
-
-
-    typedef Node< Key, Compare,  Allocator >     self;
-    Key         *_Key;
-    Color       _Color;
-    self        *_LeftChild;
-    self        *_RightChild;
-    self        *_Parent;
-    Allocator   *_alloc;
-    Compare     *_comp;
-
-/*
-*====================================================================================
-*|                                     Member Type                                  |
-*====================================================================================
-*/
-
-
-    typedef Key                                         key_types;
-    typedef key_types                                   value_type;
-    typedef std::size_t                                 size_type;
-    typedef std::ptrdiff_t                              difference_type;
-    typedef Compare                                     key_compare;
-    typedef key_compare                                 value_compare;
-    typedef value_type&                                 reference;
-    typedef const value_type&                           const_reference;
-    typedef Allocator                                   allocator_type;
-    typedef typename Allocator::pointer                 pointer;
-    typedef typename Allocator::const_pointer           const_pointer;
-
-/*
-*====================================================================================
-*|                                  Member Fonction                                 |
-*====================================================================================
-*/
-
-    explicit Node(Compare comp, const Allocator& alloc) : _Key(NULL), _comp(comp), _alloc(&alloc),
-                                                _Color(RED), _LeftChild(NULL),_RightChild(NULL), _Parent(NULL){ };
-
-    explicit Node(Key key, Compare comp, const Allocator& alloc) : _comp(comp), _alloc(&alloc), _Color(RED),
-                                                _LeftChild(NULL),_RightChild(NULL), _Parent(NULL)
-    {
-        _alloc->construct(_Key, key);
-    };
-
-    ~Node()
-    {
-        _alloc->destroy(_Key);
-    };
-
-};
-
-
-/*==================================================================================*/
-
 
 /*red black tree of map*/
-template< class Key, class Node, class Compare, class Allocator >
+template< class Key, class Compare, class Allocator >
 struct RedBlackTree {
+
+private:
+
+    typedef RedBlackTree< Key, Compare, Allocator>  _self;
+    enum Color {RED, BLACK};
+    static Allocator                                _alloc;
+    static Compare                                  _comp;
+
+    /* struct of set*/
+    struct Node{
+
+        Key         *_Key;
+        Color       _Color;
+        Node        *_LeftChild;
+        Node        *_RightChild;
+        Node        *_Parent;
+
+        Node(){};
+        explicit Node( Key key) : _Color(RED), _LeftChild(nullptr),_RightChild(nullptr), _Parent(nullptr)
+        {
+            _alloc.construct(_Key, key);
+        };
+
+        ~Node()
+        {
+            _alloc->destroy(_Key);
+        };
+
+    };
+
+    Node*                                           _root;
+
+
 
 /*
 *====================================================================================
 *|                                      Iterator                                    |
 *====================================================================================
 */
+
 protected:
 
-    struct RedBlackTreeIterator : public std::iterator<std::random_access_iterator_tag, Key,
-                                                        Key, const Key*, Key > {
+    struct iterator : public std::iterator<std::random_access_iterator_tag,
+                                            Key, Key, const Key*, Key > {
+    private:
+        Node*   It;
     public:
-        RedBlackTreeIterator(){};
+        iterator(){};
+        iterator( const iterator& other ) : It(other){};
+
     };
 
 /*
@@ -141,8 +103,6 @@ protected:
 
 protected:
 
-    typedef Node                                            node;
-    typedef RedBlackTree< Key, Node, Compare, Allocator>    self;
     typedef Key                                             key_types;
     typedef key_types                                       value_type;
     typedef std::size_t                                     size_type;
@@ -154,13 +114,8 @@ protected:
     typedef Allocator                                       allocator_type;
     typedef typename Allocator::pointer                     pointer;
     typedef typename Allocator::const_pointer               const_pointer;
-    typedef RedBlackTreeIterator                            iterator;
-    typedef const RedBlackTreeIterator                      const_iterator;
     typedef ft::reverse_iterator<iterator>                  reverse_iterator;
     typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
-    node*                                                   _root;
-    Allocator                                               _alloc;
-    Compare                                                 _comp;
 
 
 /*
@@ -169,27 +124,46 @@ protected:
 *====================================================================================
 */
 
-protected:
+public:
 
-    RedBlackTree() { __INFOMF__ };
+    RedBlackTree() { __INFOMF__ _root = nullptr; };
 
     explicit RedBlackTree( const Compare& comp, const Allocator& alloc = Allocator() )
-                            :  _comp(comp), _alloc(alloc) { __INFOMF__ };
+    { __INFOMF__
+        _alloc = alloc;
+        _comp = comp;
+        _root = nullptr;
+    };
 
     template< class InputIt >
     RedBlackTree( InputIt first, InputIt last, const Compare& comp, const Allocator& alloc )
-                  :  _comp(comp), _alloc(alloc){};//assigne pointerdelte les double
+    { __INFOMF__
+        _alloc = alloc;
+        _comp = comp;
+        _root = nullptr;
+        insert( first, last );
+    };//assigne pointerdelte les double
 
-    RedBlackTree( const self& other ) : _root(other._root),
-                                    _comp(other.comp), _alloc(other.alloc){};//assigne pointerdelte les double
+    RedBlackTree( const _self& other ) : _root(other._root)
+    {__INFOMF__
+        _alloc = other._alloc;
+        _comp = other._comp;
+        insert( other.beging(), other.end() );
+    };//assigne pointerdelte les double
 
-    virtual ~RedBlackTree() {};
+    virtual ~RedBlackTree() {__INFOMF__ clear(); __INFOMFNL__};
 
-    RedBlackTree& operator=( const self& other )
+    /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
+    RedBlackTree& operator=( const _self& other )
     {
+        clear();
+        _alloc = other._alloc;
+        _comp = other._comp;
+        insert( other.beging(), other.end() );
         return *this;
     };
 
+    /*Returns the allocator associated with the container.*/
     allocator_type get_allocator() const{ return allocator_type(); }
 
 /*
@@ -216,448 +190,306 @@ public:
 *====================================================================================
 */
 
-        bool        empty()     const   {__INFOCA__ return Base::empty(); };
+public:
 
-        size_type   size()      const   {__INFOCA__ return Base::size(); };
+    /*Checks if the container has no elements, i.e. whether begin() == end().*/
+    bool        empty()     const   {__INFOCA__ return begin() == end(); };
 
-        size_type   max_size()  const{__INFOCA__ return Base::max_size(); };
+    /*Returns the number of elements in the container,
+     * i.e. std::distance(begin(), end()).*/
+    size_type   size()      const   {__INFOCA__ return (end() - begin()); };
 
+    /*Returns the maximum number of elements the container is able to
+     * hold due to system or library implementation limitations, i.e.
+     * std::distance(begin(), end()) for the largest container.*/
+    size_type   max_size()  const
+    {__INFOCA__ return std::numeric_limits<size_type>::max() / sizeof(value_type); };
 
-};
-
-//    typedef Alloc           allocator_type;
-//
-//    allocator_type get_allocator() const { return allocator_type(); }
-//
-//    _Rb_tree(const allocator_type&): _M_header(0) { _M_header = _M_get_node(); }
-//
-//    ~_Rb_tree_base() { _M_put_node(_M_header); }
-//
-//protected:
-//    _Rb_tree_node<_Tp>* _M_header; // 实现的一个技巧
-//
-//    typedef simple_alloc<_Rb_tree_node<_Tp>, _Alloc> _Alloc_type;
-//
-//    _Rb_tree_node<_Tp>* _M_get_node()
-//    { return _Alloc_type::allocate(1); }
-//    void _M_put_node(_Rb_tree_node<_Tp>* __p)
-//    { _Alloc_type::deallocate(__p, 1); }
-//
-//
-//    template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<s_node<Key> > >
-//    class red_black_tree{
-//    public:
-//        typedef Key                                                                 key_type;
-//        typedef Key                                                                 value_type;
-//        typedef std::size_t                                                         size_type;
-//        typedef std::ptrdiff_t                                                      difference_type;
-//        typedef Compare                                                             key_compare;
-//        typedef Compare                                                             value_compare;
-//        typedef Allocator                                                           allocator_type;
-//        typedef value_type&                                                         reference;
-//        typedef const value_type&                                                   const_reference;
-//        typedef typename Allocator::pointer                                         pointer;
-//        typedef typename Allocator::const_pointer                                   const_pointer;
-//        typedef typename ft::tree_iterator<value_type>    iterator;
-//        typedef typename ft::map_iterator<std::bidirectional_iterator_tag, value_type>    const_iterator;
-//        typedef typename ft::reverse_iterator<iterator>                             reverse_iterator;
-//        typedef typename ft::reverse_iterator<const_iterator>                       const_reverse_iterator;
-//
-//
-//    protected:
-//        //constructor
-//        red_black_tree() : _first(NULL){}
-//        explicit red_black_tree(const Compare& comp, const Allocator& alloc = Allocator() )
-//                : _first(NULL){}// init the first pointer
-//        template< class InputIt >
-//        red_black_tree( InputIt first, InputIt last, const Compare& comp = Compare(),
-//                        const Allocator& alloc = Allocator() ) : _first(NULL)
-//        { this->insert(first, last); }
-//        red_black_tree( const red_black_tree& other ) : _first(other._first)
-//        { this->swap(other); }
-//
-//        //destructor
-//        ~red_black_tree(){}//voir pour desaloc
-//
-//        red_black_tree&     operator=(const red_black_tree& other)
-//        {
-//            this->clear();
-//            this->swap(other);
-//            return *this;
-//        }
-//
-//        allocator_type get_allocator() const {return allocator_type(); }
-//
-//        iterator begin() { return self.begin(); }
-//        const_iterator begin() const { return self.begin(); }
-//
-//        iterator end() { return self.end(); }
-//        const_iterator end() const { return self.end(); }
-//
-//        reverse_iterator rbegin() { return self.rbegin(); }
-//        const_reverse_iterator rbegin() const { return self.rbegin(); }
-//
-//        std::pair<iterator, bool> insert( const key_type& value )
-//        {
-//
-//        }
-//
-//        iterator insert( iterator pos, const key_type& value )
-//        {
-//
-//        }
-//
-//
-//
-//    private:
-//        typedef red_black_tree<Key>     self_type;
-//        s_node<key_type>                *_first;
-//
-//    };
-
-//    static Node_ptr N_minimum(Node_ptr N_ptr)
-//    {
-//        while (N_ptr->leftChild != nullptr)
-//            N_ptr = N_ptr->leftChild;
-//        return N_ptr;
-//    }
-//
-//    static Node_ptr N_maximum(Node_ptr N_ptr)
-//    {
-//        while (N_ptr->rightChild != nullptr)
-//            N_ptr = N_ptr->rightChild;
-//        return N_ptr;
-//    }
-//};
+/*
+*====================================================================================
+*|                                    Modifiers                                     |
+*====================================================================================
+*/
 
 
-    //iterator the tree
-    //struct of base
-//struct S_RB_Tree_iterator{
-//    typedef S_Node::Node_ptr                    Node_ptr;
-//    typedef std::bidirectional_iterator_tag     iterator_category;//not use
-//    typedef std::ptrdiff_t                      difference_type;//not use
-//    Node_ptr N_ptr;
-//    Node_ptr T_ptr;
-//
-//    void Iter_Plus_Plus()//a proteger des segv?
-//    {
-//        if (N_ptr->rightChild != nullptr)
-//        {
-//            N_ptr = S_Node::N_minimum(N_ptr->rightChild);
-//        }
-//        else
-//        {
-//            T_ptr = N_ptr->Parent;
-//            while (N_ptr == T_ptr->rightChild)
-//            {
-//                N_ptr = T_ptr;
-//                T_ptr = T_ptr->Parent;
-//            }
-//            //if (N_ptr->rightChild != T_ptr)
-//            N_ptr = T_ptr;
-//        }
-//        T_ptr = nullptr;
-//    }
-//
-//    void Iter_Less_less()
-//    {
-//        if (N_ptr->Color == __RBT_RED &&
-//            N_ptr->Parent->Parent == N_ptr)
-//            N_ptr = N_ptr->rightChild;
-//if (N_ptr->leftChild != nullptr)
-//        {
-//            N_ptr = S_Node::N_maximum(N_ptr->leftChild);
-//            T_ptr = N_ptr->leftChild;
-//            while (T_ptr->rightChild != NULL)
-//                T_ptr = T_ptr->rightChild;
-//            N_ptr = T_ptr;
-//        }
-//        else
-//        {
-//            T_ptr = N_ptr->Parent;
-//            while (N_ptr == T_ptr->leftChild) {
-//                N_ptr = T_ptr;
-//                T_ptr = T_ptr->Parent;
-//            }
-//            N_ptr = T_ptr;
-//        }
-//        T_ptr = nullptr;
-//    }
-//};
-//    //struct template
-//template <class Vt, class Ref, class Ptr>
-//struct S_RB_Tree_iterator_Vt : public S_RB_Tree_iterator
-//{
-//    typedef Vt                                                                          value_type;
-//    typedef Ref                                                                         reference;
-//    typedef Ptr                                                                         pointer;
-//    typedef S_RB_Tree_iterator_Vt<value_type, value_type&, value_type*>                 iterator;
-//    typedef S_RB_Tree_iterator_Vt<value_type, const value_type&, const value_type*>     const_iterator;
-//    typedef S_RB_Tree_iterator_Vt<value_type, reference, pointer>                       Self;
-//    typedef S_Node_Vt<value_type>*                                                      Node_ptr;
-//
-//    S_RB_Tree_iterator_Vt() {}
-//    S_RB_Tree_iterator_Vt(Node_ptr N_ptr) { this->N_ptr = N_ptr; }
-//    S_RB_Tree_iterator_Vt(const iterator& it) { this->N_ptr = it.N_ptr; }
-//
-//    reference operator*() const { return Node_ptr(N_ptr)->Vt; }
-//
-//
-//    Self& operator++()
-//    {
-//        Iter_Plus_Plus();
-//        return *this;
-//    }
-//    Self operator++(int)
-//    {
-//        Self __tmp = *this;
-//        Iter_Plus_Plus();
-//        return __tmp;
-//    }
-//    Self& operator--()
-//    {
-//        Iter_Less_less();
-//        return *this;
-//    }
-//    Self operator--(int)
-//    {
-//        Self __tmp = *this;
-//        Iter_Less_less();
-//        return __tmp;
-//    }
-//};
-//    //compare only de node base
-//bool operator==(const S_RB_Tree_iterator& it1, const S_RB_Tree_iterator& it2)
-//{ return it1.N_ptr == it2.N_ptr; }
-//
-//bool operator!=(const S_RB_Tree_iterator& it1, const S_RB_Tree_iterator& it2)
-//{ return it1.N_ptr != it2.N_ptr; }
-//
-//    //the red black tree operand
-//    //rotate left the node N
-//void    RB_Tree_rotate_left(S_Node* N, S_Node*& Root)
-//{
-//    S_Node* tmp;
-//
-//    tmp = N->rightChild;
-//    N->rightChild = tmp->leftChild;
-//    if (tmp->leftChild != nullptr)
-//        tmp->leftChild->Parent = N;
-//    tmp->Parent = N->Parent;
-//    if (N == Root)
-//        Root = tmp;
-//    else if (N == N->Parent->leftChild)
-//        N->Parent->leftChild = tmp;
-//    else
-//        N->Parent->rightChild = tmp;
-//    tmp->leftChild = N;
-//    N->Parent = tmp;
-//}
-//
-//    //rotate right the node N
-//void    RB_Tree_rotate_right(S_Node* N, S_Node*& Root)
-//{
-//    S_Node* tmp;
-//
-//    tmp = N->leftChild;
-//    N->leftChild = tmp->rightChild;
-//    if (tmp->rightChild != nullptr)
-//        tmp->rightChild->Parent = N;
-//    tmp->Parent = N->Parent;
-//    if (N == Root)
-//        Root = tmp;
-//    else if (N == N->Parent->rightChild)
-//        N->Parent->rightChild = tmp;
-//    else
-//        N->Parent->leftChild = tmp;
-//    tmp->rightChild = N;
-//    N->Parent = tmp;
-//}
-//
-//void    RB_Tree_balance(S_Node* N, S_Node*& Root)
-//{
-//    N->Color |= __RBT_RED;
-//    while (N != Root && N->Parent->Color & __RBT_RED)
-//    {
-//        // check the end of NBT
-//        if (N->Parent == N->Parent->Parent->leftChild)
-//        {
-//            //if the rotation is necessary
-//            if (N->Parent->Parent->rightChild && N->Parent->Parent->rightChild->Color & __RBT_RED)
-//            {
-//                N->Parent->Color |= __RBT_BLACK;
-//                N->Parent->Parent->rightChild->Color |= __RBT_BLACK;
-//                N->Parent->Parent->Color |= __RBT_RED;
-//                N = N->Parent->Parent;
-//            }
-//            else//do the right rotation
-//            {
-//                if (N == N->Parent->rightChild)
-//                {
-//                    N = N->Parent;
-//                    RB_Tree_rotate_left(N, Root);
-//                }
-//                N->Parent->Color |= __RBT_BLACK;
-//                N->Parent->Parent->Color |= __RBT_RED;
-//                RB_Tree_rotate_right(N->Parent->Parent, Root);
-//            }
-//        }
-//        else// check the start of NBT
-//        {
-//            //if the rotation is necessary
-//            if (N->Parent->Parent->leftChild && N->Parent->Parent->leftChild->Color & __RBT_RED)
-//            {
-//                N->Parent->Color |= __RBT_BLACK;
-//                N->Parent->Parent->leftChild->Color |= __RBT_BLACK;
-//                N->Parent->Parent->Color |= __RBT_RED;
-//                N = N->Parent->Parent;
-//            }
-//            else//do the left rotation
-//            {
-//                if (N == N->Parent->leftChild)
-//                {
-//                    N = N->Parent;
-//                    RB_Tree_rotate_right(N, Root);
-//                }
-//                N->Parent->Color |= __RBT_BLACK;
-//                N->Parent->Parent->Color |= __RBT_RED;
-//                RB_Tree_rotate_left(N->Parent->Parent, Root);
-//            }
-//        }
-//    }
-//    Root->Color = __RBT_BLACK;
-//}
-//
-//S_Node::Node_ptr RB_Tree_del_balance(S_Node::Node_ptr __z, S_Node::Node_ptr& __root,
-//                                     S_Node::Node_ptr& __leftmost,S_Node::Node_ptr& __rightmost)
-//{
-//    S_Node::Node_ptr __y = __z;
-//    S_Node::Node_ptr __x = 0;
-//    S_Node::Node_ptr __x_parent = 0;
-//    if (__y->_M_left == 0)     // __z has at most one non-null child. y == z.
-//        __x = __y->_M_right;     // __x might be null.
-//    else
-//    if (__y->_M_right == 0)  // __z has exactly one non-null child. y == z.
-//        __x = __y->_M_left;    // __x is not null.
-//    else {                   // __z has two non-null children.  Set __y to
-//        __y = __y->_M_right;   //   __z's successor.  __x might be null.
-//        while (__y->_M_left != 0)
-//            __y = __y->_M_left;
-//        __x = __y->_M_right;
-//    }
-//    if (__y != __z) {          // relink y in place of z.  y is z's successor
-//        __z->_M_left->_M_parent = __y;
-//        __y->_M_left = __z->_M_left;
-//        if (__y != __z->_M_right) {
-//            __x_parent = __y->_M_parent;
-//            if (__x) __x->_M_parent = __y->_M_parent;
-//            __y->_M_parent->_M_left = __x;      // __y must be a child of _M_left
-//            __y->_M_right = __z->_M_right;
-//            __z->_M_right->_M_parent = __y;
-//        }
-//        else
-//            __x_parent = __y;
-//        if (__root == __z)
-//            __root = __y;
-//        else if (__z->_M_parent->_M_left == __z)
-//            __z->_M_parent->_M_left = __y;
-//        else
-//            __z->_M_parent->_M_right = __y;
-//        __y->_M_parent = __z->_M_parent;
-//        __STD::swap(__y->_M_color, __z->_M_color);
-//        __y = __z;
-//        // __y now points to node to be actually deleted
-//    }
-//    else {                        // __y == __z
-//        __x_parent = __y->_M_parent;
-//        if (__x) __x->_M_parent = __y->_M_parent;
-//        if (__root == __z)
-//            __root = __x;
-//        else
-//        if (__z->_M_parent->_M_left == __z)
-//            __z->_M_parent->_M_left = __x;
-//        else
-//            __z->_M_parent->_M_right = __x;
-//        if (__leftmost == __z)
-//            if (__z->_M_right == 0)        // __z->_M_left must be null also
-//                __leftmost = __z->_M_parent;
-//                // makes __leftmost == _M_header if __z == __root
-//            else
-//                __leftmost = _Rb_tree_node_base::_S_minimum(__x);
-//        if (__rightmost == __z)
-//            if (__z->_M_left == 0)         // __z->_M_right must be null also
-//                __rightmost = __z->_M_parent;
-//                // makes __rightmost == _M_header if __z == __root
-//            else                      // __x == __z->_M_left
-//                __rightmost = _Rb_tree_node_base::_S_maximum(__x);
-//    }
-//    if (__y->_M_color != _S_rb_tree_red) {
-//        while (__x != __root && (__x == 0 || __x->_M_color == _S_rb_tree_black))
-//            if (__x == __x_parent->_M_left) {
-//                _Rb_tree_node_base* __w = __x_parent->_M_right;
-//                if (__w->_M_color == _S_rb_tree_red) {
-//                    __w->_M_color = _S_rb_tree_black;
-//                    __x_parent->_M_color = _S_rb_tree_red;
-//                    _Rb_tree_rotate_left(__x_parent, __root);
-//                    __w = __x_parent->_M_right;
-//                }
-//                if ((__w->_M_left == 0 ||
-//                     __w->_M_left->_M_color == _S_rb_tree_black) &&
-//                    (__w->_M_right == 0 ||
-//                     __w->_M_right->_M_color == _S_rb_tree_black)) {
-//                    __w->_M_color = _S_rb_tree_red;
-//                    __x = __x_parent;
-//                    __x_parent = __x_parent->_M_parent;
-//                } else {
-//                    if (__w->_M_right == 0 ||
-//                        __w->_M_right->_M_color == _S_rb_tree_black) {
-//                        if (__w->_M_left) __w->_M_left->_M_color = _S_rb_tree_black;
-//                        __w->_M_color = _S_rb_tree_red;
-//                        _Rb_tree_rotate_right(__w, __root);
-//                        __w = __x_parent->_M_right;
-//                    }
-//                    __w->_M_color = __x_parent->_M_color;
-//                    __x_parent->_M_color = _S_rb_tree_black;
-//                    if (__w->_M_right) __w->_M_right->_M_color = _S_rb_tree_black;
-//                    _Rb_tree_rotate_left(__x_parent, __root);
-//                    break;
-//                }
-//            } else {                  // same as above, with _M_right <-> _M_left.
-//                _Rb_tree_node_base* __w = __x_parent->_M_left;
-//                if (__w->_M_color == _S_rb_tree_red) {
-//                    __w->_M_color = _S_rb_tree_black;
-//                    __x_parent->_M_color = _S_rb_tree_red;
-//                    _Rb_tree_rotate_right(__x_parent, __root);
-//                    __w = __x_parent->_M_left;
-//                }
-//                if ((__w->_M_right == 0 ||
-//                     __w->_M_right->_M_color == _S_rb_tree_black) &&
-//                    (__w->_M_left == 0 ||
-//                     __w->_M_left->_M_color == _S_rb_tree_black)) {
-//                    __w->_M_color = _S_rb_tree_red;
-//                    __x = __x_parent;
-//                    __x_parent = __x_parent->_M_parent;
-//                } else {
-//                    if (__w->_M_left == 0 ||
-//                        __w->_M_left->_M_color == _S_rb_tree_black) {
-//                        if (__w->_M_right) __w->_M_right->_M_color = _S_rb_tree_black;
-//                        __w->_M_color = _S_rb_tree_red;
-//                        _Rb_tree_rotate_left(__w, __root);
-//                        __w = __x_parent->_M_left;
-//                    }
-//                    __w->_M_color = __x_parent->_M_color;
-//                    __x_parent->_M_color = _S_rb_tree_black;
-//                    if (__w->_M_left) __w->_M_left->_M_color = _S_rb_tree_black;
-//                    _Rb_tree_rotate_right(__x_parent, __root);
-//                    break;
-//                }
-//            }
-//        if (__x) __x->_M_color = _S_rb_tree_black;
-//    }
-//    return __y;
-//}
+public:
+
+    /*Erases all elements from the container. After this call, size() returns zero.
+     * Invalidates any references, pointers, or iterators referring to contained elements.
+     * Any past-the-end iterators are also invalidated.*/
+    void            clear(){__INFOMO__ erase(begin(), end()); __INFOMONL__};
+
+    /* inserts value.
+     * Returns a pair consisting of an iterator to the inserted element (or to the element
+     * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
+    ft::pair<iterator, bool>    insert( const value_type& value )
+    {__INFOMO__
+
+        __INFOMONL__
+    };
+
+    /*
+     * inserts value in the position as close as possible to the position just prior to pos.
+     * Returns an iterator to the inserted element, or to the element that prevented the insertion.
+     */
+    iterator                    insert( iterator pos, const value_type& value )
+    {__INFOMO__
+
+
+        return pos;
+    };
+
+    /*Inserts elements from range [first, last). If multiple elements in the range have keys
+     * that compare equivalent, it is unspecified which element is inserted
+     * O(N·log(size() + N)), where N is the number of elements to insert.*/
+    template <class InputIt>
+    iterator                    insert(InputIt first, InputIt last)
+    {__INFOMO__
+
+        Select_Input(  pos, first, last )
+
+        __INFOMONL__
+        return ;
+    };
+
+private:
+
+
+    /*
+    if forward, bidirectional or random-access iterators,
+    the copy constructor of T is only called N  times, and
+    no reallocation occurs.*/
+    template <class InputIt>
+    void        Select_Input(   const_iterator pos,
+                                typename ft::enable_if<ft::is_random_access_iterator
+                                    <typename ft::iterator_traits_if
+                                    <InputIt, !is_integral
+                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                                InputIt last )
+    {__INFOMF__
+
+        try{
+            std::uninitialized_copy(first, last, Pos);
+        }
+        catch (...)
+        {
+
+            throw;
+        }
+
+        __INFOMFNL__};
+
+    /* otherwise (first and last are just input iterators),
+      the copy constructor of T is called O(N) times, and
+      reallocation occurs O(log N) times.*/
+    template< class InputIt >
+    void        Select_Input(   const_iterator pos,
+                                typename ft::enable_if<ft::is_input_iterator
+                                    <typename ft::iterator_traits_if
+                                    <InputIt, !ft::is_integral
+                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                                InputIt last )
+    {__INFOMF__
+
+        (void)pos;
+        for ( ; first != last; ++first)
+            insert( *first );
+
+        __INFOMFNL__};
+
+
+
+public:
+
+    /*Removes the element at pos
+     * Iterator following the last removed element.*/
+    iterator        erase(iterator pos)
+    {__INFOMO__
+        if (pos != end())
+            std::copy(pos + 1, end(), pos);
+
+        __INFOMONL__
+        return pos;
+    };
+
+    /*Removes the elements in the range [first, last).
+     * Iterator following the last removed element.*/
+    iterator        erase(iterator first, iterator last)
+    {__INFOMO__
+
+        if ( first && last && (last - first) > 0 )
+        {
+
+        }
+
+        __INFOMONL__
+        return first;
+    };
+
+    /*Removes the element (if one exists) with the key equivalent to key.
+     * Number of elements removed (0 or 1).
+     * Any exceptions thrown by the Compare object.*/
+    iterator        erase(const Key& key )
+    {__INFOMO__
+
+        __INFOMONL__
+        return pos;
+    };
+
+/*
+*====================================================================================
+*|                                  Lookup                                          |
+*====================================================================================
+*/
+
+    /*Returns the number of elements with key that compares equivalent to the specified argument.
+     * Returns the number of elements with key key. This is either 1 or 0 since this container
+     * does not allow duplicates.*/
+    size_type count( const Key& key ) const{
+
+    };
+
+    /*Finds an element with key equivalent to key.
+     * Iterator to an element with key equivalent to key. If no such element is found,
+     * past-the-end (see end()) iterator is returned.*/
+    iterator find( const Key& key ){
+
+    };
+    const_iterator find( const Key& key ) const{
+
+    };
+
+
+    /* Returns a range containing all elements with the given key in the container. The range is
+     * defined by two iterators, one pointing to the first element that is not less than key and
+     * another pointing to the first element greater than key. Alternatively, the first iterator
+     * may be obtained with lower_bound(), and the second with upper_bound().
+     * 1,2) Compares the keys to key.*/
+    std::pair<iterator,iterator> equal_range( const Key& key ){
+
+    };
+
+    std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const{
+
+    };
+
+    /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
+     * Iterator pointing to the first element that is not less than key.
+     * If no such element is found, a past-the-end iterator (see end()) is returned.*/
+    iterator lower_bound( const Key& key ){
+
+    };
+
+    const_iterator lower_bound( const Key& key ) const{
+
+    };
+
+    /*Returns an iterator pointing to the first element that is greater than key.
+     * Iterator pointing to the first element that is greater than key.
+     * If no such element is found, past-the-end (see end()) iterator is returned.*/
+    iterator upper_bound( const Key& key ){
+
+    };
+
+    const_iterator upper_bound( const Key& key ) const{
+
+    };
+
+    /*Returns the function object that compares the keys, which is a copy of
+     * this container's constructor argument comp. It is the same as value_comp.*/
+    key_compare key_comp() const{
+
+    };
+
+    /*Returns the function object that compares the values. It is the same as key_comp.*/
+    value_compare value_comp() const{
+
+    };
+/*
+*====================================================================================
+*|                             Private Membre fonction                              |
+*====================================================================================
+*/
+
+private:
+
+    Color getColor(Node *&node) {
+        if (node == nullptr)
+            return BLACK;
+        return node->_Color;
+    };
+
+    void setColor(Node *&node, Color color) {
+        if (node != nullptr)
+            node->_Color = color;
+    };
+
+    iterator upper_bound( const Key& key ){
+
+        if (root != nullptr) {
+            if (node->_Key < root->_Key) {
+                root->_LeftChild = insertBST(root->_LeftChild, node);
+                root->_LeftChild->parent = root;
+            } else if (node->_Key > root->_Key) {
+                root->right = insertBST(root->right, node);
+                root->right->parent = root;
+            }
+            return root;
+        }
+        return node;
+    }
+
+/*
+*====================================================================================
+*|                                 Non Membre fonction                              |
+*====================================================================================
+*/
+
+/*Checks if the contents of lhs and rhs are equal,
+ * that is, they have the same number of elements and each element
+ * in lhs compares equal with the element in rhs at the same position.*/
+    template< class Key, class Compare, class Allocator >
+    inline bool operator== ( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                             const ft::RedBlackTree< Key, Compare, Allocator >& rhs )
+    {__INFONM__
+        if (lhs.size() == rhs.size())
+            return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+        return false;
+    };
+
+    template< class Key, class Compare, class Allocator >
+    inline bool operator!=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
+
+/*3-6) Compares the contents of lhs and rhs lexicographically.
+ * The comparison is performed
+ * by a function equivalent to std::lexicographical_compare.*/
+    template< class Key, class Compare, class Allocator >
+    inline bool operator<( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                           const ft::RedBlackTree< Key, Compare, Allocator >& rhs )
+    {__INFONM__
+        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
+                                           rhs.begin(), rhs.end());
+    };
+
+    template< class Key, class Compare, class Allocator >
+    inline bool operator<=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
+
+    template< class Key, class Compare, class Allocator >
+    inline bool operator>( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                           const ft::RedBlackTree< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
+
+    template< class Key, class Compare, class Allocator >
+    inline bool operator>=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
+                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
+
+namespace std {
+    template< class Key, class Compare, class Allocator >
+    inline void swap(ft::RedBlackTree< Key, Compare, Allocator >& lhs, ft::RedBlackTree< Key, Compare, Allocator > &rhs)
+    {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
+}
 
 #endif //FT_CONTAINERS_RED_BLACK_TREE_TPP

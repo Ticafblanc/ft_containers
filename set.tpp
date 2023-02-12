@@ -22,11 +22,11 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
 template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-class set : protected RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator > {
+class set : protected RedBlackTree< Key, Compare, Allocator > {
 
 private:
-    typedef RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator >    Base;
-    typedef set< Key, Compare, Allocator >                                              Self;
+    typedef RedBlackTree< Node< Key, Compare, Allocator > >       Base;
+    typedef set< Key, Compare, Allocator >                             Self;
 
 
     /*
@@ -96,9 +96,9 @@ Calls to Allocator::allocate may throw.*/
 
     set& operator=( const set& other ) {};
 };
-ft::set<int>        tst;
-    ft::set<int>::
-
+ft::set<int>::
+ft::vector< Node<int> > tes2;
+std::set<int>::n
 __FT_CONTAINERS_END_NAMESPACE
 
 #endif //FT_CONTAINERS_SET_TPP
