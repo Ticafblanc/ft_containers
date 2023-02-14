@@ -44,38 +44,38 @@ Depth Property: For each node, any simple path from this node to any of its desc
 template< class Key, class Compare, class Allocator >
 struct RedBlackTree {
 
-private:
+    private:
 
-    typedef RedBlackTree< Key, Compare, Allocator>  _self;
-    enum Color {RED, BLACK};
-    static Allocator                                _alloc;
-    static Compare                                  _comp;
-
-    /* struct of set*/
-    struct Node{
-
-        Key         *_Key;
-        Color       _Color;
-        Node        *_LeftChild;
-        Node        *_RightChild;
-        Node        *_Parent;
-
-        Node(){};
-        explicit Node( Key key) : _Color(RED), _LeftChild(nullptr),_RightChild(nullptr), _Parent(nullptr)
-        {
-            _alloc.construct(_Key, key);
+        typedef RedBlackTree<Key, Compare, Allocator> _self;
+        enum Color {
+            RED, BLACK
         };
+        static Allocator _alloc;
+        static Compare _comp;
 
-        ~Node()
-        {
-            _alloc->destroy(_Key);
+        /* struct of set*/
+        struct Node {
+
+            Key *_Key;
+            Color _Color;
+            Node *_LeftChild;
+            Node *_RightChild;
+            Node *_Parent;
+
+            Node() {};
+
+            explicit Node(Key key) : _Color(RED), _LeftChild(nullptr), _RightChild(nullptr), _Parent(nullptr) {
+                _alloc.construct(_Key, key);
+            };
+
+            ~Node() {
+                _alloc->destroy(_Key);
+            };
+
+            Color getColor() { return _Color; };
+
+            void setColor(Color color) { _Color = color; };
         };
-
-    };
-
-    Node*                                           _root;
-
-
 
 /*
 *====================================================================================
@@ -83,17 +83,78 @@ private:
 *====================================================================================
 */
 
-protected:
+    protected:
 
-    struct iterator : public std::iterator<std::random_access_iterator_tag,
-                                            Key, Key, const Key*, Key > {
-    private:
-        Node*   It;
-    public:
-        iterator(){};
-        iterator( const iterator& other ) : It(other){};
+        struct iterator : public std::iterator<std::bidirectional_iterator_tag,
+                Key, Key, const Key *, Key> {
+        private:
+            Node *It;
+        public:
+            iterator() {};
 
-    };
+            explicit iterator(Node* tmp) : It(tmp) {};
+
+            iterator(const iterator &other) : It(other.It) {};
+
+            ~iterator(){};
+
+            iterator& operator=( const iterator & other){
+                It = other.It;
+                return *this;
+            };
+
+            Key& operator*() const { return It->_Key; }
+            Key* operator->() const { return &(operator*()); }
+
+            iterator& operator++() {
+                if (It->_RightChild){
+                    It = It->_RightChild;
+                    while (It->_LeftChild)
+                        It = It->_LeftChild;
+                }
+                else {
+                    Node* Tnode = It->_Parent;
+                    while (It == Tnode->_RightChild) {
+                        It = Tnode;
+                        Tnode = It->_Parent;
+                    }
+                    if (It->_RightChild != Tnode)
+                        It = Tnode;
+                }
+                return *this;
+            }
+
+            iterator  operator++(int) {
+                iterator Tmp = *this;
+                operator++();
+                return Tmp;
+            }
+
+            iterator& operator--() {
+                if (It->_LeftChild){
+                    It = It->_LeftChild;
+                    while (It->_RightChild)
+                        It = It->_RightChild;
+                }
+                else {
+                    Node* Tnode = It->_Parent;
+                    while (It == Tnode->_LeftChild) {
+                        It = Tnode;
+                        Tnode = It->_Parent;
+                    }
+                    if (It->_LeftChild != Tnode)
+                        It = Tnode;
+                }
+                return *this;
+            }
+
+            iterator  operator--(int) {
+                iterator Tmp = *this;
+                operator--();
+                return Tmp;
+            }
+
+        };
 
 /*
 *====================================================================================
@@ -101,21 +162,25 @@ protected:
 *====================================================================================
 */
 
-protected:
+    protected:
 
-    typedef Key                                             key_types;
-    typedef key_types                                       value_type;
-    typedef std::size_t                                     size_type;
-    typedef std::ptrdiff_t                                  difference_type;
-    typedef Compare                                         key_compare;
-    typedef key_compare                                     value_compare;
-    typedef value_type&                                     reference;
-    typedef const value_type&                               const_reference;
-    typedef Allocator                                       allocator_type;
-    typedef typename Allocator::pointer                     pointer;
-    typedef typename Allocator::const_pointer               const_pointer;
-    typedef ft::reverse_iterator<iterator>                  reverse_iterator;
-    typedef ft::reverse_iterator<const_iterator>            const_reverse_iterator;
+        typedef Key key_types;
+        typedef key_types value_type;
+        typedef std::size_t size_type;
+        typedef std::ptrdiff_t difference_type;
+        typedef Compare key_compare;
+        typedef key_compare value_compare;
+        typedef value_type &reference;
+        typedef const value_type &const_reference;
+        typedef Allocator allocator_type;
+        typedef typename Allocator::pointer pointer;
+        typedef typename Allocator::const_pointer const_pointer;
+        typedef iterator iterator;
+        typedef const iterator const_iterator;
+        typedef ft::reverse_iterator<iterator> reverse_iterator;
+        typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+
+        iterator    _root;
 
 
 /*
@@ -124,47 +189,52 @@ protected:
 *====================================================================================
 */
 
-public:
+    public:
 
-    RedBlackTree() { __INFOMF__ _root = nullptr; };
+        RedBlackTree() {
+            __INFOMF__
+            _root = nullptr;
+        };
 
-    explicit RedBlackTree( const Compare& comp, const Allocator& alloc = Allocator() )
-    { __INFOMF__
-        _alloc = alloc;
-        _comp = comp;
-        _root = nullptr;
-    };
+        explicit RedBlackTree(const Compare &comp, const Allocator &alloc = Allocator()) {
+            __INFOMF__
+            _alloc = alloc;
+            _comp = comp;
+            _root = nullptr;
+        };
 
-    template< class InputIt >
-    RedBlackTree( InputIt first, InputIt last, const Compare& comp, const Allocator& alloc )
-    { __INFOMF__
-        _alloc = alloc;
-        _comp = comp;
-        _root = nullptr;
-        insert( first, last );
-    };//assigne pointerdelte les double
+        template<class InputIt>
+        RedBlackTree(InputIt first, InputIt last, const Compare &comp, const Allocator &alloc) {
+            __INFOMF__
+            _alloc = alloc;
+            _comp = comp;
+            _root = nullptr;
+            insert(first, last);
+        };//assigne pointerdelte les double
 
-    RedBlackTree( const _self& other ) : _root(other._root)
-    {__INFOMF__
-        _alloc = other._alloc;
-        _comp = other._comp;
-        insert( other.beging(), other.end() );
-    };//assigne pointerdelte les double
+        RedBlackTree(const _self &other) : _root(other._root) {
+            __INFOMF__
+            _alloc = other._alloc;
+            _comp = other._comp;
+            insert(other.beging(), other.end());
+        };//assigne pointerdelte les double
 
-    virtual ~RedBlackTree() {__INFOMF__ clear(); __INFOMFNL__};
+        virtual ~RedBlackTree() {
+            __INFOMF__
+            clear();__INFOMFNL__
+        };
 
-    /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
-    RedBlackTree& operator=( const _self& other )
-    {
-        clear();
-        _alloc = other._alloc;
-        _comp = other._comp;
-        insert( other.beging(), other.end() );
-        return *this;
-    };
+        /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
+        RedBlackTree &operator=(const _self &other) {
+            clear();
+            _alloc = other._alloc;
+            _comp = other._comp;
+            insert(other.beging(), other.end());
+            return *this;
+        };
 
-    /*Returns the allocator associated with the container.*/
-    allocator_type get_allocator() const{ return allocator_type(); }
+        /*Returns the allocator associated with the container.*/
+        allocator_type get_allocator() const { return allocator_type(); }
 
 /*
 *====================================================================================
@@ -172,16 +242,47 @@ public:
 *====================================================================================
 */
 
-public:
+    public:
 
-    iterator                begin()                 {__INFOIT__ return _root->_Key; };
-    const_iterator          begin()         const   {__INFOIT__ return _root->_Key; };
-    iterator                end()                   {__INFOIT__ return _root->_Key; };
-    const_iterator          end()           const   {__INFOIT__ return _root->_Key;; };
-    reverse_iterator        rbegin()                {__INFOIT__ return reverse_iterator (end()); };
-    reverse_iterator        rend()                  {__INFOIT__ return reverse_iterator (begin()); };
-    const_reverse_iterator  rbegin()        const   {__INFOIT__ return reverse_iterator (end()); };
-    const_reverse_iterator  rend()          const   {__INFOIT__ return reverse_iterator (begin()); };
+        iterator begin() {
+            __INFOIT__
+            return _root->_Key;
+        };
+
+        const_iterator begin() const {
+            __INFOIT__
+            return _root->_Key;
+        };
+
+        iterator end() {
+            __INFOIT__
+            return _root->_Key;
+        };
+
+        const_iterator end() const {
+            __INFOIT__
+            return _root->_Key;;
+        };
+
+        reverse_iterator rbegin() {
+            __INFOIT__
+            return reverse_iterator(end());
+        };
+
+        reverse_iterator rend() {
+            __INFOIT__
+            return reverse_iterator(begin());
+        };
+
+        const_reverse_iterator rbegin() const {
+            __INFOIT__
+            return reverse_iterator(end());
+        };
+
+        const_reverse_iterator rend() const {
+            __INFOIT__
+            return reverse_iterator(begin());
+        };
 
 
 /*
@@ -190,20 +291,28 @@ public:
 *====================================================================================
 */
 
-public:
+    public:
 
-    /*Checks if the container has no elements, i.e. whether begin() == end().*/
-    bool        empty()     const   {__INFOCA__ return begin() == end(); };
+        /*Checks if the container has no elements, i.e. whether begin() == end().*/
+        bool empty() const {
+            __INFOCA__
+            return begin() == end();
+        };
 
-    /*Returns the number of elements in the container,
-     * i.e. std::distance(begin(), end()).*/
-    size_type   size()      const   {__INFOCA__ return (end() - begin()); };
+        /*Returns the number of elements in the container,
+         * i.e. std::distance(begin(), end()).*/
+        size_type size() const {
+            __INFOCA__
+            return (end() - begin());
+        };
 
-    /*Returns the maximum number of elements the container is able to
-     * hold due to system or library implementation limitations, i.e.
-     * std::distance(begin(), end()) for the largest container.*/
-    size_type   max_size()  const
-    {__INFOCA__ return std::numeric_limits<size_type>::max() / sizeof(value_type); };
+        /*Returns the maximum number of elements the container is able to
+         * hold due to system or library implementation limitations, i.e.
+         * std::distance(begin(), end()) for the largest container.*/
+        size_type max_size() const {
+            __INFOCA__
+            return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        };
 
 /*
 *====================================================================================
@@ -212,129 +321,129 @@ public:
 */
 
 
-public:
+    public:
 
-    /*Erases all elements from the container. After this call, size() returns zero.
-     * Invalidates any references, pointers, or iterators referring to contained elements.
-     * Any past-the-end iterators are also invalidated.*/
-    void            clear(){__INFOMO__ erase(begin(), end()); __INFOMONL__};
+        /*Erases all elements from the container. After this call, size() returns zero.
+         * Invalidates any references, pointers, or iterators referring to contained elements.
+         * Any past-the-end iterators are also invalidated.*/
+        void clear() {
+            __INFOMO__
+            erase(begin(), end());__INFOMONL__
+        };
 
-    /* inserts value.
-     * Returns a pair consisting of an iterator to the inserted element (or to the element
-     * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
-    ft::pair<iterator, bool>    insert( const value_type& value )
-    {__INFOMO__
+        /* inserts value.
+         * Returns a pair consisting of an iterator to the inserted element (or to the element
+         * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
+        ft::pair<iterator, bool> insert(const value_type &value) {
+            __INFOMO__
 
-        __INFOMONL__
-    };
+            __INFOMONL__
+        };
 
-    /*
-     * inserts value in the position as close as possible to the position just prior to pos.
-     * Returns an iterator to the inserted element, or to the element that prevented the insertion.
-     */
-    iterator                    insert( iterator pos, const value_type& value )
-    {__INFOMO__
-
-
-        return pos;
-    };
-
-    /*Inserts elements from range [first, last). If multiple elements in the range have keys
-     * that compare equivalent, it is unspecified which element is inserted
-     * O(N·log(size() + N)), where N is the number of elements to insert.*/
-    template <class InputIt>
-    iterator                    insert(InputIt first, InputIt last)
-    {__INFOMO__
-
-        Select_Input(  pos, first, last )
-
-        __INFOMONL__
-        return ;
-    };
-
-private:
+        /*
+         * inserts value in the position as close as possible to the position just prior to pos.
+         * Returns an iterator to the inserted element, or to the element that prevented the insertion.
+         */
+        iterator insert(iterator pos, const value_type &value) {
+            __INFOMO__
 
 
-    /*
-    if forward, bidirectional or random-access iterators,
-    the copy constructor of T is only called N  times, and
-    no reallocation occurs.*/
-    template <class InputIt>
-    void        Select_Input(   const_iterator pos,
-                                typename ft::enable_if<ft::is_random_access_iterator
-                                    <typename ft::iterator_traits_if
-                                    <InputIt, !is_integral
-                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                                InputIt last )
-    {__INFOMF__
+            return pos;
+        };
 
-        try{
-            std::uninitialized_copy(first, last, Pos);
-        }
-        catch (...)
-        {
+        /*Inserts elements from range [first, last). If multiple elements in the range have keys
+         * that compare equivalent, it is unspecified which element is inserted
+         * O(N·log(size() + N)), where N is the number of elements to insert.*/
+        template<class InputIt>
+        iterator insert(InputIt first, InputIt last) {
+            __INFOMO__
 
-            throw;
-        }
+            Select_Input(pos, first, last)__INFOMONL__
+            return;
+        };
 
-        __INFOMFNL__};
-
-    /* otherwise (first and last are just input iterators),
-      the copy constructor of T is called O(N) times, and
-      reallocation occurs O(log N) times.*/
-    template< class InputIt >
-    void        Select_Input(   const_iterator pos,
-                                typename ft::enable_if<ft::is_input_iterator
-                                    <typename ft::iterator_traits_if
-                                    <InputIt, !ft::is_integral
-                                    <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                                InputIt last )
-    {__INFOMF__
-
-        (void)pos;
-        for ( ; first != last; ++first)
-            insert( *first );
-
-        __INFOMFNL__};
+    private:
 
 
+        /*
+        if forward, bidirectional or random-access iterators,
+        the copy constructor of T is only called N  times, and
+        no reallocation occurs.*/
+        template<class InputIt>
+        void Select_Input(const_iterator pos,
+                          typename ft::enable_if<ft::is_random_access_iterator
+                                  <typename ft::iterator_traits_if
+                                          <InputIt, !is_integral
+                                                  <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                          InputIt last) {
+            __INFOMF__
 
-public:
+            try {
+                std::uninitialized_copy(first, last, Pos);
+            }
+            catch (...) {
 
-    /*Removes the element at pos
-     * Iterator following the last removed element.*/
-    iterator        erase(iterator pos)
-    {__INFOMO__
-        if (pos != end())
-            std::copy(pos + 1, end(), pos);
+                throw;
+            }
 
-        __INFOMONL__
-        return pos;
-    };
+            __INFOMFNL__
+        };
 
-    /*Removes the elements in the range [first, last).
-     * Iterator following the last removed element.*/
-    iterator        erase(iterator first, iterator last)
-    {__INFOMO__
+        /* otherwise (first and last are just input iterators),
+          the copy constructor of T is called O(N) times, and
+          reallocation occurs O(log N) times.*/
+        template<class InputIt>
+        void Select_Input(const_iterator pos,
+                          typename ft::enable_if<ft::is_input_iterator
+                                  <typename ft::iterator_traits_if
+                                          <InputIt, !ft::is_integral
+                                                  <InputIt>::value>::iterator_category>::value, InputIt>::type first,
+                          InputIt last) {
+            __INFOMF__
 
-        if ( first && last && (last - first) > 0 )
-        {
+            (void) pos;
+            for (; first != last; ++first)
+                insert(*first);
 
-        }
+            __INFOMFNL__
+        };
 
-        __INFOMONL__
-        return first;
-    };
 
-    /*Removes the element (if one exists) with the key equivalent to key.
-     * Number of elements removed (0 or 1).
-     * Any exceptions thrown by the Compare object.*/
-    iterator        erase(const Key& key )
-    {__INFOMO__
+    public:
 
-        __INFOMONL__
-        return pos;
-    };
+        /*Removes the element at pos
+         * Iterator following the last removed element.*/
+        iterator erase(iterator pos) {
+            __INFOMO__
+            if (pos != end())
+                std::copy(pos + 1, end(), pos);
+
+            __INFOMONL__
+            return pos;
+        };
+
+        /*Removes the elements in the range [first, last).
+         * Iterator following the last removed element.*/
+        iterator erase(iterator first, iterator last) {
+            __INFOMO__
+
+            if (first && last && (last - first) > 0) {
+
+            }
+
+            __INFOMONL__
+            return first;
+        };
+
+        /*Removes the element (if one exists) with the key equivalent to key.
+         * Number of elements removed (0 or 1).
+         * Any exceptions thrown by the Compare object.*/
+        iterator erase(const Key &key) {
+            __INFOMO__
+
+            __INFOMONL__
+            return pos;
+        };
 
 /*
 *====================================================================================
@@ -342,69 +451,72 @@ public:
 *====================================================================================
 */
 
-    /*Returns the number of elements with key that compares equivalent to the specified argument.
-     * Returns the number of elements with key key. This is either 1 or 0 since this container
-     * does not allow duplicates.*/
-    size_type count( const Key& key ) const{
+        /*Returns the number of elements with key that compares equivalent to the specified argument.
+         * Returns the number of elements with key key. This is either 1 or 0 since this container
+         * does not allow duplicates.*/
+        size_type count(const Key &key) const {
 
-    };
+        };
 
-    /*Finds an element with key equivalent to key.
-     * Iterator to an element with key equivalent to key. If no such element is found,
-     * past-the-end (see end()) iterator is returned.*/
-    iterator find( const Key& key ){
+        /*Finds an element with key equivalent to key.
+         * Iterator to an element with key equivalent to key. If no such element is found,
+         * past-the-end (see end()) iterator is returned.*/
+        iterator find(const Key &key) {
 
-    };
-    const_iterator find( const Key& key ) const{
+        };
 
-    };
+        const_iterator find(const Key &key) const {
+
+        };
 
 
-    /* Returns a range containing all elements with the given key in the container. The range is
-     * defined by two iterators, one pointing to the first element that is not less than key and
-     * another pointing to the first element greater than key. Alternatively, the first iterator
-     * may be obtained with lower_bound(), and the second with upper_bound().
-     * 1,2) Compares the keys to key.*/
-    std::pair<iterator,iterator> equal_range( const Key& key ){
+        /* Returns a range containing all elements with the given key in the container. The range is
+         * defined by two iterators, one pointing to the first element that is not less than key and
+         * another pointing to the first element greater than key. Alternatively, the first iterator
+         * may be obtained with lower_bound(), and the second with upper_bound().
+         * 1,2) Compares the keys to key.*/
+        std::pair<iterator, iterator> equal_range(const Key &key) {
 
-    };
+        };
 
-    std::pair<const_iterator,const_iterator> equal_range( const Key& key ) const{
+        std::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
 
-    };
+        };
 
-    /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
-     * Iterator pointing to the first element that is not less than key.
-     * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-    iterator lower_bound( const Key& key ){
+        /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
+         * Iterator pointing to the first element that is not less than key.
+         * If no such element is found, a past-the-end iterator (see end()) is returned.*/
+        iterator lower_bound(const Key &key) {
 
-    };
+        };
 
-    const_iterator lower_bound( const Key& key ) const{
+        const_iterator lower_bound(const Key &key) const {
 
-    };
+        };
 
-    /*Returns an iterator pointing to the first element that is greater than key.
-     * Iterator pointing to the first element that is greater than key.
-     * If no such element is found, past-the-end (see end()) iterator is returned.*/
-    iterator upper_bound( const Key& key ){
+        /*Returns an iterator pointing to the first element that is greater than key.
+         * Iterator pointing to the first element that is greater than key.
+         * If no such element is found, past-the-end (see end()) iterator is returned.*/
+        iterator upper_bound(const Key &key) {
+            iterator troot = _root;
+            while(troot )
+        };
 
-    };
+        const_iterator upper_bound(const Key &key) const {
+            iterator troot = _root;
+            if(*troot == key)
+                return (++troot)
 
-    const_iterator upper_bound( const Key& key ) const{
 
-    };
+        };
 
-    /*Returns the function object that compares the keys, which is a copy of
-     * this container's constructor argument comp. It is the same as value_comp.*/
-    key_compare key_comp() const{
+        /*Returns the function object that compares the keys, which is a copy of
+         * this container's constructor argument comp. It is the same as value_comp.*/
+        key_compare key_comp() const { return key_comp(); };
 
-    };
+        /*Returns the function object that compares the values. It is the same as key_comp.*/
+        value_compare value_comp() const { return value_comp(); };
 
-    /*Returns the function object that compares the values. It is the same as key_comp.*/
-    value_compare value_comp() const{
-
-    };
 /*
 *====================================================================================
 *|                             Private Membre fonction                              |
@@ -413,39 +525,52 @@ public:
 
 private:
 
-    Color getColor(Node *&node) {
-        if (node == nullptr)
-            return BLACK;
-        return node->_Color;
-    };
 
-    void setColor(Node *&node, Color color) {
-        if (node != nullptr)
-            node->_Color = color;
-    };
 
-    iterator upper_bound( const Key& key ){
-
-        if (root != nullptr) {
-            if (node->_Key < root->_Key) {
-                root->_LeftChild = insertBST(root->_LeftChild, node);
-                root->_LeftChild->parent = root;
-            } else if (node->_Key > root->_Key) {
-                root->right = insertBST(root->right, node);
-                root->right->parent = root;
-            }
-            return root;
-        }
-        return node;
-    }
-
+};
 /*
 *====================================================================================
 *|                                 Non Membre fonction                              |
 *====================================================================================
 */
 
-/*Checks if the contents of lhs and rhs are equal,
+template< class Key, class Compare, class Allocator >
+inline bool operator==(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs == *rhs;
+}
+
+template< class Key, class Compare, class Allocator >
+inline bool operator!=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs != *rhs;
+}
+
+template< class Key, class Compare, class Allocator >
+inline bool operator<(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs < *rhs;
+}
+
+template< class Key, class Compare, class Allocator >
+inline bool operator<=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs <= *rhs;
+}
+
+template< class Key, class Compare, class Allocator >
+inline bool operator>(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs > *rhs;
+}
+
+template< class Key, class Compare, class Allocator >
+inline bool operator>=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                      const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+    return *lhs >= *rhs;
+}
+
+    /*Checks if the contents of lhs and rhs are equal,
  * that is, they have the same number of elements and each element
  * in lhs compares equal with the element in rhs at the same position.*/
     template< class Key, class Compare, class Allocator >
