@@ -76,7 +76,6 @@ struct RedBlackTree {
 
             void setColor(Color color) { _Color = color; };
         };
-
 /*
 *====================================================================================
 *|                                      Iterator                                    |
@@ -103,7 +102,7 @@ struct RedBlackTree {
                 return *this;
             };
 
-            Key& operator*() const { return It->_Key; }
+            Key& operator*() const { return *(It->_Key); }
             Key* operator->() const { return &(operator*()); }
 
             iterator& operator++() {
@@ -122,13 +121,13 @@ struct RedBlackTree {
                         It = Tnode;
                 }
                 return *this;
-            }
+            };
 
             iterator  operator++(int) {
                 iterator Tmp = *this;
                 operator++();
                 return Tmp;
-            }
+            };
 
             iterator& operator--() {
                 if (It->_LeftChild){
@@ -146,13 +145,37 @@ struct RedBlackTree {
                         It = Tnode;
                 }
                 return *this;
-            }
+            };
 
             iterator  operator--(int) {
                 iterator Tmp = *this;
                 operator--();
                 return Tmp;
-            }
+            };
+
+            inline bool operator<( const iterator& rhs) {
+                return _comp(*this, *rhs);
+            };
+
+            inline bool operator<=( const iterator& rhs) {
+                return !(*rhs < *this);
+            };
+
+            inline bool operator>=( const iterator& rhs) {
+                return !(*this < *rhs);
+            };
+
+            inline bool operator>( const iterator& rhs) {
+                return (*rhs < *this);
+            };
+
+            inline bool operator==( const iterator& rhs) {
+                return !(*this > *rhs) && !(*this < *rhs);
+            };
+
+            inline bool operator!=( const iterator& rhs) {
+                return !(*this == *rhs);
+            };
 
         };
 
@@ -181,6 +204,10 @@ struct RedBlackTree {
         typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
         iterator    _root;
+        iterator    _end;
+        iterator    _begin;
+        size_type   _size;
+        ft::pair<iterator, iterator>   _range;
 
 
 /*
@@ -455,18 +482,38 @@ struct RedBlackTree {
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
         size_type count(const Key &key) const {
-
+            if(find(key) == end())
+                return 0;
+            return 1;
         };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
         iterator find(const Key &key) {
-
+            iterator troot = _root;
+            if(troot && *troot != key)
+            {
+                while (troot && *troot > key)
+                    troot--;
+                while (troot && *troot < key)
+                    troot++;
+            }if(troot && *troot == key)
+                return troot;
+            return end();
         };
 
         const_iterator find(const Key &key) const {
-
+            iterator troot = _root;
+            if(troot && *troot != key)
+            {
+                while (troot && *troot > key)
+                    troot--;
+                while (troot && *troot < key)
+                    troot++;
+            }if(troot && *troot == key)
+                return const_cast<const_iterator>(troot);
+            return end();
         };
 
 
@@ -476,22 +523,52 @@ struct RedBlackTree {
          * may be obtained with lower_bound(), and the second with upper_bound().
          * 1,2) Compares the keys to key.*/
         std::pair<iterator, iterator> equal_range(const Key &key) {
-
+            return ft::make_pair(lower_bound(key), upper_bound(key));
         };
 
         std::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
-
+            return ft::make_pair(lower_bound(key), upper_bound(key));
         };
 
         /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
         iterator lower_bound(const Key &key) {
+            _Link_type __y = _M_header; /* Last node which is not less than __k. */
+            _Link_type __x = _M_root(); /* Current node. */
 
+            while (__x != 0)
+                if (!_M_key_compare(_S_key(__x), __k))
+                    __y = __x, __x = _S_left(__x);
+                else
+                    __x = _S_right(__x);
+
+            return iterator(__y);
+            iterator troot = _root;
+            if(*troot != key)
+            {
+                while (*troot >= key && )
+                    troot--;
+                while (*troot <= key)
+                    troot++;
+
+            } else
+                --troot;
+            return troot;
         };
 
         const_iterator lower_bound(const Key &key) const {
+            iterator troot = _root;
+            if(*troot != key)
+            {
+                while (_comp(*troot, key))
+                    troot--;
+                while (*troot <= key)
+                    troot++;
 
+            } else
+                --troot;
+            return const_cast<const_iterator>(troot);
         };
 
         /*Returns an iterator pointing to the first element that is greater than key.
@@ -499,15 +576,30 @@ struct RedBlackTree {
          * If no such element is found, past-the-end (see end()) iterator is returned.*/
         iterator upper_bound(const Key &key) {
             iterator troot = _root;
-            while(troot )
+            if(*troot != key)
+            {
+                while (*troot >= key)
+                    troot--;
+                while (*troot <= key)
+                    troot++;
+
+            } else
+                ++troot;
+            return troot;
         };
 
         const_iterator upper_bound(const Key &key) const {
             iterator troot = _root;
-            if(*troot == key)
-                return (++troot)
+            if(*troot != key)
+            {
+                while (*troot >= key)
+                    troot--;
+                while (*troot <= key)
+                    troot++;
 
-
+            } else
+                ++troot;
+            return const_cast<const_iterator>(troot);
         };
 
         /*Returns the function object that compares the keys, which is a copy of
@@ -547,67 +639,67 @@ inline bool operator!=(const typename ft::RedBlackTree< Key, Compare, Allocator 
 }
 
 template< class Key, class Compare, class Allocator >
-inline bool operator<(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+inline bool operator<(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
     return *lhs < *rhs;
 }
 
 template< class Key, class Compare, class Allocator >
-inline bool operator<=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+inline bool operator<=(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
     return *lhs <= *rhs;
 }
 
 template< class Key, class Compare, class Allocator >
-inline bool operator>(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+inline bool operator>(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
     return *lhs > *rhs;
 }
 
 template< class Key, class Compare, class Allocator >
-inline bool operator>=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                      const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
+inline bool operator>=(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
+                      const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
     return *lhs >= *rhs;
 }
 
-    /*Checks if the contents of lhs and rhs are equal,
- * that is, they have the same number of elements and each element
- * in lhs compares equal with the element in rhs at the same position.*/
-    template< class Key, class Compare, class Allocator >
-    inline bool operator== ( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                             const ft::RedBlackTree< Key, Compare, Allocator >& rhs )
-    {__INFONM__
-        if (lhs.size() == rhs.size())
-            return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
-        return false;
-    };
+/*Checks if the contents of lhs and rhs are equal,
+* that is, they have the same number of elements and each element
+* in lhs compares equal with the element in rhs at the same position.*/
+template< class Key, class Compare, class Allocator >
+inline bool operator== ( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                         const RedBlackTree< Key, Compare, Allocator >& rhs )
+{__INFONM__
+    if (lhs.size() == rhs.size())
+        return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+    return false;
+};
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator!=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
+template< class Key, class Compare, class Allocator >
+inline bool operator!=( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                        const RedBlackTree< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
 
 /*3-6) Compares the contents of lhs and rhs lexicographically.
  * The comparison is performed
  * by a function equivalent to std::lexicographical_compare.*/
-    template< class Key, class Compare, class Allocator >
-    inline bool operator<( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                           const ft::RedBlackTree< Key, Compare, Allocator >& rhs )
+template< class Key, class Compare, class Allocator >
+inline bool operator<( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                       const RedBlackTree< Key, Compare, Allocator >& rhs )
     {__INFONM__
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                            rhs.begin(), rhs.end());
     };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator<=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
+template< class Key, class Compare, class Allocator >
+inline bool operator<=( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                        const RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator>( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                           const ft::RedBlackTree< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
+template< class Key, class Compare, class Allocator >
+inline bool operator>( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                       const RedBlackTree< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator>=( const ft::RedBlackTree< Key, Compare, Allocator >& lhs,
-                            const ft::RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
+template< class Key, class Compare, class Allocator >
+inline bool operator>=( const RedBlackTree< Key, Compare, Allocator >& lhs,
+                        const RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
 
