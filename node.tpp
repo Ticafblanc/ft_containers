@@ -24,6 +24,7 @@ enum Color { RED, BLACK };
 template< class Key, class Compare, class Allocator >
 struct NodeBase {
 
+private:
     typedef NodeBase<Key, Compare, Allocator> _self;
     Key         *_Key;
     Color       _Color;
@@ -39,6 +40,7 @@ struct NodeBase {
 *====================================================================================
 */
 
+protected:
 
     typedef Key key_types;
     typedef key_types value_type;
@@ -58,6 +60,7 @@ struct NodeBase {
 *====================================================================================
 */
 
+protected:
 
     NodeBase() {};
 

@@ -18,6 +18,7 @@
 #include "type_traits.tpp"
 #include "algorithm.tpp"
 #include "node.tpp"
+#include "rbtiterator.tpp"
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -40,93 +41,15 @@ Depth Property: For each node, any simple path from this node to any of its desc
 /*==================================================================================*/
 
 /*red black tree of map*/
-template< class Key, class Compare, class Allocator >
+template< class Key, class Node, class Compare, class Allocator >
 struct RedBlackTree {
 
     private:
 
-        typedef RedBlackTree<Key, Compare, Allocator> _self;
-        static Allocator _alloc;
-        static Compare _comp;
-
-/*
-*====================================================================================
-*|                                      Iterator                                    |
-*====================================================================================
-*/
-
-    protected:
-
-        struct iterator : public std::iterator<std::bidirectional_iterator_tag,
-                Key, Key, const Key *, Key> {
-        private:
-            Node *It;
-        public:
-            iterator() {};
-
-            explicit iterator(Node* tmp) : It(tmp) {};
-
-            iterator(const iterator &other) : It(other.It) {};
-
-            ~iterator(){};
-
-            iterator& operator=( const iterator & other){
-                It = other.It;
-                return *this;
-            };
-
-            Key& operator*() const { return *(It->_Key); }
-            Key* operator->() const { return &(operator*()); }
-
-            iterator& operator++() {
-                if (It->_RightChild){
-                    It = It->_RightChild;
-                    while (It->_LeftChild)
-                        It = It->_LeftChild;
-                }
-                else {
-                    Node* Tnode = It->_Parent;
-                    while (It == Tnode->_RightChild) {
-                        It = Tnode;
-                        Tnode = It->_Parent;
-                    }
-                    if (It->_RightChild != Tnode)
-                        It = Tnode;
-                }
-                return *this;
-            };
-
-            iterator  operator++(int) {
-                iterator Tmp = *this;
-                operator++();
-                return Tmp;
-            };
-
-            iterator& operator--() {
-                if (It->_LeftChild){
-                    It = It->_LeftChild;
-                    while (It->_RightChild)
-                        It = It->_RightChild;
-                }
-                else {
-                    Node* Tnode = It->_Parent;
-                    while (It == Tnode->_LeftChild) {
-                        It = Tnode;
-                        Tnode = It->_Parent;
-                    }
-                    if (It->_LeftChild != Tnode)
-                        It = Tnode;
-                }
-                return *this;
-            };
-
-            iterator  operator--(int) {
-                iterator Tmp = *this;
-                operator--();
-                return Tmp;
-            };
-
-        };
+        typedef RedBlackTree<Key, Node, Compare, Allocator> _self;
+        typedef Node                                        _node;
+        static Allocator                                    _alloc;
+        static Compare                                      _comp;
 
 /*
 *====================================================================================
@@ -147,7 +70,7 @@ struct RedBlackTree {
         typedef Allocator allocator_type;
         typedef typename Allocator::pointer pointer;
         typedef typename Allocator::const_pointer const_pointer;
-        typedef iterator iterator;
+        typedef rbtiterator<Key, Node> iterator;
         typedef const iterator const_iterator;
         typedef ft::reverse_iterator<iterator> reverse_iterator;
         typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -167,12 +90,12 @@ struct RedBlackTree {
 
     public:
 
-        RedBlackTree() {
+        RedBlackTree() : _size() {
             __INFOMF__
             _root = nullptr;
         };
 
-        explicit RedBlackTree(const Compare &comp, const Allocator &alloc = Allocator()) {
+        explicit RedBlackTree(const Compare &comp, const Allocator &alloc = Allocator()) : _size() {
             __INFOMF__
             _alloc = alloc;
             _comp = comp;
