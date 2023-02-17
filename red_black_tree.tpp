@@ -17,8 +17,7 @@
 #include "iterator.tpp"
 #include "type_traits.tpp"
 #include "algorithm.tpp"
-#include <set>
-//std::set
+#include "node.tpp"
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -47,59 +46,9 @@ struct RedBlackTree {
     private:
 
         typedef RedBlackTree<Key, Compare, Allocator> _self;
-        enum Color {
-            RED, BLACK
-        };
         static Allocator _alloc;
         static Compare _comp;
 
-        /* struct of set*/
-        struct Node {
-
-            Key *_Key;
-            Color _Color;
-            Node *_LeftChild;
-            Node *_RightChild;
-            Node *_Parent;
-
-            Node() {};
-
-            explicit Node(Key key) : _Color(RED), _LeftChild(nullptr), _RightChild(nullptr), _Parent(nullptr) {
-                _alloc.construct(_Key, key);
-            };
-
-            ~Node() {
-                _alloc->destroy(_Key);
-            };
-
-            Color getColor() { return _Color; };
-
-            void setColor(Color color) { _Color = color; };
-
-            inline bool operator<( const Key& rhs) {
-                return _comp(_Key, rhs);
-            };
-
-            inline bool operator<=( const Key& rhs) {
-                return !(*rhs < *this);
-            };
-
-            inline bool operator>=( const Key& rhs) {
-                return !(*this < *rhs);
-            };
-
-            inline bool operator>( const Key& rhs) {
-                return (*rhs < *this);
-            };
-
-            inline bool operator==( const Key& rhs) {
-                return !(*this > *rhs) && !(*this < *rhs);
-            };
-
-            inline bool operator!=( const Key& rhs) {
-                return !(*this == *rhs);
-            };
-        };
 /*
 *====================================================================================
 *|                                      Iterator                                    |
