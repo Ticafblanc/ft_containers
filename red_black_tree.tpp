@@ -12,13 +12,12 @@
 
 #pragma once
 
+#include <iostream>
+#include <stdlib.h>
 #include "ft_containers.hpp"
-#include "utility.tpp"
-#include "iterator.tpp"
 #include "type_traits.tpp"
 #include "algorithm.tpp"
 #include "node.tpp"
-#include "rbtiterator.tpp"
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -40,533 +39,426 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
 /*==================================================================================*/
 
-/*red black tree of map*/
-template< class Key, class Node, class Compare, class Allocator >
-struct RedBlackTree {
 
-    private:
+    template< class Key, class Node >
+    struct RedBlackTree {
 
-        typedef RedBlackTree<Key, Node, Compare, Allocator> _self;
-        typedef Node                                        _node;
-        static Allocator                                    _alloc;
-        static Compare                                      _comp;
+        typedef RedBlackTree<Key, Node>                     _self;
+        Node                                                *_root;
+        Node                                                *_nul;
+        std::size_t                                         _size;
 
-/*
-*====================================================================================
-*|                                     Member Type                                  |
-*====================================================================================
-*/
-
-    protected:
+    /*
+    *====================================================================================
+    *|                                     Member Type                                  |
+    *====================================================================================
+    */
 
         typedef Key key_types;
         typedef key_types value_type;
+        typedef Node        node_type;
         typedef std::size_t size_type;
         typedef std::ptrdiff_t difference_type;
-        typedef Compare key_compare;
-        typedef key_compare value_compare;
-        typedef value_type &reference;
-        typedef const value_type &const_reference;
-        typedef Allocator allocator_type;
-        typedef typename Allocator::pointer pointer;
-        typedef typename Allocator::const_pointer const_pointer;
-        typedef rbtiterator<Key, Node> iterator;
-        typedef const iterator const_iterator;
-        typedef ft::reverse_iterator<iterator> reverse_iterator;
-        typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
-        iterator    _root;
-        iterator    _end;
-        iterator    _begin;
-        size_type   _size;
-        ft::pair<iterator, iterator>   _range;
+    /*
+    *====================================================================================
+    *|                                  Member Fonction                                 |
+    *====================================================================================
+    */
 
+        RedBlackTree() : _root(_nul), _nul(new Node()), _size(0) { __INFOMF__ };
 
-/*
-*====================================================================================
-*|                                  Member Fonction                                 |
-*====================================================================================
-*/
-
-    public:
-
-        RedBlackTree() : _size() {
+        RedBlackTree(const _self &other) : _root(_nul), _nul(new Node()), _size(0) {
             __INFOMF__
-            _root = nullptr;
+            copy_tree(other.root);
         };
 
-        explicit RedBlackTree(const Compare &comp, const Allocator &alloc = Allocator()) : _size() {
-            __INFOMF__
-            _alloc = alloc;
-            _comp = comp;
-            _root = nullptr;
-        };
-
-        template<class InputIt>
-        RedBlackTree(InputIt first, InputIt last, const Compare &comp, const Allocator &alloc) {
-            __INFOMF__
-            _alloc = alloc;
-            _comp = comp;
-            _root = nullptr;
-            insert(first, last);
-        };//assigne pointerdelte les double
-
-        RedBlackTree(const _self &other) : _root(other._root) {
-            __INFOMF__
-            _alloc = other._alloc;
-            _comp = other._comp;
-            insert(other.beging(), other.end());
-        };//assigne pointerdelte les double
-
-        virtual ~RedBlackTree() {
-            __INFOMF__
-            clear();__INFOMFNL__
-        };
+        virtual ~RedBlackTree() { __INFOMF__ clear(); __INFOMFNL__ };
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
-        RedBlackTree &operator=(const _self &other) {
+        _self &operator=(const _self &other) {
             clear();
-            _alloc = other._alloc;
-            _comp = other._comp;
-            insert(other.beging(), other.end());
+            copy_tree(other.root);
             return *this;
         };
 
-        /*Returns the allocator associated with the container.*/
-        allocator_type get_allocator() const { return allocator_type(); }
+        void copy_tree(Node* x) {
+            if (x != _nul) {
+                insert(x->data);
+                copy_tree(x->left);
+                copy_tree(x->right);
+            }
+        };
+    /*
+    *====================================================================================
+    *|                                    Move                                         |
+    *====================================================================================
+    */
 
-/*
-*====================================================================================
-*|                                      Iterator                                    |
-*====================================================================================
-*/
+        bool isNul(Node* node) const {
+            return (node == nullptr || node == _nul);
+        }
 
-    public:
+        Node* maximum(Node* node) {
+            while (!isNul(node->_RightChild)) {
+                node = node->_RightChild;
+            }
+            return node;
+        }
 
-        iterator begin() {
-            __INFOIT__
-            return _root->_Key;
+        Node* minimum(Node* node) {
+            while (!isNul(node->_LeftChild)) {
+                node = node->_LeftChild;
+            }
+            return node;
+        }
+
+        Node* successor(Node* node) {
+            if (!isNul(node->_RightChild)) {
+                node = node->_RightChild;
+                return minimum(node);
+            }
+            Node* rnode = node->_Parent;
+            while (!isNul(rnode) && node == rnode->_RightChild) {
+                node = rnode;
+                rnode = rnode->_Parent;
+            }
+            return rnode;
         };
 
-        const_iterator begin() const {
-            __INFOIT__
-            return _root->_Key;
-        };
+        Node* predecessor(Node* x) {
+            if (!isNul(x->_LeftChild)) {
+                return maximum(x->_LeftChild);
+            }
+            Node* y = x->_Parent;
+            while (y != _nul && x == y->_LeftChild) {
+                x = y;
+                y = y->_Parent;
+            }
+            return y;
+        }
 
-        iterator end() {
-            __INFOIT__
-            return _root->_Key;
-        };
+    /*
+    *====================================================================================
+    *|                                    utility                                       |
+    *====================================================================================
+    */
 
-        const_iterator end() const {
-            __INFOIT__
-            return _root->_Key;;
-        };
+        Node* find(Key value) {
+            Node* x = _root;
+            while (x != _nul && x->_Key != value) {
+                if (value < x->_Key)
+                    x = x->_LeftChild;
+                else
+                    x = x->_RightChild;
+            }
+            return x;
+        }
 
-        reverse_iterator rbegin() {
-            __INFOIT__
-            return reverse_iterator(end());
-        };
+        void fixup_size(Node* x) {
+            std::size_t left_size = (x->_LeftChild == _nul) ? 0 : x->left->size;
+            std::size_t right_size = (x->_RightChild == _nul) ? 0 : x->right->size;
+            x->size = left_size + right_size + 1;
+        }
 
-        reverse_iterator rend() {
-            __INFOIT__
-            return reverse_iterator(begin());
-        };
+    /*
+    *====================================================================================
+    *|                                    Clear                                         |
+    *====================================================================================
+    */
 
-        const_reverse_iterator rbegin() const {
-            __INFOIT__
-            return reverse_iterator(end());
-        };
+        /*Erases all elements from the treee*/
+        void clear(void (*delete_func)(Key*)) {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
 
-        const_reverse_iterator rend() const {
-            __INFOIT__
-            return reverse_iterator(begin());
-        };
+        void clear_tree(Node* x, void (*delete_func)(Key*)) {
+            if (x != _nul) {
+                clear_tree(x->_LeftChild, delete_func);
+                clear_tree(x->_RightChild, delete_func);
+                if (delete_func != nullptr)
+                    delete_func(x->data);
+                delete x;
+            }
+        }
 
-
-/*
-*====================================================================================
-*|                                     Capacity                                     |
-*====================================================================================
-*/
-
-    public:
-
-        /*Checks if the container has no elements, i.e. whether begin() == end().*/
-        bool empty() const {
-            __INFOCA__
-            return begin() == end();
-        };
-
-        /*Returns the number of elements in the container,
-         * i.e. std::distance(begin(), end()).*/
-        size_type size() const {
-            __INFOCA__
-            return (end() - begin());
-        };
-
-        /*Returns the maximum number of elements the container is able to
-         * hold due to system or library implementation limitations, i.e.
-         * std::distance(begin(), end()) for the largest container.*/
-        size_type max_size() const {
-            __INFOCA__
-            return std::numeric_limits<size_type>::max() / sizeof(value_type);
-        };
-
-/*
-*====================================================================================
-*|                                    Modifiers                                     |
-*====================================================================================
-*/
-
-
-    public:
-
-        /*Erases all elements from the container. After this call, size() returns zero.
-         * Invalidates any references, pointers, or iterators referring to contained elements.
-         * Any past-the-end iterators are also invalidated.*/
-        void clear() {
+    /*
+    *====================================================================================
+    *|                                    Insert                                        |
+    *====================================================================================
+    */
+        /* find place with spec func to copmpare and add new node fo inserts value.*/
+        Node* insert(const Key *value, bool (*comp_func)(Key, Key)) {
             __INFOMO__
-            erase(begin(), end());__INFOMONL__
-        };
-
-        /* inserts value.
-         * Returns a pair consisting of an iterator to the inserted element (or to the element
-         * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
-        ft::pair<iterator, bool> insert(const value_type &value) {
-            __INFOMO__
-
+            Node* z = new Node(value, RED);
+            Node* y = _nul;
+            Node* x = _root;
+            while (x != _nul) {
+                y = x;
+                if (comp_func(*z->_Key, *x->_Key))
+                    x = x->_LeftChild;
+                else
+                    x = x->_RightChild;
+            }
+            z->_Parent = y;
+            if (y == _nul)
+                _root = z;
+            else if (comp_func(*z->_Key, *y->_Key))
+                y->_LeftChild = z;
+            else
+                y->_RightChild = z;
+            z->_LeftChild = _nul;
+            z->_RightChild = _nul;
+            z->_Color = RED;
+            insertFixup(z);
             __INFOMONL__
         };
 
-        /*
-         * inserts value in the position as close as possible to the position just prior to pos.
-         * Returns an iterator to the inserted element, or to the element that prevented the insertion.
-         */
-        iterator insert(iterator pos, const value_type &value) {
-            __INFOMO__
-
-
-            return pos;
+        void transplant(Node* u, Node* v) {
+            if (u->_Parent == _nul)
+                _root = v;
+            else if (u == u->_Parent->_LeftChild)
+                u->_Parent->_LeftChild = v;
+            else
+                u->_Parent->_RightChild = v;
+            v->_Parent = u->_Parent;
         };
 
-        /*Inserts elements from range [first, last). If multiple elements in the range have keys
-         * that compare equivalent, it is unspecified which element is inserted
-         * O(N·log(size() + N)), where N is the number of elements to insert.*/
-        template<class InputIt>
-        iterator insert(InputIt first, InputIt last) {
+    /*
+    *====================================================================================
+    *|                                    Erase                                         |
+    *====================================================================================
+    */
+        /*Removes the element at pos delete data Key with specific allocator in set*/
+        Node* erase(Node* pos, void (*delete_func)(Key*)) {
             __INFOMO__
-
-            Select_Input(pos, first, last)__INFOMONL__
-            return;
-        };
-
-    private:
-
-
-        /*
-        if forward, bidirectional or random-access iterators,
-        the copy constructor of T is only called N  times, and
-        no reallocation occurs.*/
-        template<class InputIt>
-        void Select_Input(const_iterator pos,
-                          typename ft::enable_if<ft::is_random_access_iterator
-                                  <typename ft::iterator_traits_if
-                                          <InputIt, !is_integral
-                                                  <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                          InputIt last) {
-            __INFOMF__
-
-            try {
-                std::uninitialized_copy(first, last, Pos);
+            if (pos == _nul)
+                return;
+            Node* x;
+            Node* y = pos;
+            Color y_original_color = y->_Color;
+            if (pos->_LeftChild == _nul) {
+                x = pos->right;
+                transplant(pos, pos->right);
+                x = pos->right;
+            } else if (pos->right == _nul) {
+                x = pos->_LeftChild;
+                transplant(pos, pos->_LeftChild);
+                x = pos->_LeftChild;
+            } else {
+                y = minimum(pos->right);
+                y_original_color = y->color;
+                x = y->right;
+                if (y->_Parent == pos)
+                    x->_Parent = y;
+                else {
+                    transplant(y, y->right);
+                    y->right = pos->right;
+                    y->right->parent = y;
+                }
+                transplant(pos, y);
+                y->left = pos->left;
+                y->left->parent = y;
+                y->color = pos->color;
             }
-            catch (...) {
-
-                throw;
-            }
-
-            __INFOMFNL__
-        };
-
-        /* otherwise (first and last are just input iterators),
-          the copy constructor of T is called O(N) times, and
-          reallocation occurs O(log N) times.*/
-        template<class InputIt>
-        void Select_Input(const_iterator pos,
-                          typename ft::enable_if<ft::is_input_iterator
-                                  <typename ft::iterator_traits_if
-                                          <InputIt, !ft::is_integral
-                                                  <InputIt>::value>::iterator_category>::value, InputIt>::type first,
-                          InputIt last) {
-            __INFOMF__
-
-            (void) pos;
-            for (; first != last; ++first)
-                insert(*first);
-
-            __INFOMFNL__
-        };
-
-
-    public:
-
-        /*Removes the element at pos
-         * Iterator following the last removed element.*/
-        iterator erase(iterator pos) {
-            __INFOMO__
-            if (pos != end())
-                std::copy(pos + 1, end(), pos);
-
+            if (y_original_color == BLACK)
+                deleteFixup(x);
+            delete_func(x->_Key);
+            x = successor(pos);
+            delete pos;
             __INFOMONL__
-            return pos;
+            return x;
         };
 
-        /*Removes the elements in the range [first, last).
-         * Iterator following the last removed element.*/
-        iterator erase(iterator first, iterator last) {
-            __INFOMO__
+    /*
+    *====================================================================================
+    *|                                    Balance                                       |
+    *====================================================================================
+    */
 
-            if (first && last && (last - first) > 0) {
+        /*rotate Node X */
+        void rotateLeft(Node* x) {
+            Node* y = x->_RightChild;
+            x->_RightChild = y->_LeftChild;
+            if (y->_LeftChild != _nul)
+                y->_LeftChild->_Parent = x;
+            y->_Parent = x->_Parent;
+            if (x->_Parent == _nul)
+                _root = y;
+            else if (x == x->_Parent->_LeftChild)
+                x->_Parent->_LeftChild = y;
+            else
+                x->_Parent->_RightChild = y;
+            y->_LeftChild = x;
+            x->_Parent = y;
+        };
 
+        /*rotate Node X */
+        void rotateRight(Node* x) {
+            Node* y = x->_LeftChild;
+            x->_LeftChild = y->_RightChild;
+            if (y->_RightChild != _nul)
+                y->_RightChild->_Parent = x;
+            y->_Parent = x->_Parent;
+            if (x->_Parent == _nul)
+                _root = y;
+            else if (x == x->_Parent->_RightChild)
+                x->_Parent->_RightChild = y;
+            else
+                x->_Parent->_LeftChild = y;
+            y->_RightChild = x;
+            x->_Parent = y;
+        };
+
+        /*balance tree after insert*/
+        void insertFixup(Node* z) {
+            while (z->_Parent->_Color == RED) {
+                if (z->_Parent == z->_Parent->_Parent->_LeftChild) {
+                    Node* y = z->_Parent->_Parent->_RightChild;
+                    if (y->_Color == RED) {
+                        z->_Parent->_Color = BLACK;
+                        y->_Color = BLACK;
+                        z->_Parent->_Parent->_Color = RED;
+                        z = z->_Parent->_Parent;
+                    } else {
+                        if (z == z->_Parent->_RightChild) {
+                            z = z->_Parent;
+                            rotateLeft(z);
+                        }
+                        z->_Parent->_Color = BLACK;
+                        z->_Parent->_Parent->_Color = RED;
+                        rotateRight(z->_Parent->_Parent);
+                    }
+                } else {
+                    Node* y = z->_Parent->_Parent->_LeftChild;
+                    if (y->_Color == RED) {
+                        z->_Carent->_Color = BLACK;
+                        y->_Color = BLACK;
+                        z->_Parent->_Parent->_Color = RED;
+                        z = z->_Parent->_Parent;
+                    } else {
+                        if (z == z->_Parent->_LeftChild) {
+                            z = z->_Parent;
+                            rotateRight(z);
+                        }
+                        z->_Parent->_Color = BLACK;
+                        z->_Parent->_Parent->_Color = RED;
+                        rotateLeft(z->_Parent->_Parent);
+                    }
+                }
             }
-
-            __INFOMONL__
-            return first;
+            _root->color = BLACK;
         };
 
-        /*Removes the element (if one exists) with the key equivalent to key.
-         * Number of elements removed (0 or 1).
-         * Any exceptions thrown by the Compare object.*/
-        iterator erase(const Key &key) {
-            __INFOMO__
-            iterator mem = find(key);
-
-            DelNode(mem);
-            _alloc.deallocate(mem);
-            __INFOMONL__
-            return pos;
-        };
-
-/*
-*====================================================================================
-*|                                  Lookup                                          |
-*====================================================================================
-*/
-
-        /*Returns the number of elements with key that compares equivalent to the specified argument.
-         * Returns the number of elements with key key. This is either 1 or 0 since this container
-         * does not allow duplicates.*/
-        size_type count(const Key &key) const {
-            if(find(key) == end())
-                return 0;
-            return 1;
-        };
-
-        /*Finds an element with key equivalent to key.
-         * Iterator to an element with key equivalent to key. If no such element is found,
-         * past-the-end (see end()) iterator is returned.*/
-        iterator find(const Key &key) {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
-
-            while (troot && *ritr != key) {
-                if (!(*troot < key))
-                    ritr = troot--;
-                else
-                    ritr = troot++;
+        /*balance tree after delete*/
+        void deleteFixup(Node* x) {
+            while (x != _root && x->_Color == BLACK) {
+                if (x == x->_Parent->_LeftChild) {
+                    Node* w = x->_Parent->_RightChild;
+                    if (w->_Color == RED) {
+                        w->_Color = BLACK;
+                        x->_Parent->_Color = RED;
+                        rotateLeft(x->_Parent);
+                        w = x->_Parent->_RightChild;
+                    }
+                    if (w->_LeftChild->_Color == BLACK && w->_RightChild->_Color == BLACK) {
+                        w->_Color = RED;
+                        x = x->_Parent;
+                    } else {
+                        if (w->_RightChild->_Color == BLACK) {
+                            w->_LeftChild->_Color = BLACK;
+                            w->_Color = RED;
+                            rotateRight(w);
+                            w = x->_Parent->_RightChild;
+                        }
+                        w->_Color = x->_Parent->_Color;
+                        x->_Parent->_Color = BLACK;
+                        w->_RightChild->_Color = BLACK;
+                        rotateLeft(x->_Parent);
+                        x = _root;
+                    }
+                } else {
+                    Node* w = x->_Parent->_LeftChild;
+                    if (w->_Color == RED) {
+                        w->_Color = BLACK;
+                        x->_Parent->_Color = RED;
+                        rotateRight(x->_Parent);
+                        w = x->_Parent->_LeftChild;
+                    }
+                    if (w->_RightChild->_Color == BLACK && w->_LeftChild->_Color == BLACK) {
+                        w->_Color = RED;
+                        x = x->_Parent;
+                    } else {
+                        if (w->_LeftChild->_Color == BLACK) {
+                            w->_RightChild->_Color = BLACK;
+                            w->_Color = RED;
+                            rotateLeft(w);
+                            w = x->_Parent->_LeftChild;
+                        }
+                        w->_Color = x->_Parent->_Color;
+                        x->_Parent->_Color = BLACK;
+                        w->_LeftChild->_Color = BLACK;
+                        rotateRight(x->_Parent);
+                        x = _root;
+                    }
+                }
             }
-            return ritr;
+            x->color = BLACK;
         };
 
-        const_iterator find(const Key &key) const {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
+    /*
+    *====================================================================================
+    *|                                    printTest                                     |
+    *====================================================================================
+    */
 
-            while (troot && *ritr != key) {
-                if (!(*troot < key))
-                    ritr = troot--;
-                else
-                    ritr = troot++;
-            }
-            return const_iterator(ritr);
-        };
+        void inorderTraversal(Node* node) {
+            if (node == _nul)
+                return;
 
+            inorderTraversal(node->left);
+            system("Color 70");
+            if (node->_Color == RED)
+                system("Color 74");
+            std::cout << node->data << " ";
+            inorderTraversal(node->right);
+        }
 
-        /* Returns a range containing all elements with the given key in the container. The range is
-         * defined by two iterators, one pointing to the first element that is not less than key and
-         * another pointing to the first element greater than key. Alternatively, the first iterator
-         * may be obtained with lower_bound(), and the second with upper_bound().
-         * 1,2) Compares the keys to key.*/
-        std::pair<iterator, iterator> equal_range(const Key &key) {
-            return ft::make_pair(lower_bound(key), upper_bound(key));
-        };
-
-        std::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
-            return ft::make_pair(lower_bound(key), upper_bound(key));
-        };
-
-        /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
-         * Iterator pointing to the first element that is not less than key.
-         * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-        iterator lower_bound(const Key &key) {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
-
-            while (troot ) {
-                if (!(*troot < key))
-                    ritr = troot--;
-                else
-                    ritr = troot++;
-            }
-            return ritr;
-        };
-
-        const_iterator lower_bound(const Key &key) const {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
-
-            while (troot) {
-                if (!(*troot < key))
-                    ritr = troot--;
-                else
-                    ritr = troot++;
-            }
-            return const_iterator(ritr);
-        };
-
-        /*Returns an iterator pointing to the first element that is greater than key.
-         * Iterator pointing to the first element that is greater than key.
-         * If no such element is found, past-the-end (see end()) iterator is returned.*/
-        iterator upper_bound(const Key &key) {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
-
-            while (troot) {
-                if (*troot < key)
-                    ritr = troot--;
-                else
-                    ritr = troot++;
-            }
-            return ritr;
-        };
-
-        const_iterator upper_bound(const Key &key) const {
-            iterator troot = _root;/*forward*/
-            iterator ritr = _root;/*return*/
-
-            while (troot){
-                if (*troot < key)
-                    ritr = troot--;
-                else
-                    ritr = troot++;
-            }
-            return const_iterator(ritr);
-        };
-
-        /*Returns the function object that compares the keys, which is a copy of
-         * this container's constructor argument comp. It is the same as value_comp.*/
-        key_compare key_comp() const { return key_comp(); };
-
-        /*Returns the function object that compares the values. It is the same as key_comp.*/
-        value_compare value_comp() const { return value_comp(); };
-
-/*
-*====================================================================================
-*|                             Private Membre fonction                              |
-*====================================================================================
-*/
-
-private:
-
-
-
+        void printTree() {
+            inorderTraversal(_root);
+            std::cout << std::endl;
+        }
 };
+
 /*
 *====================================================================================
 *|                                 Non Membre fonction                              |
 *====================================================================================
 */
+Node* RBTree<T>::successor(RBNode<T>* x) const {
+    if (x->right != nullptr) {
+        // Si le noeud a un fils droit, le successeur est le nœud le plus à gauche de ce sous-arbre
+        RBNode<T>* y = x->right;
+        while (y->left != nullptr) {
+            y = y->left;
+        }
+        return y;
+    } else {
+        // Si le noeud n'a pas de fils droit, on remonte dans l'arbre jusqu'à trouver le premier ancêtre
+        // qui est le fils gauche de son parent, lequel sera alors le successeur.
+        RBNode<T>* y = x->parent;
+        while (y != nullptr && x == y->right) {
+            x = y;
+            y = y->parent;
+        }
+        return y;
+    }
 
-template< class Key, class Compare, class Allocator >
-inline bool operator==(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs == rhs;
-}
-
-template< class Key, class Compare, class Allocator >
-inline bool operator!=(const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename ft::RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs != rhs;
-}
-
-template< class Key, class Compare, class Allocator >
-inline bool operator<(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs < rhs;
-}
-
-template< class Key, class Compare, class Allocator >
-inline bool operator<=(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs <= rhs;
-}
-
-template< class Key, class Compare, class Allocator >
-inline bool operator>(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                       const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs > rhs;
-}
-
-template< class Key, class Compare, class Allocator >
-inline bool operator>=(const typename RedBlackTree< Key, Compare, Allocator >::iterator& lhs,
-                      const typename RedBlackTree< Key, Compare, Allocator >::iterator& rhs) {
-    return lhs >= rhs;
-}
-
-/*Checks if the contents of lhs and rhs are equal,
-* that is, they have the same number of elements and each element
-* in lhs compares equal with the element in rhs at the same position.*/
-template< class Key, class Compare, class Allocator >
-inline bool operator== ( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                         const RedBlackTree< Key, Compare, Allocator >& rhs )
-{__INFONM__
-    if (lhs.size() == rhs.size())
-        return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
-    return false;
-};
-
-template< class Key, class Compare, class Allocator >
-inline bool operator!=( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                        const RedBlackTree< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
-
-/*3-6) Compares the contents of lhs and rhs lexicographically.
- * The comparison is performed
- * by a function equivalent to std::lexicographical_compare.*/
-template< class Key, class Compare, class Allocator >
-inline bool operator<( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                       const RedBlackTree< Key, Compare, Allocator >& rhs )
-    {__INFONM__
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                           rhs.begin(), rhs.end());
-    };
-
-template< class Key, class Compare, class Allocator >
-inline bool operator<=( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                        const RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
-
-template< class Key, class Compare, class Allocator >
-inline bool operator>( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                       const RedBlackTree< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
-
-template< class Key, class Compare, class Allocator >
-inline bool operator>=( const RedBlackTree< Key, Compare, Allocator >& lhs,
-                        const RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
 
 namespace std {
-    template< class Key, class Compare, class Allocator >
-    inline void swap(ft::RedBlackTree< Key, Compare, Allocator >& lhs, ft::RedBlackTree< Key, Compare, Allocator > &rhs)
+    template< class Key, class Node, class Compare, class Allocator >
+    inline void swap(ft::RedBlackTree< Key, Node, Compare, Allocator >& lhs,
+                     ft::RedBlackTree< Key, Node, Compare, Allocator > &rhs)
     {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
 }
 
