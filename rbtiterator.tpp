@@ -68,24 +68,24 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         Key* operator->() const { return &(operator*()); }
 
         _self& operator++() {
-
+            _node = _rbt::successor(_node);
             return *this;
         };
 
         _self operator++(int) {
             _self Tmp = *this;
-
+            _node = _rbt::successor(_node);
             return Tmp;
         };
 
         _self& operator--() {
-            _Rbt::predecessor(_node);
+            _node = _rbt::predecessor(_node);
             return *this;
         };
 
         _self  operator--(int) {
             _self Tmp = *this;
-            _Rbt::predecessor(_node);
+            _rbt::predecessor(_node);
             return Tmp;
         };
 

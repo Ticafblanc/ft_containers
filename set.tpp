@@ -23,11 +23,11 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : protected RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator > {
+    class set : protected RedBlackTree< Key, Node< Key > > {
 
     private:
 
-        typedef RedBlackTree< Key, Node< Key, Compare, Allocator >, Compare, Allocator > base;
+        typedef RedBlackTree< Key, Node< Key > > base;
         typedef set< Key, Compare, Allocator >                                           self;
 
     /*
@@ -428,7 +428,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                                 const RedBlackTree< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
     __FT_CONTAINERS_END_NAMESPACE
-
+void copy_tree(Node* root, bool (*comp_func)(Key, Key)) {
+    if (root != _nul) {
+        insert(x->data);
+        copy_tree(x->left);
+        copy_tree(x->right);
+    }
+};
     namespace std {
         template< class Key, class Compare, class Allocator >
         inline void swap(ft::RedBlackTree< Key, Compare, Allocator >& lhs, ft::RedBlackTree< Key, Compare, Allocator > &rhs)

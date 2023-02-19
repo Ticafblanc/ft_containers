@@ -13,7 +13,7 @@
 #pragma once
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "ft_containers.hpp"
 #include "type_traits.tpp"
 #include "algorithm.tpp"
@@ -50,45 +50,14 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
     /*
     *====================================================================================
-    *|                                     Member Type                                  |
-    *====================================================================================
-    */
-
-        typedef Key key_types;
-        typedef key_types value_type;
-        typedef Node        node_type;
-        typedef std::size_t size_type;
-        typedef std::ptrdiff_t difference_type;
-
-    /*
-    *====================================================================================
     *|                                  Member Fonction                                 |
     *====================================================================================
     */
 
         RedBlackTree() : _root(_nul), _nul(new Node()), _size(0) { __INFOMF__ };
 
-        RedBlackTree(const _self &other) : _root(_nul), _nul(new Node()), _size(0) {
-            __INFOMF__
-            copy_tree(other.root);
-        };
+        ~RedBlackTree() { __INFOMF__ };
 
-        virtual ~RedBlackTree() { __INFOMF__ clear(); __INFOMFNL__ };
-
-        /*Copy assignment operator. Replaces the contents with a copy of the contents of other.*/
-        _self &operator=(const _self &other) {
-            clear();
-            copy_tree(other.root);
-            return *this;
-        };
-
-        void copy_tree(Node* x) {
-            if (x != _nul) {
-                insert(x->data);
-                copy_tree(x->left);
-                copy_tree(x->right);
-            }
-        };
     /*
     *====================================================================================
     *|                                    Move                                         |
@@ -114,10 +83,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
         }
 
         Node* successor(Node* node) {
-            if (!isNul(node->_RightChild)) {
-                node = node->_RightChild;
-                return minimum(node);
-            }
+            if (!isNul(node->_RightChild))
+                return minimum(node->_RightChild);
             Node* rnode = node->_Parent;
             while (!isNul(rnode) && node == rnode->_RightChild) {
                 node = rnode;
@@ -126,16 +93,15 @@ Depth Property: For each node, any simple path from this node to any of its desc
             return rnode;
         };
 
-        Node* predecessor(Node* x) {
-            if (!isNul(x->_LeftChild)) {
-                return maximum(x->_LeftChild);
+        Node* predecessor(Node* node) {
+            if (!isNul(node->_LeftChild))
+                return maximum(node->_LeftChild);
+            Node* rnode = node->_Parent;
+            while (!isNul(rnode) && node == rnode->_LeftChild) {
+                node = rnode;
+                rnode = rnode->_Parent;
             }
-            Node* y = x->_Parent;
-            while (y != _nul && x == y->_LeftChild) {
-                x = y;
-                y = y->_Parent;
-            }
-            return y;
+            return rnode;
         }
 
     /*
@@ -144,31 +110,63 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
-        Node* find(Key value) {
-            Node* x = _root;
-            while (x != _nul && x->_Key != value) {
-                if (value < x->_Key)
-                    x = x->_LeftChild;
-                else
-                    x = x->_RightChild;
+        bool    keyComp(Key lhs, Key rhs, bool (*initFunc)(Key, Key) = nullptr){
+            static bool (*Func)(Key, Key);
+            if (initFunc != nullptr) {
+                Func = initFunc;
+                return true;
             }
-            return x;
+            return Func(lhs, rhs);
         }
 
+        Key*    keyConstruct(const Key& value, Key* (initFuncAlloc)(std::size_t) = nullptr,
+                             void (*initFuncConstruct)(Key*, const Key&) = nullptr){
+            static Key* (*FuncAlloc)(std::size_t);
+            static Key* (*FuncConstruct)(Key*, const Key&);
+            if (initFuncAlloc != nullptr && initFuncConstruct != nullptr) {
+                FuncAlloc = initFuncAlloc;
+                FuncConstruct = initFuncConstruct;
+                return true;
+            }
+            Key* rkey = FuncAlloc(1);
+            FuncConstruct(rkey, value);
+            return rkey;
+        }
+
+        Key*    keyDestroy(const Key& value, Key* (initFuncAlloc)(std::size_t) = nullptr,
+                             void (*initFuncConstruct)(Key*, const Key&) = nullptr){
+            static Key* (*FuncAlloc)(std::size_t);
+            static Key* (*FuncConstruct)(Key*, const Key&);
+            if (initFuncAlloc != nullptr && initFuncConstruct != nullptr) {
+                FuncAlloc = initFuncAlloc;
+                FuncConstruct = initFuncConstruct;
+                return true;
+            }
+            Key* rkey = FuncAlloc(1);
+            FuncConstruct(rkey, value);
+            return rkey;
+        }
+
+        Node* find(Key value, bool (*comp_func)(Key, Key)) {
+            Node* rnode = _root;
+            while (!isNul(rnode) && rnode->_Key != value) {
+                if (value < rnode->_Key)
+                    rnode = rnode->_LeftChild;
+                else
+                    rnode = rnode->_RightChild;
+            }
+            return rnode;
+        }
+
+        /*update size of container*/
         void fixup_size(Node* x) {
             std::size_t left_size = (x->_LeftChild == _nul) ? 0 : x->left->size;
             std::size_t right_size = (x->_RightChild == _nul) ? 0 : x->right->size;
             x->size = left_size + right_size + 1;
         }
 
-    /*
-    *====================================================================================
-    *|                                    Clear                                         |
-    *====================================================================================
-    */
-
         /*Erases all elements from the treee*/
-        void clear(void (*delete_func)(Key*)) {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
+        void clear(void (*delete_func)(Key*)) {__INFOMO__ clear_tree(_root, delete_func); _root = _nul; __INFOMONL__ };
 
         void clear_tree(Node* x, void (*delete_func)(Key*)) {
             if (x != _nul) {
@@ -186,7 +184,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
         /* find place with spec func to copmpare and add new node fo inserts value.*/
-        Node* insert(const Key *value, bool (*comp_func)(Key, Key)) {
+        Node* insert(const Key value, bool (*comp_func)(Key, Key)) {
             __INFOMO__
             Node* z = new Node(value, RED);
             Node* y = _nul;
@@ -433,32 +431,14 @@ Depth Property: For each node, any simple path from this node to any of its desc
 *|                                 Non Membre fonction                              |
 *====================================================================================
 */
-Node* RBTree<T>::successor(RBNode<T>* x) const {
-    if (x->right != nullptr) {
-        // Si le noeud a un fils droit, le successeur est le nœud le plus à gauche de ce sous-arbre
-        RBNode<T>* y = x->right;
-        while (y->left != nullptr) {
-            y = y->left;
-        }
-        return y;
-    } else {
-        // Si le noeud n'a pas de fils droit, on remonte dans l'arbre jusqu'à trouver le premier ancêtre
-        // qui est le fils gauche de son parent, lequel sera alors le successeur.
-        RBNode<T>* y = x->parent;
-        while (y != nullptr && x == y->right) {
-            x = y;
-            y = y->parent;
-        }
-        return y;
-    }
 
 
 __FT_CONTAINERS_END_NAMESPACE
 
 namespace std {
     template< class Key, class Node, class Compare, class Allocator >
-    inline void swap(ft::RedBlackTree< Key, Node, Compare, Allocator >& lhs,
-                     ft::RedBlackTree< Key, Node, Compare, Allocator > &rhs)
+    inline void swap(ft::RedBlackTree< Key, Node>& lhs,
+                     ft::RedBlackTree< Key, Node> &rhs)
     {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
 }
 
