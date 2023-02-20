@@ -1,19 +1,684 @@
-In file included from ../vector_tests/operator >=.cpp:1:
-In file included from ../vector_tests/../system/system_methods.ipp:2:
-In file included from ../vector_tests/../system/lib.hpp:30:
-../vector_tests/../system/Alloc.hpp:55:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
-template <class _Up, class... _Args>
-                          ^
-../vector_tests/../system/Alloc.hpp:58:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
-        construct(_Up* __p, _Args&&... __args)
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:68:31: error: cannot create a non-constant pointer to member function
+        set() : _base(&_comp, &_alloc.allocate, &_alloc.construct, &_alloc.destroy, &_alloc.deallocate){__INFOMF__};
+                              ^~~~~~~~~~~~~~~~
+../set_tests/__service.ipp:38:2: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::set' requested here
+        SetBoolTest() {
+        ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:68:31: error: cannot create a non-constant pointer to member function
+        set() : _base(&_comp, &_alloc.allocate, &_alloc.construct, &_alloc.destroy, &_alloc.deallocate){__INFOMF__};
+                              ^~~~~~~~~~~~~~~~
+../set_tests/__service.ipp:38:2: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::set' requested here
+        SetBoolTest() {
+        ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+In file included from ../set_tests/../../../set.tpp:16:
+../set_tests/../system/../../../red_black_tree.tpp:187:28: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+                clear_tree(node->_LeftChild);
+                           ^~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:182:34: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::clear_tree' requested here
+        void clear() {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
                                  ^
-../vector_tests/../system/Alloc.hpp:164:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
-template <class _Up, class... _Args>
-                          ^
-../vector_tests/../system/Alloc.hpp:167:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
-        construct(_Up* __p, _Args&&... __args)
+../set_tests/../system/../../../red_black_tree.tpp:76:38: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::clear' requested here
+        ~RedBlackTree() { __INFOMF__ clear(); };
+                                     ^
+../set_tests/../../../set.tpp:80:9: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::~RedBlackTree' requested here
+        ~set() {__INFOMF__};
+        ^
+../set_tests/__service.ipp:38:2: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::~set' requested here
+        SetBoolTest() {
+        ^
+../set_tests/../system/../../../red_black_tree.tpp:185:31: note: passing argument to parameter 'node' here
+        void clear_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:188:28: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+                clear_tree(node->_RightChild);
+                           ^~~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:185:31: note: passing argument to parameter 'node' here
+        void clear_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:187:28: error: cannot initialize a parameter of type 'ft::node<std::__1::basic_string<char>, void> *' with an lvalue of type 'ft::nodeBase<std::__1::basic_string<char> > *'
+                clear_tree(node->_LeftChild);
+                           ^~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:182:34: note: in instantiation of member function 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::clear_tree' requested here
+        void clear() {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
                                  ^
-4 warnings generated.
-ed.
-ated.
-ted.
+../set_tests/../system/../../../red_black_tree.tpp:76:38: note: in instantiation of member function 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::clear' requested here
+        ~RedBlackTree() { __INFOMF__ clear(); };
+                                     ^
+../set_tests/../../../set.tpp:80:9: note: in instantiation of member function 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::~RedBlackTree' requested here
+        ~set() {__INFOMF__};
+        ^
+../set_tests/__service.ipp:38:2: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::~set' requested here
+        SetBoolTest() {
+        ^
+../set_tests/../system/../../../red_black_tree.tpp:185:31: note: passing argument to parameter 'node' here
+        void clear_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:188:28: error: cannot initialize a parameter of type 'ft::node<std::__1::basic_string<char>, void> *' with an lvalue of type 'ft::nodeBase<std::__1::basic_string<char> > *'
+                clear_tree(node->_RightChild);
+                           ^~~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:185:31: note: passing argument to parameter 'node' here
+        void clear_tree(Node* node) {
+                              ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:156:62: error: invalid operands to binary expression ('ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') and 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::value_type' (aka 'const int'))
+            return  ft::make_pair(insert(save, value), (save == value));
+                                                        ~~~~ ^  ~~~~~
+../set_tests/__service.ipp:39:21: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::insert' requested here
+                s1.insert(2); st1.insert(2);
+                                  ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:390:1: note: candidate function not viable: no known conversion from 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') to 'const std::__1::error_code' for 1st argument
+operator==(const error_code& __x, const error_code& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:397:1: note: candidate function not viable: no known conversion from 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') to 'const std::__1::error_code' for 1st argument
+operator==(const error_code& __x, const error_condition& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:405:1: note: candidate function not viable: no known conversion from 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') to 'const std::__1::error_condition' for 1st argument
+operator==(const error_condition& __x, const error_code& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:412:1: note: candidate function not viable: no known conversion from 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') to 'const std::__1::error_condition' for 1st argument
+operator==(const error_condition& __x, const error_condition& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:576:1: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const pair<_T1,_T2>& __x, const pair<_T1,_T2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:807:1: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const reverse_iterator<_Iter1>& __x, const reverse_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1036:1: note: candidate template ignored: could not match 'istream_iterator<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const istream_iterator<_Tp, _CharT, _Traits, _Distance>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1140:6: note: candidate template ignored: could not match 'istreambuf_iterator<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator==(const istreambuf_iterator<_CharT,_Traits>& __a,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1243:1: note: candidate template ignored: could not match 'move_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const move_iterator<_Iter1>& __x, const move_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1615:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter2>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2042:6: note: candidate template ignored: could not match 'allocator<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator==(const allocator<_Tp>&, const allocator<_Up>&) _NOEXCEPT {return true;}
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2877:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const unique_ptr<_T1, _D1>& __x, const unique_ptr<_T2, _D2>& __y) {return __x.get() == __y.get();}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2913:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const unique_ptr<_T1, _D1>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2921:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'const int'
+operator==(nullptr_t, const unique_ptr<_T1, _D1>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4426:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const shared_ptr<_Tp>& __x, const shared_ptr<_Up>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4480:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const shared_ptr<_Tp>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4488:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'const int'
+operator==(nullptr_t, const shared_ptr<_Tp>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03:1568:1: note: candidate template ignored: could not match 'function<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const function<_Fp>& __f, nullptr_t) {return !__f;}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03:1573:1: note: candidate template ignored: could not match 'function<type-parameter-0-0>' against 'const int'
+operator==(nullptr_t, const function<_Fp>& __f) {return !__f;}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/array:371:1: note: candidate template ignored: could not match 'array<type-parameter-0-0, _Size>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const array<_Tp, _Size>& __x, const array<_Tp, _Size>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:3335:1: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const vector<_Tp, _Allocator>& __x, const vector<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:1594:1: note: candidate template ignored: could not match 'map<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const map<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:2176:1: note: candidate template ignored: could not match 'multimap<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const multimap<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:898:1: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const set<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:1423:1: note: candidate template ignored: could not match 'multiset<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const multiset<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque:2967:1: note: candidate template ignored: could not match 'deque<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const deque<_Tp, _Allocator>& __x, const deque<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack:256:1: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const stack<_Tp, _Container>& __x, const stack<_Tp, _Container>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:614:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator==(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:623:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator==(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:632:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'int'
+bool operator==(typename common_type<basic_string_view<_CharT, _Traits> >::type __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:563:6: note: candidate template ignored: could not match 'fpos<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator==(const fpos<_StateT>& __x, const fpos<_StateT>& __y)
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3850:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3862:1: note: candidate template ignored: could not match 'basic_string<char, std::__1::char_traits<char>, type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const basic_string<char, char_traits<char>, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3881:1: note: candidate template ignored: could not match 'const _CharT *' against 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator')
+operator==(const _CharT* __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3894:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+operator==(const basic_string<_CharT,_Traits,_Allocator>& __lhs,
+^
+../set_tests/../system/../../../iterator.tpp:252:6: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator== (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
+     ^
+../set_tests/../system/../../../vector.tpp:627:13: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+inline bool operator== ( const ft::vector<T,Alloc>& lhs,
+            ^
+../set_tests/../system/../../../stack.tpp:132:13: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
+            ^
+../set_tests/../system/../../../utility.tpp:81:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+     ^
+../set_tests/../../../set.tpp:292:17: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<int, ft::node<int, void> >::iterator'
+    inline bool operator== ( const ft::set< Key, Compare, Allocator >& lhs,
+                ^
+../set_tests/../../../set.tpp:249:64: error: use of undeclared identifier 'greater_or_equal'
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                               ^
+                                                               this->
+../set_tests/../../../set.tpp:154:29: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
+            iterator save = lower_bound(value);
+                            ^
+../set_tests/__service.ipp:39:21: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::insert' requested here
+                s1.insert(2); st1.insert(2);
+                                  ^
+../set_tests/../system/../../../red_black_tree.tpp:234:15: note: must qualify identifier to find this declaration in dependent base class
+        Node* greater_or_equal(Key& value){
+              ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:249:81: error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                                                ^~~
+../set_tests/../system/../../../red_black_tree.tpp:234:37: note: passing argument to parameter 'value' here
+        Node* greater_or_equal(Key& value){
+                                    ^
+../set_tests/../system/../../../red_black_tree.tpp:238:40: error: comparison between pointer and integer ('int *' and 'int')
+                if (forward_root->_Key >= value) {
+                    ~~~~~~~~~~~~~~~~~~ ^  ~~~~~
+../set_tests/../../../set.tpp:249:64: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::greater_or_equal' requested here
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                               ^
+../set_tests/../../../set.tpp:154:29: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
+            iterator save = lower_bound(value);
+                            ^
+../set_tests/__service.ipp:39:21: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::insert' requested here
+                s1.insert(2); st1.insert(2);
+                                  ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:163:92: error: no matching member function for call to 'insert'
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                                                                                           ^~~~~~
+../set_tests/../../../set.tpp:156:35: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::insert' requested here
+            return  ft::make_pair(insert(save, value), (save == value));
+                                  ^
+../set_tests/__service.ipp:39:21: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::insert' requested here
+                s1.insert(2); st1.insert(2);
+                                  ^
+../set_tests/../../../set.tpp:163:18: note: candidate function not viable: no known conversion from 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::value_type' (aka 'const int') to 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator' (aka 'ft::RedBlackTree<int, ft::node<int, void> >::iterator') for 1st argument
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                 ^                                                                                ~~~~~
+../set_tests/../../../set.tpp:169:14: note: candidate template ignored: deduced conflicting types for parameter 'InputIt' ('int' vs. 'ft::node<int, void> *')
+        void insert(InputIt first, InputIt last) {
+             ^
+../set_tests/../../../set.tpp:156:62: error: invalid operands to binary expression ('ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') and 'const ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::value_type' (aka 'const std::__1::basic_string<char>'))
+            return  ft::make_pair(insert(save, value), (save == value));
+                                                        ~~~~ ^  ~~~~~
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:390:1: note: candidate function not viable: no known conversion from 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') to 'const std::__1::error_code' for 1st argument
+operator==(const error_code& __x, const error_code& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:397:1: note: candidate function not viable: no known conversion from 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') to 'const std::__1::error_code' for 1st argument
+operator==(const error_code& __x, const error_condition& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:405:1: note: candidate function not viable: no known conversion from 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') to 'const std::__1::error_condition' for 1st argument
+operator==(const error_condition& __x, const error_code& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/system_error:412:1: note: candidate function not viable: no known conversion from 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') to 'const std::__1::error_condition' for 1st argument
+operator==(const error_condition& __x, const error_condition& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:576:1: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const pair<_T1,_T2>& __x, const pair<_T1,_T2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:807:1: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const reverse_iterator<_Iter1>& __x, const reverse_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1036:1: note: candidate template ignored: could not match 'istream_iterator<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const istream_iterator<_Tp, _CharT, _Traits, _Distance>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1140:6: note: candidate template ignored: could not match 'istreambuf_iterator<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator==(const istreambuf_iterator<_CharT,_Traits>& __a,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1243:1: note: candidate template ignored: could not match 'move_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const move_iterator<_Iter1>& __x, const move_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1615:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter2>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2042:6: note: candidate template ignored: could not match 'allocator<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator==(const allocator<_Tp>&, const allocator<_Up>&) _NOEXCEPT {return true;}
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2877:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const unique_ptr<_T1, _D1>& __x, const unique_ptr<_T2, _D2>& __y) {return __x.get() == __y.get();}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2913:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const unique_ptr<_T1, _D1>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2921:1: note: candidate template ignored: could not match 'unique_ptr' against 'basic_string'
+operator==(nullptr_t, const unique_ptr<_T1, _D1>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4426:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const shared_ptr<_Tp>& __x, const shared_ptr<_Up>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4480:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const shared_ptr<_Tp>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4488:1: note: candidate template ignored: could not match 'shared_ptr' against 'basic_string'
+operator==(nullptr_t, const shared_ptr<_Tp>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03:1568:1: note: candidate template ignored: could not match 'function<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const function<_Fp>& __f, nullptr_t) {return !__f;}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/__functional_03:1573:1: note: candidate template ignored: could not match 'function' against 'basic_string'
+operator==(nullptr_t, const function<_Fp>& __f) {return !__f;}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/array:371:1: note: candidate template ignored: could not match 'array<type-parameter-0-0, _Size>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const array<_Tp, _Size>& __x, const array<_Tp, _Size>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:3335:1: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const vector<_Tp, _Allocator>& __x, const vector<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:1594:1: note: candidate template ignored: could not match 'map<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const map<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:2176:1: note: candidate template ignored: could not match 'multimap<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const multimap<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:898:1: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const set<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:1423:1: note: candidate template ignored: could not match 'multiset<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const multiset<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque:2967:1: note: candidate template ignored: could not match 'deque<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const deque<_Tp, _Allocator>& __x, const deque<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack:256:1: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const stack<_Tp, _Container>& __x, const stack<_Tp, _Container>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:614:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator==(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:623:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator==(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:632:6: note: candidate template ignored: could not match 'basic_string_view' against 'basic_string'
+bool operator==(typename common_type<basic_string_view<_CharT, _Traits> >::type __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:563:6: note: candidate template ignored: could not match 'fpos<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator==(const fpos<_StateT>& __x, const fpos<_StateT>& __y)
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3850:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3862:1: note: candidate template ignored: could not match 'basic_string<char, std::__1::char_traits<char>, type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const basic_string<char, char_traits<char>, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3881:1: note: candidate template ignored: could not match 'const _CharT *' against 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator')
+operator==(const _CharT* __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:3894:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+operator==(const basic_string<_CharT,_Traits,_Allocator>& __lhs,
+^
+../set_tests/../system/../../../iterator.tpp:252:6: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator== (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
+     ^
+../set_tests/../system/../../../vector.tpp:627:13: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+inline bool operator== ( const ft::vector<T,Alloc>& lhs,
+            ^
+../set_tests/../system/../../../stack.tpp:132:13: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
+            ^
+../set_tests/../system/../../../utility.tpp:81:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+     ^
+../set_tests/../../../set.tpp:292:17: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator'
+    inline bool operator== ( const ft::set< Key, Compare, Allocator >& lhs,
+                ^
+../set_tests/../../../set.tpp:249:64: error: use of undeclared identifier 'greater_or_equal'
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                               ^
+                                                               this->
+../set_tests/../../../set.tpp:154:29: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::lower_bound' requested here
+            iterator save = lower_bound(value);
+                            ^
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+../set_tests/../system/../../../red_black_tree.tpp:234:15: note: must qualify identifier to find this declaration in dependent base class
+        Node* greater_or_equal(Key& value){
+              ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:249:81: error: binding reference of type 'basic_string<...>' to value of type 'const basic_string<...>' drops 'const' qualifier
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                                                ^~~
+../set_tests/../system/../../../red_black_tree.tpp:234:37: note: passing argument to parameter 'value' here
+        Node* greater_or_equal(Key& value){
+                                    ^
+../set_tests/../system/../../../red_black_tree.tpp:238:40: error: invalid operands to binary expression ('std::__1::basic_string<char> *' and 'std::__1::basic_string<char>')
+                if (forward_root->_Key >= value) {
+                    ~~~~~~~~~~~~~~~~~~ ^  ~~~~~
+../set_tests/../../../set.tpp:249:64: note: in instantiation of member function 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::greater_or_equal' requested here
+        iterator lower_bound(const Key &key) { return iterator(greater_or_equal(key)); };
+                                                               ^
+../set_tests/../../../set.tpp:154:29: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::lower_bound' requested here
+            iterator save = lower_bound(value);
+                            ^
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4041:1: note: candidate template ignored: deduced conflicting types for parameter '_CharT' ('std::__1::basic_string<char>' vs. 'char')
+operator>=(const _CharT* __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:608:1: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const pair<_T1,_T2>& __x, const pair<_T1,_T2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:839:1: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const reverse_iterator<_Iter1>& __x, const reverse_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1275:1: note: candidate template ignored: could not match 'move_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const move_iterator<_Iter1>& __x, const move_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1651:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter2>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1683:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter1>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2908:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const unique_ptr<_T1, _D1>& __x, const unique_ptr<_T2, _D2>& __y) {return !(__x < __y);}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2995:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const unique_ptr<_T1, _D1>& __x, nullptr_t)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:3003:1: note: candidate template ignored: could not match 'unique_ptr' against 'basic_string'
+operator>=(nullptr_t, const unique_ptr<_T1, _D1>& __x)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4472:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const shared_ptr<_Tp>& __x, const shared_ptr<_Up>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4560:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const shared_ptr<_Tp>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4568:1: note: candidate template ignored: could not match 'shared_ptr' against 'basic_string'
+operator>=(nullptr_t, const shared_ptr<_Tp>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/array:412:1: note: candidate template ignored: could not match 'array<type-parameter-0-0, _Size>' against 'std::__1::basic_string<char> *'
+operator>=(const array<_Tp, _Size>& __x, const array<_Tp, _Size>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:3368:1: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const vector<_Tp, _Allocator>& __x, const vector<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:1630:1: note: candidate template ignored: could not match 'map<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'std::__1::basic_string<char> *'
+operator>=(const map<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:2212:1: note: candidate template ignored: could not match 'multimap<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'std::__1::basic_string<char> *'
+operator>=(const multimap<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:934:1: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const set<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:1459:1: note: candidate template ignored: could not match 'multiset<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const multiset<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque:3000:1: note: candidate template ignored: could not match 'deque<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const deque<_Tp, _Allocator>& __x, const deque<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack:288:1: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const stack<_Tp, _Container>& __x, const stack<_Tp, _Container>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:749:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>=(basic_string_view<_CharT, _Traits> __lhs, basic_string_view<_CharT, _Traits> __rhs) _NOEXCEPT
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:757:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>=(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:765:6: note: candidate template ignored: could not match 'basic_string_view' against 'basic_string'
+bool operator>=(typename common_type<basic_string_view<_CharT, _Traits> >::type __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4023:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4032:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+../set_tests/../system/../../../iterator.tpp:277:6: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+bool operator>= (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
+     ^
+../set_tests/../system/../../../vector.tpp:659:13: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+inline bool operator>=( const ft::vector<T,Alloc>& lhs,
+            ^
+../set_tests/../system/../../../stack.tpp:152:13: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+inline bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
+            ^
+../set_tests/../system/../../../utility.tpp:114:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+     ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:163:92: error: no matching member function for call to 'insert'
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                                                                                           ^~~~~~
+../set_tests/../../../set.tpp:156:35: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+            return  ft::make_pair(insert(save, value), (save == value));
+                                  ^
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+../set_tests/../../../set.tpp:163:18: note: candidate function not viable: no known conversion from 'const ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::value_type' (aka 'const std::__1::basic_string<char>') to 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') for 1st argument
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                 ^                                                                                ~~~~~
+../set_tests/../../../set.tpp:169:14: note: candidate template ignored: deduced conflicting types for parameter 'InputIt' ('std::__1::basic_string<char>' vs. 'ft::node<std::__1::basic_string<char>, void> *')
+        void insert(InputIt first, InputIt last) {
+             ^
+In file included from ../set_tests/insert(hint).cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+In file included from ../set_tests/../../../set.tpp:16:
+../set_tests/../system/../../../red_black_tree.tpp:212:46: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+            new_node->_LeftChild = copy_tree(node->_LeftChild);
+                                             ^~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:74:78: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::copy_tree' requested here
+                Dealloc(other.Dealloc), _nul(create_node(other._nul)), _root(copy_tree(other._root)){}
+                                                                             ^
+../set_tests/../../../set.tpp:78:77: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::RedBlackTree' requested here
+        set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base(other) {__INFOMF__ };
+                                                                            ^
+../set_tests/__service.ipp:65:15: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::set' requested here
+        res2 = func2(my_set);
+                     ^
+../set_tests/insert(hint).cpp:38:10: note: in instantiation of function template specialization 'run_set_unit_test<int>' requested here
+    exit(run_set_unit_test<int>("insert(hint)", insert_test_3, insert_test_3));
+         ^
+../set_tests/../system/../../../red_black_tree.tpp:207:31: note: passing argument to parameter 'node' here
+        Node* copy_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:213:47: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+            new_node->_RightChild = copy_tree(node->_RightChild);
+                                              ^~~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:207:31: note: passing argument to parameter 'node' here
+        Node* copy_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:215:24: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+            if (!isNul(new_node->_LeftChild)) {
+                       ^~~~~~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:84:26: note: passing argument to parameter 'node' here
+        bool isNul(Node* node) const {
+                         ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+ror-limit=]
+20 errors generated.
+ requested here
+            iterator save = lower_bound(value);
+                            ^
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4041:1: note: candidate template ignored: deduced conflicting types for parameter '_CharT' ('std::__1::basic_string<char>' vs. 'char')
+operator>=(const _CharT* __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/utility:608:1: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const pair<_T1,_T2>& __x, const pair<_T1,_T2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:839:1: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const reverse_iterator<_Iter1>& __x, const reverse_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1275:1: note: candidate template ignored: could not match 'move_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const move_iterator<_Iter1>& __x, const move_iterator<_Iter2>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1651:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter2>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/iterator:1683:1: note: candidate template ignored: could not match '__wrap_iter<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const __wrap_iter<_Iter1>& __x, const __wrap_iter<_Iter1>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2908:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const unique_ptr<_T1, _D1>& __x, const unique_ptr<_T2, _D2>& __y) {return !(__x < __y);}
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:2995:1: note: candidate template ignored: could not match 'unique_ptr<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const unique_ptr<_T1, _D1>& __x, nullptr_t)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:3003:1: note: candidate template ignored: could not match 'unique_ptr' against 'basic_string'
+operator>=(nullptr_t, const unique_ptr<_T1, _D1>& __x)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4472:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const shared_ptr<_Tp>& __x, const shared_ptr<_Up>& __y) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4560:1: note: candidate template ignored: could not match 'shared_ptr<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+operator>=(const shared_ptr<_Tp>& __x, nullptr_t) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/memory:4568:1: note: candidate template ignored: could not match 'shared_ptr' against 'basic_string'
+operator>=(nullptr_t, const shared_ptr<_Tp>& __x) _NOEXCEPT
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/array:412:1: note: candidate template ignored: could not match 'array<type-parameter-0-0, _Size>' against 'std::__1::basic_string<char> *'
+operator>=(const array<_Tp, _Size>& __x, const array<_Tp, _Size>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/vector:3368:1: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const vector<_Tp, _Allocator>& __x, const vector<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:1630:1: note: candidate template ignored: could not match 'map<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'std::__1::basic_string<char> *'
+operator>=(const map<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/map:2212:1: note: candidate template ignored: could not match 'multimap<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2, type-parameter-0-3>' against 'std::__1::basic_string<char> *'
+operator>=(const multimap<_Key, _Tp, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:934:1: note: candidate template ignored: could not match 'set<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const set<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/set:1459:1: note: candidate template ignored: could not match 'multiset<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const multiset<_Key, _Compare, _Allocator>& __x,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/deque:3000:1: note: candidate template ignored: could not match 'deque<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const deque<_Tp, _Allocator>& __x, const deque<_Tp, _Allocator>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/stack:288:1: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+operator>=(const stack<_Tp, _Container>& __x, const stack<_Tp, _Container>& __y)
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:749:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>=(basic_string_view<_CharT, _Traits> __lhs, basic_string_view<_CharT, _Traits> __rhs) _NOEXCEPT
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:757:6: note: candidate template ignored: could not match 'basic_string_view<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>=(basic_string_view<_CharT, _Traits> __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string_view:765:6: note: candidate template ignored: could not match 'basic_string_view' against 'basic_string'
+bool operator>=(typename common_type<basic_string_view<_CharT, _Traits> >::type __lhs,
+     ^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4023:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/string:4032:1: note: candidate template ignored: could not match 'basic_string<type-parameter-0-0, type-parameter-0-1, type-parameter-0-2>' against 'std::__1::basic_string<char> *'
+operator>=(const basic_string<_CharT, _Traits, _Allocator>& __lhs,
+^
+../set_tests/../system/../../../iterator.tpp:277:6: note: candidate template ignored: could not match 'reverse_iterator<type-parameter-0-0>' against 'std::__1::basic_string<char> *'
+bool operator>= (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
+     ^
+../set_tests/../system/../../../vector.tpp:659:13: note: candidate template ignored: could not match 'vector<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+inline bool operator>=( const ft::vector<T,Alloc>& lhs,
+            ^
+../set_tests/../system/../../../stack.tpp:152:13: note: candidate template ignored: could not match 'stack<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+inline bool operator>=( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
+            ^
+../set_tests/../system/../../../utility.tpp:114:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'std::__1::basic_string<char> *'
+bool operator>= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+     ^
+In file included from ../set_tests/compare class.cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+../set_tests/../../../set.tpp:163:92: error: no matching member function for call to 'insert'
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                                                                                           ^~~~~~
+../set_tests/../../../set.tpp:156:35: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+            return  ft::make_pair(insert(save, value), (save == value));
+                                  ^
+../set_tests/__service.ipp:44:25: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::insert' requested here
+                s5.insert("122"); st5.insert("122");
+                                      ^
+../set_tests/../../../set.tpp:163:18: note: candidate function not viable: no known conversion from 'const ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::value_type' (aka 'const std::__1::basic_string<char>') to 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::iterator' (aka 'ft::RedBlackTree<std::__1::basic_string<char>, ft::node<std::__1::basic_string<char>, void> >::iterator') for 1st argument
+        iterator insert(iterator pos, const value_type &value) {__INFOMO__ return iterator(insert(value, pos._node)); };
+                 ^                                                                                ~~~~~
+../set_tests/../../../set.tpp:169:14: note: candidate template ignored: deduced conflicting types for parameter 'InputIt' ('std::__1::basic_string<char>' vs. 'ft::node<std::__1::basic_string<char>, void> *')
+        void insert(InputIt first, InputIt last) {
+             ^
+In file included from ../set_tests/compare class.cpp:2:
+In file included from ../set_tests/__service.ipp:3:
+In file included from ../set_tests/../../../set.tpp:16:
+../set_tests/../system/../../../red_black_tree.tpp:212:46: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+            new_node->_LeftChild = copy_tree(node->_LeftChild);
+                                             ^~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:74:78: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::copy_tree' requested here
+                Dealloc(other.Dealloc), _nul(create_node(other._nul)), _root(copy_tree(other._root)){}
+                                                                             ^
+../set_tests/../../../set.tpp:78:77: note: in instantiation of member function 'ft::RedBlackTree<int, ft::node<int, void> >::RedBlackTree' requested here
+        set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base(other) {__INFOMF__ };
+                                                                            ^
+../set_tests/__service.ipp:65:15: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::set' requested here
+        res2 = func2(my_set);
+                     ^
+../set_tests/compare class.cpp:106:10: note: in instantiation of function template specialization 'run_set_unit_test<int>' requested here
+    exit(run_set_unit_test<int>("compare class", comparator_test, comparator_test));
+         ^
+../set_tests/../system/../../../red_black_tree.tpp:207:31: note: passing argument to parameter 'node' here
+        Node* copy_tree(Node* node) {
+                              ^
+../set_tests/../system/../../../red_black_tree.tpp:213:47: error: cannot initialize a parameter of type 'ft::node<int, void> *' with an lvalue of type 'ft::nodeBase<int> *'
+            new_node->_RightChild = copy_tree(node->_RightChild);
+                                              ^~~~~~~~~~~~~~~~~
+../set_tests/../system/../../../red_black_tree.tpp:207:31: note: passing argument to parameter 'node' here
+        Node* copy_tree(Node* node) {
+                              ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.

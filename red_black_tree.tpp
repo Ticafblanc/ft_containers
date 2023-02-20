@@ -20,6 +20,8 @@
 #include "node.tpp"
 #include "utility.tpp"
 #include "stack.tpp"
+#include <functional>
+
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -46,11 +48,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     struct RedBlackTree {
 
         typedef RedBlackTree<Key, Node>                     _self;
-        bool    (*Comp)(Key, Key) ;
-        Key*    (*Alloc)( std::size_t );
-        void    (*Construct)(Key*, const Key&);
-        void    (*Destroy)(Key*);
-        void    (*Dealloc)(Key*, std::size_t);
         Node                                                *_root;
         Node                                                *_nul;
 
@@ -61,17 +58,14 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
 
-        explicit RedBlackTree( bool  (*initComp)      (Key, Key)          = &std::less<Key>(),
-                               Key*  (*initAlloc)     (std::size_t)       = &std::allocator<Key>::allocate(),
-                               Key*  (*initConstruct) (const Key&)        = &std::allocator<Key>::construct(),
-                               void  (*initDestroy)   (const Key*)        = &std::allocator<Key>::destroy(),
-                               void  (*initDealloc)   (Key*, std::size_t) = &std::allocator<Key>::deallocate())
-                : Comp(initComp), Alloc(initAlloc), Construct(initConstruct), Destroy(initDestroy),
-                Dealloc(initDealloc), _nul(create_node()), _root(_nul){ __INFOMF__ };
+        explicit RedBlackTree()
+                :  _nul(create_node()) { __INFOMF__ _root = _nul;
+//        std::cout <<std::boolalpha;
+//        std::cout << (_root == nullptr) << (_root == _nul) <<  std::endl;
+    };
 
         RedBlackTree(const _self &other)
-                : Comp(other.Comp), Alloc(other.Alloc), Construct(other.Construct), Destroy(other.Destroy),
-                Dealloc(other.Dealloc), _nul(create_node(other._nul)), _root(copy_tree(other._root)){}
+                :  _nul(create_node()){__INFOMF__ _root = copy_tree(other._root); }
 
         ~RedBlackTree() { __INFOMF__ clear(); };
 
@@ -82,6 +76,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
         bool isNul(Node* node) const {
+//            std::cout << (node == nullptr) << (node == _nul) <<  std::endl;
+
             return (node == nullptr || node == _nul);
         };
 
@@ -145,25 +141,23 @@ Depth Property: For each node, any simple path from this node to any of its desc
         };
 
         /*call constructor non void de Node and new Node */
-        Node*   create_node(Key& value, Color color){
-            return new Node(value, color,  _nul, Comp, Alloc, Construct, Destroy, Dealloc);
-        };
-
-        /*call copy constructor de Node and new Node*/
-        Node*   create_node(Node * node){
-            return new Node(*node);
+        Node*   create_node(Key* value, Color color){
+            return new Node(value, color,  _nul);
         };
 
         /*delete node and call the destructor of Node*/
-        void    delete_node(Node* node){
+        Key*    delete_node(Node* node){
+            Key* save = node->_Key;
             delete node;
+            return save;
         };
 
         /*find value in the tree and return Node * to the pos
          * or retur the _nul node*/
-        Node*   find(Key& value, Node* rnode) {
-            while (!isNul(rnode) && *(rnode->_Key) != value) {
-                if (value < *(rnode->_Key))
+        template<class Compare>
+        Node*   find(Key& value, Node* rnode, Compare comp = std::less<Key>()) {
+            while (!isNul(rnode) && (comp(*(rnode->_Key), value) || comp(value, *(rnode->_Key)))) {
+                if (comp(value, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
                 else
                     rnode = rnode->_RightChild;
@@ -173,13 +167,13 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
         /*update size of container*/
         void fixup_size(Node* node) {
-            std::size_t left_size = (isNul(node->_LeftChild)) ? 0 : node->left->size;
-            std::size_t right_size = (isNul(node->_LeftChild)) ? 0 : node->right->size;
-            node->size = left_size + right_size + 1;
+            std::size_t left_size = (isNul(node->_LeftChild)) ? 0 : node->_LeftChild->_Size;
+            std::size_t right_size = (isNul(node->_RightChild)) ? 0 : node->_RightChild->_Size;
+            node->_Size = left_size + right_size + 1;
         };
 
         /*Erases all elements from the treee*/
-        void clear() {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
+        virtual void clear() {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
 
         /*Erases all elements from the treee start at _root*/
         void clear_tree(Node* node) {
@@ -208,7 +202,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
             if (isNul(node)) {
                 return _nul;
             }
-            Node *new_node = create_node(node);
+            Node *new_node = create_node(node->_Key, node->_Color);
             new_node->_LeftChild = copy_tree(node->_LeftChild);
             new_node->_RightChild = copy_tree(node->_RightChild);
             new_node->_Parent = _nul;
@@ -222,20 +216,22 @@ Depth Property: For each node, any simple path from this node to any of its desc
         };
 
         void swap(_self& other) {
-            std::swap(Comp, other.Comp);
-            std::swap(Construct, other.Construct);
-            std::swap(Alloc, other.Alloc);
-            std::swap(Destroy, other.Destroy);
-            std::swap(Dealloc, other.Dealloc);
             std::swap(_root, other._root);
             std::swap(_nul, other._nul);
         };
 
-        Node* greater_or_equal(Key& value){
+        /* find return greater or eqaul pos value*/
+        template<typename Compare>
+        Node* greater_or_equal(const Key& value, Compare comp) const {
             Node* forward_root = _root;
             Node* save = _nul;
             while (!(isNul(forward_root))) {
-                if (forward_root->_Key >= value) {
+                std::cout <<std::boolalpha;
+                std::cout << (_root == nullptr) << (_root == _nul) <<  std::endl;
+
+//                std::cout << "coucou   " << (isNul(forward_root)) <<  std::endl;
+
+                if (!comp(*(forward_root->_Key), value)) {
                     save = forward_root;
                     forward_root = forward_root->_LeftChild;
                 }
@@ -244,24 +240,23 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 }
             }
             return save;
-        }
+        };
 
-    /*
-    *====================================================================================
-    *|                                    Insert                                        |
-    *====================================================================================
-    */
+        /*
+        *====================================================================================
+        *|                                    Insert                                        |
+        *====================================================================================
+        */
 
         /* find place with spec func to compare and add new node fo inserts value.
          * return Node* to pos*/
-        Node* insert(const Key& value, Node* forward_root) {
+        template<typename Compare>
+        Node* insertn(Key* value, Node* forward_root, Compare comp ) {
             __INFOMO__
             Node* destination_node = _nul;
             while (!isNul(forward_root)) {
                 destination_node = forward_root;
-                if (value == *(forward_root->_Key))
-                    return forward_root;
-                if (value < *(forward_root->_Key))
+                if (comp(*value, *(forward_root->_Key)))
                     forward_root = forward_root->_LeftChild;
                 else
                     forward_root = forward_root->_RightChild;
@@ -270,7 +265,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
             new_node->_Parent = destination_node;
             if (isNul(destination_node))
                 _root = new_node;
-            else if (*(new_node->_Key) < *(destination_node->_Key))
+            else if (comp(*(new_node->_Key), *(destination_node->_Key)))
                 destination_node->_LeftChild = new_node;
             else
                 destination_node->_RightChild = new_node;
@@ -288,7 +283,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
         /*Removes the element at pos delete data Key with specific allocator in set
          * return node* to replace it*/
-        Node* erase(Node* pos) {
+        ft::pair<Node*, Key*> erase(Node* pos) {
             __INFOMO__
             if (isNul(pos))
                 return;
@@ -322,9 +317,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
             if (original_color == BLACK)
                 deleteFixup(trans);
             fixup_size(trans);
-            delete_node(pos);
             __INFOMONL__
-            return trans;
+            return ft::make_pair(trans, delete_node(pos));
         };
 
     /*
@@ -396,7 +390,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 } else {
                     check = new_node->_Parent->_Parent->_LeftChild;
                     if (check->_Color == RED) {
-                        new_node->_Carent->_Color = BLACK;
+                        new_node->_Parent->_Color = BLACK;
                         check->_Color = BLACK;
                         new_node->_Parent->_Parent->_Color = RED;
                         new_node = new_node->_Parent->_Parent;
@@ -580,28 +574,29 @@ Depth Property: For each node, any simple path from this node to any of its desc
         *|                                  overload operator                               |
         *====================================================================================
         */
+
             Key& operator*() const { return *(_node->_Key); }
             Key* operator->() const { return &(operator*()); }
 
             _self& operator++() {
-                _node = successor(_node);
+                _node = RedBlackTree::successor(_node);
                 return *this;
             };
 
             iterator operator++(int) {
                 const iterator Tmp = *this;
-                _node = successor(_node);
+                _node = RedBlackTree::successor(_node);
                 return Tmp;
             };
 
             iterator& operator--() {
-                _node = predecessor(_node);
+                _node = RedBlackTree::predecessor(_node);
                 return *this;
             };
 
             iterator  operator--(int) {
                 const iterator Tmp = *this;
-                predecessor(_node);
+                RedBlackTree::predecessor(_node);
                 return Tmp;
             };
 

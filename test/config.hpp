@@ -15,7 +15,7 @@
 #define VECTOR			"../../../vector.tpp"
 #define STACK			"../../../stack.tpp"
 //#define MAP			  	"../../../Map.tpp"
-#define SET			  	"../../../Set.tpp"
+#define SET			  	"../../../set.tpp"
 #define UTILITIES		"../../../utility.tpp"
 #define TYPE_TRAITS     "../../../type_traits.tpp"
 
@@ -29,7 +29,7 @@
 #define	_vector 			ft::vector
 #define	_stack	 			ft::stack
 //#define	_map 				ft::Map
-#define	_set	 			ft::Set
+#define	_set	 			ft::set
 #define	_is_integral 		ft::is_integral
 #define	_enable_if 			ft::enable_if
 #define	_pair 				ft::pair
