@@ -45,10 +45,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
     template< class Key, class Node >
     struct RedBlackTree {
 
-    protected:
-
         typedef RedBlackTree<Key, Node>                     _self;
-        bool    (*Comp)(Key, Key);
+        bool    (*Comp)(Key, Key) ;
         Key*    (*Alloc)( std::size_t );
         void    (*Construct)(Key*, const Key&);
         void    (*Destroy)(Key*);
@@ -62,7 +60,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
-    protected:
 
         explicit RedBlackTree( bool  (*initComp)      (Key, Key)          = &std::less<Key>(),
                                Key*  (*initAlloc)     (std::size_t)       = &std::allocator<Key>::allocate(),
@@ -83,8 +80,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *|                                    Move                                         |
     *====================================================================================
     */
-
-    private:
 
         bool isNul(Node* node) const {
             return (node == nullptr || node == _nul);
@@ -143,8 +138,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *|                                    utility                                       |
     *====================================================================================
     */
-
-    private:
 
         /*call constructor void non void de Node and new Node */
         Node*   create_node(){
@@ -258,8 +251,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *|                                    Insert                                        |
     *====================================================================================
     */
-
-    private:
 
         /* find place with spec func to compare and add new node fo inserts value.
          * return Node* to pos*/
@@ -564,8 +555,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
         struct iterator : public std::iterator<std::bidirectional_iterator_tag,
                 Key, Key, const Key *, Key> {
 
-        protected:
-
             Node*                           _node;
 
         /*
@@ -573,8 +562,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
         *|                                  Member Fonction                                 |
         *====================================================================================
         */
-
-        public:
 
             iterator() : _node(nullptr){};
 

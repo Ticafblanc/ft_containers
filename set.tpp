@@ -23,7 +23,7 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : private RedBlackTree< Key, node< Key > > {
+    class set : protected RedBlackTree< Key, node< Key > > {
 
     private:
 
