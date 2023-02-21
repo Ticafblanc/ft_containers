@@ -44,7 +44,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         explicit nodeSet(Key* value, Color color, nodeSet* _nul)
                 : _Key(value), _Color(color), _LeftChild(_nul),
-                _RightChild(_nul), _Parent(_nul), _Size(0) {};
+                _RightChild(_nul), _Parent(_nul), _Size(1) {};
 
         ~nodeSet() {};
 
@@ -67,45 +67,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             __INFOMONL__
         };
     };
-
-//    template< class Key, class T >
-//    struct nodeMap : public nodeBase< ft::pair<Key, T> > {
-//
-//        typedef nodeBase< ft::pair<Key, T> > base;
-//
-//    /*
-//    *====================================================================================
-//    *|                                  Member Fonction                                 |
-//    *====================================================================================
-//    */
-//
-//        nodeMap() : base() {};
-//
-//        explicit nodeMap(ft::pair<Key, T>* value, Color color, nodeMap* _nul)
-//                : base(value, color, _nul){ };
-//
-//        ~nodeMap() {};
-//    };
-//
-//    template< class Key >
-//    struct nodeSet : public nodeBase< Key > {
-//
-//        typedef nodeBase<Key> base;
-//
-//    /*
-//    *====================================================================================
-//    *|                                  Member Fonction                                 |
-//    *====================================================================================
-//    */
-//
-//        nodeSet() : base() {};
-//
-//        explicit nodeSet(Key* value, Color color, nodeSet* _nul)
-//                      : base(value, color, _nul){ };
-//
-//        ~nodeSet() {};
-//
-//    };
 
 __FT_CONTAINERS_END_NAMESPACE
 

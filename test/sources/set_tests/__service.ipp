@@ -60,7 +60,7 @@ int run_set_unit_test(std::string test_name, std::vector<int> (func1)(std::set<T
 	std::set<int> set;
 	_set<int> my_set;
 
-	printElement(test_name);
+    printElement(test_name);
 	res1 = func1(set);
 	res2 = func2(my_set);
 	if (res1 == res2) {

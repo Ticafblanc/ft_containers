@@ -21,7 +21,11 @@
 #include "utility.tpp"
 #include "stack.tpp"
 #include <functional>
-
+#include <sstream>
+#include <deque>
+#include <queue>
+#include <iomanip>
+#include <unistd.h>
 
 #ifndef FT_CONTAINERS_RED_BLACK_TREE_TPP
 # define FT_CONTAINERS_RED_BLACK_TREE_TPP
@@ -50,6 +54,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
         typedef RedBlackTree<Key, Node>                     _self;
         Node                                                *_root;
         Node                                                *_nul;
+        std::size_t                                         _size;
 
     /*
     *====================================================================================
@@ -58,16 +63,9 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
 
-        explicit RedBlackTree()
-                :  _nul(create_node()) { __INFOMF__ _root = _nul;
-//        std::cout <<std::boolalpha;
-//        std::cout << (_root == nullptr) << (_root == _nul) <<  std::endl;
-    };
+        explicit RedBlackTree() : _nul(create_node()), _size(0) { __INFOMF__ _root = _nul;};
 
-        RedBlackTree(const _self &other)
-                :  _nul(create_node()){__INFOMF__ _root = copy_tree(other._root); }
-
-        ~RedBlackTree() { __INFOMF__ clear(); };
+        ~RedBlackTree() { __INFOMF__ delete_node(_nul);  };
 
     /*
     *====================================================================================
@@ -76,8 +74,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
         bool isNul(Node* node) const {
-//            std::cout << (node == nullptr) << (node == _nul) <<  std::endl;
-
             return (node == nullptr || node == _nul);
         };
 
@@ -172,17 +168,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             node->_Size = left_size + right_size + 1;
         };
 
-        /*Erases all elements from the treee*/
-        virtual void clear() {__INFOMO__ clear_tree(_root); _root = _nul; __INFOMONL__ };
-
-        /*Erases all elements from the treee start at _root*/
-        void clear_tree(Node* node) {
-            if (!isNul(node)) {
-                clear_tree(node->_LeftChild);
-                clear_tree(node->_RightChild);
-                delete_node(node);
-            }
-        };
 
         Node* transplant(Node* node_to_delete, Node* node_to_transplant) {
             if (isNul(node_to_delete->_Parent))
@@ -197,24 +182,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             return node_to_transplant;
         };
 
-        /*copy the tree start at _root*/
-        Node* copy_tree(Node* node) {
-            if (isNul(node)) {
-                return _nul;
-            }
-            Node *new_node = create_node(node->_Key, node->_Color);
-            new_node->_LeftChild = copy_tree(node->_LeftChild);
-            new_node->_RightChild = copy_tree(node->_RightChild);
-            new_node->_Parent = _nul;
-            if (!isNul(new_node->_LeftChild)) {
-                new_node->_LeftChild->_Parent = new_node;
-            }
-            if (!isNul(new_node->_RightChild)) {
-                new_node->_RightChild->_Parent = new_node;
-            }
-            return new_node;
-        };
-
         void swap(_self& other) {
             std::swap(_root, other._root);
             std::swap(_nul, other._nul);
@@ -226,11 +193,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             Node* forward_root = _root;
             Node* save = _nul;
             while (!(isNul(forward_root))) {
-                std::cout <<std::boolalpha;
-                std::cout << (_root == nullptr) << (_root == _nul) <<  std::endl;
-
-//                std::cout << "coucou   " << (isNul(forward_root)) <<  std::endl;
-
                 if (!comp(*(forward_root->_Key), value)) {
                     save = forward_root;
                     forward_root = forward_root->_LeftChild;
@@ -269,8 +231,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 destination_node->_LeftChild = new_node;
             else
                 destination_node->_RightChild = new_node;
-            fixup_size(new_node);
             insertFixup(new_node);
+            _size++;
             __INFOMONL__
             return new_node;
         };
@@ -316,7 +278,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
             }
             if (original_color == BLACK)
                 deleteFixup(trans);
-            fixup_size(trans);
+            _size--;
             __INFOMONL__
             return ft::make_pair(trans, delete_node(pos));
         };
@@ -342,9 +304,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 node->_Parent->_RightChild = tmp;
             tmp->_LeftChild = node;
             node->_Parent = tmp;
-            fixup_size(tmp->_LeftChild);
-            fixup_size(tmp->_RightChild);
-            fixup_size(tmp);
         };
 
         /*rotate Node X */
@@ -362,9 +321,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 node->_Parent->_LeftChild = tmp;
             tmp->_RightChild = node;
             node->_Parent = tmp;
-            fixup_size(tmp->_LeftChild);
-            fixup_size(tmp->_RightChild);
-            fixup_size(tmp);
         };
 
         /*balance tree after insert*/
@@ -471,137 +427,98 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
-        void inorderTraversal(Node* node) {
-            if (isNul(node))
-                return;
+        void printSubtree(Node* node, int level, const std::deque<bool>& branches) {
+            if (isNul(node)) return;
+            std::deque<bool> new_branches(branches);
+            new_branches.push_back(false);
+            printSubtree(node->_RightChild, level + 1, new_branches);
+            new_branches.pop_back();
 
-            inorderTraversal(node->left);
-            system("Color 70");
-            if (node->_Color == RED)
-                system("Color 74");
-            std::cout << node->data << " ";
-            inorderTraversal(node->right);
+            std::cout << std::string(level * 4, ' ');
+            for (std::deque<bool>::const_iterator it = branches.begin(); it != branches.end(); ++it) {
+                std::cout << "    " ;
+            }
+            if (node == _root)
+                std::cout << "─── " << "\033[1;32m" << *(node->_Key) << " s=" << node->_Size << "\033[0m" << std::endl;
+            else if (node->_Color == BLACK )
+                std::cout << "── " << "\033[1;30m"<<  *(node->_Key) << " s=" << node->_Size << "\033[0m" << std::endl;
+
+            else
+                std::cout << "── " << "\033[1;31m" << *(node->_Key)  << " s=" << node->_Size << "\033[0m" << std::endl;
+
+            new_branches.push_back(true);
+            printSubtree(node->_LeftChild, level + 1, new_branches);
         }
 
-        void printTree() {
-            inorderTraversal(_root);
-            std::cout << std::endl;
+        void print() {
+            std::cout << "\033[2J\033[1;1H" << std::endl;
+            printSubtree(_root, 0, std::deque<bool>());
+            std::cout<<std::endl;
+            sleep(1);
         }
-
-    void print() const {
-        if (isNul(_root)) {
-            std::cout << "Empty tree" << std::endl;
-            return;
-        }
-        const std::string kBlackNodeColor = "\033[1;30m";  // Black text
-        const std::string kRedNodeColor = "\033[1;31m";    // Red text
-        const std::string kResetColor = "\033[0m";         // Reset text color
-
-        ft::stack<Node*> node_stack;
-        ft::stack<int> level_stack;
-
-        node_stack.push(_root);
-        level_stack.push(0);
-
-        int current_level = 0;
-        while (!node_stack.empty()) {
-            Node* node = node_stack.top();
-            node_stack.pop();
-
-            int level = level_stack.top();
-            level_stack.pop();
-
-            if (level != current_level) {
-                std::cout << std::endl;
-                current_level = level;
-            }
-
-            if (node->_Color == BLACK) {
-                std::cout << kBlackNodeColor;
-            } else {
-                std::cout << kRedNodeColor;
-            }
-
-            std::cout << node->_Key << " ";
-            std::cout << kResetColor;
-
-            if (!isNul(node->right)) {
-                node_stack.push(node->right);
-                level_stack.push(level + 1);
-            }
-
-            if (!isNul(node->left)) {
-                node_stack.push(node->left);
-                level_stack.push(level + 1);
-            }
-        }
-
-        std::cout << std::endl;
-    }
-
-
     /*
     *====================================================================================
     *|                                    iterator                                      |
     *====================================================================================
     */
 
-        struct iterator : public std::iterator<std::bidirectional_iterator_tag,
-                Key, Key, const Key *, Key> {
+    struct iterator : public std::iterator<std::bidirectional_iterator_tag,
+            Key, Key, const Key *, Key> {
 
-            Node*                           _node;
+        Node*                                   _node;
+        RedBlackTree<Key, Node>&                _tree;
 
-        /*
-        *====================================================================================
-        *|                                  Member Fonction                                 |
-        *====================================================================================
-        */
+    /*
+    *====================================================================================
+    *|                                  Member Fonction                                 |
+    *====================================================================================
+    */
 
-            iterator() : _node(nullptr){};
+        iterator() : _node(nullptr), _tree(nullptr){};
 
-            explicit iterator(Node* tmp) : _node(tmp) {};
+        explicit iterator(Node* tmp, ft::RedBlackTree<Key, Node>& _tree) : _node(tmp), _tree(_tree){};
 
-            iterator(const iterator &other) : _node(other._node) {};
+        iterator(const iterator &other) : _node(other._node) , _tree(other._tree){};
 
-            ~iterator(){};
+        ~iterator(){};
 
-            iterator& operator=(const iterator& other){
-                _node = other._node;
-                return *this;
-            };
-        /*
-        *====================================================================================
-        *|                                  overload operator                               |
-        *====================================================================================
-        */
+        iterator& operator=(const iterator& other){
+            _node = other._node;
+            _tree = other._tree;
+            return *this;
+        };
+    /*
+    *====================================================================================
+    *|                                  overload operator                               |
+    *====================================================================================
+    */
 
-            Key& operator*() const { return *(_node->_Key); }
-            Key* operator->() const { return &(operator*()); }
+        Key& operator*() const { return *(_node->_Key); }
+        Key* operator->() const { return &(operator*()); }
 
-            _self& operator++() {
-                _node = RedBlackTree::successor(_node);
-                return *this;
-            };
+        iterator& operator++() {
+            _node = _tree.successor(_node);
+            return *this;
+        };
 
-            iterator operator++(int) {
-                const iterator Tmp = *this;
-                _node = RedBlackTree::successor(_node);
-                return Tmp;
-            };
+        iterator operator++(int) {
+            const iterator Tmp = *this;
+            _node = _tree.successor(_node);
+            return Tmp;
+        };
 
-            iterator& operator--() {
-                _node = RedBlackTree::predecessor(_node);
-                return *this;
-            };
+        iterator& operator--() {
+            _node = _tree.predecessor(_node);
+            return *this;
+        };
 
-            iterator  operator--(int) {
-                const iterator Tmp = *this;
-                RedBlackTree::predecessor(_node);
-                return Tmp;
-            };
+        iterator  operator--(int) {
+            const iterator Tmp = *this;
+            _node = _tree.predecessor(_node);
+            return Tmp;
+        };
 
-        };/*end of iterator*/
-
+    };/*end of iterator*/
 };/*end of Red_black_tree*/
 
 /*

@@ -17,6 +17,7 @@
 #include "iterator.tpp"
 #include "node.tpp"
 #include <functional>
+#include <unistd.h>
 
 
 #ifndef FT_CONTAINERS_SET_TPP
@@ -25,7 +26,7 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : protected RedBlackTree< Key, nodeSet< Key > > {
+    class set : public RedBlackTree< Key, nodeSet< Key > > {
 
     private:
 
@@ -67,19 +68,21 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        set() : _base(){__INFOMF__};
+        set() : _base(){__INFOMF__ };
 
         explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : _comp(comp), _alloc(alloc),
                 _base() {__INFOMF__};
 
         template<class InputIt>
-        set(InputIt first, InputIt last, const Compare &comp, const Allocator &alloc) : _comp(comp), _alloc(alloc),
-                                                                                        _base()
-        { __INFOMF__ insert(first, last); };
+        set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
+                : _comp(comp), _alloc(alloc), _base() { __INFOMF__ insert(first, last); };
 
-        set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base(other) {__INFOMF__ };
+        set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base() {
+            __INFOMF__
+            copy_tree(other, other._root);
+        };
 
-        ~set() {__INFOMF__};
+        ~set() {__INFOMF__ clear();};
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
@@ -100,13 +103,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->::_root)); };
+        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->::_root)); };
+        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->::_root) + 1); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_root), *this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->::_root) + 1); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_root), *this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -125,11 +128,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     public:
 
         /*Checks if the container has no elements, i.e. whether begin() == end().*/
-        bool        empty()     const { __INFOCA__ return this->_root->_Size == 0; };
+        bool        empty()     const { __INFOCA__ return this->_size == 0; };
 
         /*Returns the number of elements in the container,
          * i.e. std::distance(begin(), end()).*/
-        size_type   size()      const {__INFOCA__ return this->_root->_Size; };
+        size_type   size()      const {__INFOCA__ return this->_size; };
 
         /*Returns the maximum number of elements the container is able to
          * hold due to system or library implementation limitations, i.e.
@@ -148,7 +151,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Erases all elements from the container. After this call, size() returns zero.
          * Invalidates any references, pointers, or iterators referring to contained elements.
          * Any past-the-end iterators are also invalidated.*/
-        void clear() { __INFOMO__ this->clear();__INFOMONL__ };
+        void clear() { __INFOMO__ clear_tree(this->_root); this->_root = this->_nul; __INFOMONL__ };
 
         /* inserts value.
          * Returns a pair consisting of an iterator to the inserted element (or to the element
@@ -156,10 +159,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         ft::pair<iterator, bool> insert(const value_type &value) {
             __INFOMO__
             iterator pos = lower_bound(value);
-            if (*pos == value)
+            if (!this->isNul(pos._node) && *pos == value)
                 return  ft::make_pair(pos, false);
             else
-                return  ft::make_pair(insert(pos, value), true);
+                return  ft::make_pair(insert(iterator(this->_root, *this), value), true);
             __INFOMONL__
 
         };
@@ -172,7 +175,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             __INFOMO__
             Key* build = _alloc.allocate(1);
             _alloc.construct(build, value);
-            return iterator(this->insertn(build, pos._node, _comp));
+            return iterator(this->insertn(build, pos._node, _comp), *this);
         };
 
         /*Inserts elements from range [first, last). If multiple elements in the range have keys
@@ -181,10 +184,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         template<class InputIt>
         void insert(InputIt first, InputIt last) {
             __INFOMO__
-            iterator pos = iterator(this->_root);
-            while ( first && last && first != last) {
+            iterator pos = iterator(this->_root, *this);
+            for ( ; *first != *last; ++first) {
                 pos = insert(pos, *first);
-                first++;
             }
             insert(pos, *first);
             __INFOMONL__
@@ -192,14 +194,21 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         /*Removes the element at pos
          * Iterator following the last removed element.*/
-        iterator erase(iterator pos) {__INFOMO__ return iterator(this->erase(pos._node)); };
+        iterator erase(iterator pos) {
+            __INFOMO__
+            ft::pair<_node*, Key*> result;
+            result = this->erase(pos._node);
+            _alloc.destroy(result.second);
+            _alloc.deallocate(result.second, 1);
+            return iterator(result.first, *this); };
 
         /*Removes the elements in the range [first, last).
          * Iterator following the last removed element.*/
         iterator erase(iterator first, iterator last) {
             __INFOMO__
-            while ( first && last && first != last)
-                this->erase(first._node);
+            ft::pair<_node*, Key*> result;
+            for ( ; *first != *last; ++first)
+                erase(first);
             __INFOMONL__
             return erase(first);
         };
@@ -238,9 +247,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
-        iterator find(const Key &key) {__INFOMO__ return iterator(this->find(key, this->_root, _comp())); };
+        iterator find(const Key &key) {__INFOMO__ return iterator(this->find(key, this->_root, _comp()), *this); };
 
-        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->find(key, this->_root, _comp())); };
+        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->find(key, this->_root, _comp()), *this); };
 
         /* Returns a range containing all elements with the given key in the container. The range is
          * defined by two iterators, one pointing to the first element that is not less than key and
@@ -258,7 +267,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-        iterator lower_bound(const Key &key) { return iterator(this->greater_or_equal(key, _comp)); };
+        iterator lower_bound(const Key &key) {return iterator(this->greater_or_equal(key, _comp), *this); };
 
         const_iterator lower_bound(const Key &key) const {return const_iterator(this->greater_or_equal(key, _comp));};
 
@@ -288,6 +297,43 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the function object that compares the values. It is the same as key_comp.*/
         value_compare value_comp() const { return value_compare(); };
 
+    /*
+    *====================================================================================
+    *|                                 private membre                                   |
+    *====================================================================================
+    */
+
+    private:
+
+        /*copy the tree start at _root*/
+        _node* copy_tree(const _self &other, _node* node) {
+            if(other.isNul(node))
+                return this->_nul;
+            Key* build = _alloc.allocate(1);
+            _alloc.construct(build, *(node->_Key));
+            _node *new_node = this->create_node(build, node->_Color);
+            new_node->_LeftChild = copy_tree(other, node->_LeftChild);
+            new_node->_RightChild = copy_tree(other, node->_RightChild);
+            new_node->_Parent = this->_nul;
+            if (!this->isNul(new_node->_LeftChild)) {
+                new_node->_LeftChild->_Parent = new_node;
+            }
+            if (!this->isNul(new_node->_RightChild)) {
+                new_node->_RightChild->_Parent = new_node;
+            }
+            return new_node;
+        };
+
+        /*Erases all elements from the treee start at _root*/
+        void clear_tree(_node* node) {
+            if (!this->isNul(node)) {
+                clear_tree(node->_LeftChild);
+                clear_tree(node->_RightChild);
+                Key * save = this->delete_node(node);
+                _alloc.destroy(save);
+                _alloc.deallocate(save, 1);
+            }
+        };
     };//end of ft::set
 
     /*
