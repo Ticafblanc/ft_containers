@@ -504,22 +504,30 @@ Depth Property: For each node, any simple path from this node to any of its desc
         Key* operator->() const { return &(operator*()); }
 
         iterator& operator++() {
+//            std::cout << "coucou " << std::endl;
+
             _node = _tree.successor(_node);
             return *this;
         };
 
         iterator operator++(int) {
+//            std::cout << "coucou " << std::endl;
+
             const iterator Tmp = *this;
             _node = _tree.successor(_node);
             return Tmp;
         };
 
         iterator& operator--() {
+//            std::cout << "coucou " << std::endl;
+
             _node = _tree.predecessor(_node);
             return *this;
         };
 
         iterator  operator--(int) {
+//            std::cout << "coucou " << std::endl;
+
             const iterator Tmp = *this;
             _node = _tree.predecessor(_node);
             return Tmp;

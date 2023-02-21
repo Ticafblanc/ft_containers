@@ -1,4 +1,4 @@
-In file included from ../set_tests/operator >=.cpp:1:
+In file included from ../set_tests/insert(hint).cpp:1:
 In file included from ../set_tests/../system/system_methods.ipp:2:
 In file included from ../set_tests/../system/lib.hpp:30:
 ../set_tests/../system/Alloc.hpp:55:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
@@ -13,72 +13,28 @@ template <class _Up, class... _Args>
 ../set_tests/../system/Alloc.hpp:167:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
         construct(_Up* __p, _Args&&... __args)
                                  ^
-In file included from ../set_tests/operator >=.cpp:2:
+4 warnings generated.
+d.
+/set_tests/compare class.cpp:2:
 In file included from ../set_tests/__service.ipp:3:
-../set_tests/../../../set.tpp:133:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<int>', but function is not marked const
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
-                                                                                ^~~~
-../set_tests/../../../set.tpp:400:48: note: in instantiation of member function 'ft::set<int>::begin' requested here
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                               ^
-../set_tests/../../../set.tpp:414:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
-                                                                                                     ^
-../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::less<int>, std::allocator<int> >' requested here
-        result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
-                                 ^
-../set_tests/../system/../../../red_black_tree.tpp:103:15: note: 'minimum' declared here
-        Node* minimum(Node* node) {
-              ^
-In file included from ../set_tests/operator >=.cpp:2:
+../set_tests/../../../set.tpp:249:43: error: no matching function for call to object of type 'std::greater<int>'
+            _node* node = this->find(key, _comp());
+                                          ^~~~~
+../set_tests/compare class.cpp:63:9: note: in instantiation of member function 'ft::set<int, std::greater<int> >::erase' requested here
+    st1.erase(41);
+        ^
+../set_tests/compare class.cpp:106:67: note: in instantiation of function template specialization 'comparator_test<int>' requested here
+    exit(run_set_unit_test<int>("compare class", comparator_test, comparator_test));
+                                                                  ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/operations.h:597:10: note: candidate function not viable: requires 2 arguments, but 0 were provided
+    bool operator()(const _Tp& __x, const _Tp& __y) const
+         ^
+In file included from ../set_tests/compare class.cpp:2:
 In file included from ../set_tests/__service.ipp:3:
-../set_tests/../../../set.tpp:137:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<int>', but function is not marked const
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
-                                                                                ^~~~
-../set_tests/../../../set.tpp:400:61: note: in instantiation of member function 'ft::set<int>::end' requested here
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                                            ^
-../set_tests/../../../set.tpp:414:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
-                                                                                                     ^
-../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::less<int>, std::allocator<int> >' requested here
-        result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
-                                 ^
-../set_tests/../system/../../../red_black_tree.tpp:96:15: note: 'maximum' declared here
-        Node* maximum(Node* node) {
-              ^
-In file included from ../set_tests/operator >=.cpp:2:
-In file included from ../set_tests/__service.ipp:3:
-../set_tests/../../../set.tpp:133:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<std::string>', but function is not marked const
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
-                                                                                ^~~~
-../set_tests/../../../set.tpp:400:48: note: in instantiation of member function 'ft::set<std::string>::begin' requested here
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                               ^
-../set_tests/../../../set.tpp:414:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
-                                                                                                     ^
-../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
-        result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
-                                                                                                           ^
-../set_tests/../system/../../../red_black_tree.tpp:103:15: note: 'minimum' declared here
-        Node* minimum(Node* node) {
-              ^
-In file included from ../set_tests/operator >=.cpp:2:
-In file included from ../set_tests/__service.ipp:3:
-../set_tests/../../../set.tpp:137:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<std::string>', but function is not marked const
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
-                                                                                ^~~~
-../set_tests/../../../set.tpp:400:61: note: in instantiation of member function 'ft::set<std::string>::end' requested here
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(),
-                                                            ^
-../set_tests/../../../set.tpp:414:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
-                                                                                                     ^
-../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
-        result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
-                                                                                                           ^
-../set_tests/../system/../../../red_black_tree.tpp:96:15: note: 'maximum' declared here
-        Node* maximum(Node* node) {
-              ^
-4 warnings and 4 errors generated.
+../set_tests/../../../set.tpp:253:50: error: no matching function for call to object of type 'std::greater<int>'
+            return (!this->isNul(this->find(key, _comp()))) ? 1 : 0;;
+                                                 ^~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/operations.h:597:10: note: candidate function not viable: requires 2 arguments, but 0 were provided
+    bool operator()(const _Tp& __x, const _Tp& __y) const
+         ^
+4 warnings and 2 errors generated.

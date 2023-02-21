@@ -197,8 +197,7 @@ public:
 
         //Pre-increments or pre-decrements by one respectively
     //*this.
-    reverse_iterator& operator++()
-    {
+    reverse_iterator& operator++(){
         --(this->current);
         return (*this);
     }
@@ -212,13 +211,13 @@ public:
     // a copy of *this that was made before the change
     reverse_iterator operator++(int) {
         reverse_iterator tmp = *this;
-        ++(*this->current);
+        --(this->current);
         return tmp;
     }
 
     reverse_iterator operator--(int) {
         reverse_iterator tmp = *this;
-        --(*this->current);
+        ++(this->current);
         return tmp;
     }
 
