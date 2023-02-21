@@ -157,7 +157,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
         /*find value in the tree and return Node * to the pos
          * or retur the _nul node*/
         template<class Compare>
-        Node*   find(Key& value, Node* rnode, Compare comp = std::less<Key>()) {
+        Node*   find(Key& value, Node* rnode, Compare comp ) {
             while (!isNul(rnode) && (comp(*(rnode->_Key), value) || comp(value, *(rnode->_Key)))) {
                 if (comp(value, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;

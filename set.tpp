@@ -25,16 +25,35 @@
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
+    template< class Key, class Compare, class Allocator >
+    class setbase {
+
+    protected:
+        typedef Allocator                                                           allocator;
+        typedef Compare                                                             compare;
+
+        setbase() {};
+
+        explicit setbase(const Compare& comp, const Allocator& alloc) : _comp(comp), _alloc(alloc){};
+
+        ~setbase() {};
+
+
+    protected:
+
+        Allocator _alloc;
+        Compare _comp;
+    };
+
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : public RedBlackTree< Key, nodeSet< Key > > {
+    class set : public setbase <Key, Compare , Allocator>, public RedBlackTree< Key, nodeSet< Key > > {
 
     private:
 
         typedef RedBlackTree< Key, nodeSet< Key > >                 _base;
+        typedef setbase <Key, Compare , Allocator>                  base;
         typedef set< Key, Compare, Allocator >                      _self;
         typedef nodeSet< Key >                                      _node;
-        Allocator                                                   _alloc;
-        Compare                                                     _comp;
 
     /*
     *====================================================================================
@@ -48,11 +67,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef key_types                                           value_type;
         typedef std::size_t                                         size_type;
         typedef std::ptrdiff_t                                      difference_type;
-        typedef Compare                                             key_compare;
+        typedef typename base::compare                              key_compare;
         typedef key_compare                                         value_compare;
         typedef value_type &                                        reference;
         typedef const value_type &                                  const_reference;
-        typedef Allocator                                           allocator_type;
+        typedef typename base::allocator                            allocator_type;
         typedef typename Allocator::pointer                         pointer;
         typedef typename Allocator::const_pointer                   const_pointer;
         typedef typename _base::iterator                            iterator;
@@ -68,35 +87,34 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        set() : _base(){
+        set() : base(), _base(){
             __INFOMF__
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build);
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
             this->init(build);
         };
 
-        explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : _comp(comp), _alloc(alloc),
-                _base() {
+        explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : base(comp, alloc), _base() {
             __INFOMF__
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build);
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
             this->init(build);
         };
 
         template<class InputIt>
         set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
-                : _comp(comp), _alloc(alloc), _base() {
+                : base(comp, alloc), _base() {
             __INFOMF__
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build);
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
             this->init(build);
             insert(first, last);
         };
 
-        set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base() {
+        set(const _self &other) : base(other._comp, other._alloc), _base() {
             __INFOMF__
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build);
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
             this->init(build);
             this->_root = copy_tree(other, other._root);
         };
@@ -104,15 +122,15 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         ~set() {
             __INFOMF__
             clear();
-            _alloc.destroy(this->_nul->_Key);
-            _alloc.deallocate(this->_nul->_Key, 1);
+            this->_alloc.destroy(this->_nul->_Key);
+            this->_alloc.deallocate(this->_nul->_Key, 1);
         };
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
             clear();
-            _alloc = other._alloc;
-            _comp = other._comp;
+            this->_alloc = other._alloc;
+            this->_comp = other._comp;
             this->_root = copy_tree(other, other._root);
             return *this;
         };
@@ -203,9 +221,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          */
         iterator insert(iterator pos, const value_type &value) {
             __INFOMO__
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build, value);
-            return iterator(this->insertn(build, pos._node, _comp), *this);
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build, value);
+            return iterator(this->insertn(build, pos._node, this->_comp), *this);
         };
 
         /*Inserts elements from range [first, last). If multiple elements in the range have keys
@@ -226,8 +244,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             __INFOMO__
             ft::pair<_node*, Key*> result;
             result = this->erase(pos._node);
-            _alloc.destroy(result.second);
-            _alloc.deallocate(result.second, 1);
+            this->_alloc.destroy(result.second);
+            this->_alloc.deallocate(result.second, 1);
             return iterator(result.first, *this); };
 
         /*Removes the elements in the range [first, last).
@@ -246,19 +264,19 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
             __INFOMO__
-            _node* node = this->find(key, _comp());
+            _node* node = this->find(key, this->_root, this->_comp());
             if(!(this->isNul(node)))
                 this->erase(node);
             __INFOMONL__
-            return (!this->isNul(this->find(key, _comp()))) ? 1 : 0;;
+            return (!this->isNul(this->find(key, this->_root, this->_comp()))) ? 1 : 0;
         };
         /*Exchanges the contents of the container with those of other. Does not invoke any
          * move, copy, or swap operations on individual elements.All iterators and references
          * remain valid. The past-the-end iterator is invalidated.The Compare objects must be
          * Swappable, and they are exchanged using unqualified call to non-member swap.*/
         void swap( _self& other ) {
-            std::swap(_alloc, other._alloc);
-            std::swap(_comp, other._comp);
+            std::swap(this->_alloc, other._alloc);
+            std::swap(this->_comp, other._comp);
             this->swap(other);
         };
 
@@ -271,14 +289,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the number of elements with key that compares equivalent to the specified argument.
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
-        size_type count(const Key &key) const { return (this->isNul(this->find(key, this->_root))) ? 1 : 0; };
+        size_type count(const Key &key) const { return (this->isNul(this->find(key, this->_root, this->_comp()))) ? 1 : 0; };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
-        iterator find(const Key &key) {__INFOMO__ return iterator(this->find(key, this->_root, _comp()), *this); };
+        iterator find(const Key &key) {__INFOMO__ return iterator(this->find(key, this->_root, this->_comp()), *this); };
 
-        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->find(key, this->_root, _comp()), *this); };
+        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->find(key, this->_root, this->_comp()), *this); };
 
         /* Returns a range containing all elements with the given key in the container. The range is
          * defined by two iterators, one pointing to the first element that is not less than key and
@@ -296,9 +314,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-        iterator lower_bound(const Key &key) {return iterator(this->greater_or_equal(key, _comp), *this); };
+        iterator lower_bound(const Key &key) {return iterator(this->greater_or_equal(key, this->_comp), *this); };
 
-        const_iterator lower_bound(const Key &key) const {return const_iterator(this->greater_or_equal(key, _comp));};
+        const_iterator lower_bound(const Key &key) const {return const_iterator(this->greater_or_equal(key, this->_comp));};
 
         /*Returns an iterator pointing to the first element that is greater than key.
          * Iterator pointing to the first element that is greater than key.
@@ -338,8 +356,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         _node* copy_tree(const _self &other, _node* node) {
             if(other.isNul(node))
                 return this->_nul;
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build, *(node->_Key));
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build, *(node->_Key));
             _node *new_node = this->create_node(build, node->_Color);
             new_node->_LeftChild = copy_tree(other, node->_LeftChild);
             new_node->_RightChild = copy_tree(other, node->_RightChild);
@@ -360,8 +378,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                 clear_tree(node->_LeftChild);
                 clear_tree(node->_RightChild);
                 Key * save = this->delete_node(node);
-                _alloc.destroy(save);
-                _alloc.deallocate(save, 1);
+                this->_alloc.destroy(save);
+                this->_alloc.deallocate(save, 1);
                 this->_size--;
             }
         };

@@ -47,7 +47,7 @@ std::vector<int> comparator_test(std::set<T> st) {
     for (typename std::set<T>::iterator it = --st8.end(); it != st8.begin(); it--) { v.push_back(*it); }
     g_start1 = timer();
     g_end1 = timer();
-    v.push_back(st1.size());
+    v.push_back(st1.size(   ));
     return v;
 }
 
