@@ -73,6 +73,10 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
+        void init(Key* value){
+            _nul = create_node(value, BLACK);
+        };
+
         bool isNul(Node* node) const {
             return (node == nullptr || node == _nul);
         };
@@ -439,12 +443,12 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 std::cout << "    " ;
             }
             if (node == _root)
-                std::cout << "─── " << "\033[1;32m" << *(node->_Key) << " s=" << node->_Size << "\033[0m" << std::endl;
+                std::cout << "─── " << "\033[1;32m" << *(node->_Key) << "\033[0m" << std::endl;
             else if (node->_Color == BLACK )
-                std::cout << "── " << "\033[1;30m"<<  *(node->_Key) << " s=" << node->_Size << "\033[0m" << std::endl;
+                std::cout << "── " << "\033[1;30m"<<  *(node->_Key) << "\033[0m" << std::endl;
 
             else
-                std::cout << "── " << "\033[1;31m" << *(node->_Key)  << " s=" << node->_Size << "\033[0m" << std::endl;
+                std::cout << "── " << "\033[1;31m" << *(node->_Key) << "\033[0m" << std::endl;
 
             new_branches.push_back(true);
             printSubtree(node->_LeftChild, level + 1, new_branches);
@@ -517,6 +521,11 @@ Depth Property: For each node, any simple path from this node to any of its desc
             _node = _tree.predecessor(_node);
             return Tmp;
         };
+
+        bool operator==(const iterator& rhs) const { return _node == rhs._node; };
+
+        bool operator!=(const iterator& rhs) const { return !(*this == rhs); };
+
 
     };/*end of iterator*/
 };/*end of Red_black_tree*/

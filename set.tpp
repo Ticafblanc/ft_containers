@@ -68,27 +68,47 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        set() : _base(){__INFOMF__ };
+        set() : _base(){
+            __INFOMF__
+            Key* build = _alloc.allocate(1);
+            _alloc.construct(build);
+            this->init(build);
+        };
 
         explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : _comp(comp), _alloc(alloc),
-                _base() {__INFOMF__};
+                _base() {
+            __INFOMF__
+            Key* build = _alloc.allocate(1);
+            _alloc.construct(build);
+            this->init(build);
+        };
 
         template<class InputIt>
         set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
-                : _comp(comp), _alloc(alloc), _base() { __INFOMF__ insert(first, last); };
+                : _comp(comp), _alloc(alloc), _base() {
+            __INFOMF__
+            Key* build = _alloc.allocate(1);
+            _alloc.construct(build);
+            this->init(build);
+            insert(first, last);
+        };
 
         set(const _self &other) : _comp(other._comp), _alloc(other._alloc), _base() {
             __INFOMF__
-            copy_tree(other, other._root);
+            Key* build = _alloc.allocate(1);
+            _alloc.construct(build);
+            this->init(build);
+            this->_root = copy_tree(other, other._root);
         };
 
         ~set() {__INFOMF__ clear();};
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
+            clear();
             _alloc = other._alloc;
             _comp = other._comp;
-            this->base = other.base;
+            this->_root = copy_tree(other, other._root);
             return *this;
         };
 
@@ -107,9 +127,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_root), *this); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_root), *this); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -151,7 +171,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Erases all elements from the container. After this call, size() returns zero.
          * Invalidates any references, pointers, or iterators referring to contained elements.
          * Any past-the-end iterators are also invalidated.*/
-        void clear() { __INFOMO__ clear_tree(this->_root); this->_root = this->_nul; __INFOMONL__ };
+        void clear() {
+            __INFOMO__
+            clear_tree(this->_root);
+            this->_root = this->_nul;
+            __INFOMONL__
+        };
 
         /* inserts value.
          * Returns a pair consisting of an iterator to the inserted element (or to the element
@@ -186,6 +211,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             __INFOMO__
             iterator pos = iterator(this->_root, *this);
             for ( ; *first != *last; ++first) {
+                std::cout << "cocou" << std::endl;
                 pos = insert(pos, *first);
             }
             insert(pos, *first);
@@ -321,6 +347,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             if (!this->isNul(new_node->_RightChild)) {
                 new_node->_RightChild->_Parent = new_node;
             }
+            this->_size++;
             return new_node;
         };
 
@@ -332,6 +359,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                 Key * save = this->delete_node(node);
                 _alloc.destroy(save);
                 _alloc.deallocate(save, 1);
+                this->_size--;
             }
         };
     };//end of ft::set

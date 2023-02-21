@@ -31,7 +31,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         nodeSet    *_LeftChild;
         nodeSet    *_RightChild;
         nodeSet    *_Parent;
-        std::size_t _Size;
 
     /*
     *====================================================================================
@@ -40,11 +39,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     */
 
         nodeSet() : _Key(nullptr), _Color(BLACK), _LeftChild(nullptr),
-                     _RightChild(nullptr), _Parent(nullptr), _Size(0){};
+                          _RightChild(nullptr), _Parent(nullptr){};
+
+        explicit nodeSet(Key* value) : _Key(value), _Color(BLACK), _LeftChild(nullptr),
+                     _RightChild(nullptr), _Parent(nullptr){};
 
         explicit nodeSet(Key* value, Color color, nodeSet* _nul)
                 : _Key(value), _Color(color), _LeftChild(_nul),
-                _RightChild(_nul), _Parent(_nul), _Size(1) {};
+                _RightChild(_nul), _Parent(_nul){};
 
         ~nodeSet() {};
 
@@ -62,7 +64,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             std::swap(_LeftChild, other._LeftChild);
             std::swap(_RightChild, other._RightChild);
             std::swap(_Parent, other._Parent);
-            std::swap(_Size, other._Size);
 
             __INFOMONL__
         };
