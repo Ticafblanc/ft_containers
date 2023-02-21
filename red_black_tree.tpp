@@ -63,7 +63,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
 
-        explicit RedBlackTree() : _nul(create_node()), _size(0) { __INFOMF__ _root = _nul;};
+        explicit RedBlackTree() : _root(nullptr), _nul(nullptr), _size(0) { __INFOMF__ };
 
         ~RedBlackTree() { __INFOMF__ delete_node(_nul);  };
 
@@ -74,7 +74,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
         void init(Key* value){
-            _nul = create_node(value, BLACK);
+            _root = _nul = create_node(value, BLACK);
         };
 
         bool isNul(Node* node) const {
@@ -119,6 +119,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
         };
 
         Node* predecessor(Node* node) {
+            if (isNul(node))
+               return maximum(_root);
             if (!isNul(node->_LeftChild))
                 return maximum(node->_LeftChild);
             Node* rnode = node->_Parent;
@@ -189,6 +191,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
         void swap(_self& other) {
             std::swap(_root, other._root);
             std::swap(_nul, other._nul);
+            std::swap(_size, other._size);
         };
 
         /* find return greater or eqaul pos value*/

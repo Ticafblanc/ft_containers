@@ -101,7 +101,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             this->_root = copy_tree(other, other._root);
         };
 
-        ~set() {__INFOMF__ clear();};
+        ~set() {
+            __INFOMF__
+            clear();
+            _alloc.destroy(this->_nul->_Key);
+            _alloc.deallocate(this->_nul->_Key, 1);
+        };
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
@@ -210,11 +215,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         void insert(InputIt first, InputIt last) {
             __INFOMO__
             iterator pos = iterator(this->_root, *this);
-            for ( ; *first != *last; ++first) {
-                std::cout << "cocou" << std::endl;
+            for ( ; first != last; ++first)
                 pos = insert(pos, *first);
-            }
-            insert(pos, *first);
             __INFOMONL__
         };
 
@@ -256,6 +258,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Swappable, and they are exchanged using unqualified call to non-member swap.*/
         void swap( _self& other ) {
             std::swap(_alloc, other._alloc);
+            std::swap(_comp, other._comp);
             this->swap(other);
         };
 
