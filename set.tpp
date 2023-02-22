@@ -215,8 +215,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                                     : _base(comp, alloc), _size(0){ init(); };
 
         template<class InputIt>
-        set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
-                                : _base(comp, alloc), _size(0) { init(); insert(first, last); };
+        set(InputIt first, InputIt last,
+            const Compare &comp = Compare(), const Allocator &alloc = Allocator())
+            : _base(comp, alloc), _size(0) { init(); insert(first, last); };
 
         set(const _self &other) : _base(other._comp, other._alloc), _size(other._size) {
             init();
