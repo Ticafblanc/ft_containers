@@ -18,10 +18,10 @@ In file included from ../set_tests/__service.ipp:3:
 ../set_tests/../../../set.tpp:151:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<int>', but function is not marked const
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:418:48: note: in instantiation of member function 'ft::set<int>::begin' requested here
+../set_tests/../../../set.tpp:422:48: note: in instantiation of member function 'ft::set<int>::begin' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                ^
-../set_tests/../../../set.tpp:432:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
+../set_tests/../../../set.tpp:436:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::less<int>, std::allocator<int> >' requested here
@@ -35,10 +35,10 @@ In file included from ../set_tests/__service.ipp:3:
 ../set_tests/../../../set.tpp:155:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<int>', but function is not marked const
         const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:418:61: note: in instantiation of member function 'ft::set<int>::end' requested here
+../set_tests/../../../set.tpp:422:61: note: in instantiation of member function 'ft::set<int>::end' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                             ^
-../set_tests/../../../set.tpp:432:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
+../set_tests/../../../set.tpp:436:102: note: in instantiation of function template specialization 'ft::operator<<int, std::less<int>, std::allocator<int> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::less<int>, std::allocator<int> >' requested here
@@ -52,10 +52,10 @@ In file included from ../set_tests/__service.ipp:3:
 ../set_tests/../../../set.tpp:151:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<std::string>', but function is not marked const
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:418:48: note: in instantiation of member function 'ft::set<std::string>::begin' requested here
+../set_tests/../../../set.tpp:422:48: note: in instantiation of member function 'ft::set<std::string>::begin' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                ^
-../set_tests/../../../set.tpp:432:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
+../set_tests/../../../set.tpp:436:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
@@ -69,10 +69,10 @@ In file included from ../set_tests/__service.ipp:3:
 ../set_tests/../../../set.tpp:155:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<std::string>', but function is not marked const
         const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:418:61: note: in instantiation of member function 'ft::set<std::string>::end' requested here
+../set_tests/../../../set.tpp:422:61: note: in instantiation of member function 'ft::set<std::string>::end' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                             ^
-../set_tests/../../../set.tpp:432:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
+../set_tests/../../../set.tpp:436:102: note: in instantiation of function template specialization 'ft::operator<<std::string, std::less<std::string>, std::allocator<std::string> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::string, std::less<std::string>, std::allocator<std::string> >' requested here

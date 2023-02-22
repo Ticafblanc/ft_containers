@@ -156,8 +156,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
         /*find value in the tree and return Node * to the pos
          * or retur the _nul node*/
-        template<class Compare>
-        Node*   find(Key& value, Node* rnode, Compare comp ) {
+        template<class compare>
+        Node*   finds(const Key& value, Node* rnode, compare comp ) {
             while (!isNul(rnode) && (comp(*(rnode->_Key), value) || comp(value, *(rnode->_Key)))) {
                 if (comp(value, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
@@ -183,8 +183,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             else
                 node_to_delete->_Parent->_RightChild = node_to_transplant;
             node_to_transplant->_Parent = node_to_delete->_Parent;
-            fixup_size(node_to_delete);
-            fixup_size(node_to_transplant);
             return node_to_transplant;
         };
 
@@ -252,14 +250,14 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
         /*Removes the element at pos delete data Key with specific allocator in set
          * return node* to replace it*/
-        ft::pair<Node*, Key*> erase(Node* pos) {
+        ft::pair<Node*, Key*> erases(Node* pos) {
             __INFOMO__
             if (isNul(pos))
-                return;
+                return  ft::make_pair(pos, nullptr);
             if (isRoot(pos)){
-                delete_node(pos);
+                ft::pair<Node*, Key*> ret = ft::make_pair(_root, delete_node(pos));
                 _root = _nul;
-                return _root;
+                return ret;
             }
             Node* trans;
             Color original_color = pos->_Color;
@@ -269,7 +267,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 trans = transplant(pos, pos->_LeftChild);
             else {
                 Node* next = minimum(pos->_RightChild);
-                original_color = next->color;
+                original_color = next->_Color;
                 trans = next->_RightChild;
                 if (next->_Parent == pos)
                     trans->_Parent = next;
@@ -425,7 +423,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
                     }
                 }
             }
-            transplant->color = BLACK;
+            transplant->_Color = BLACK;
         };
 
     /*

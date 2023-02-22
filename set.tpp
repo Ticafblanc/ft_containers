@@ -243,7 +243,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         iterator erase(iterator pos) {
             __INFOMO__
             ft::pair<_node*, Key*> result;
-            result = this->erase(pos._node);
+            result = this->erases(pos._node);
             this->_alloc.destroy(result.second);
             this->_alloc.deallocate(result.second, 1);
             return iterator(result.first, *this); };
@@ -264,11 +264,15 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
             __INFOMO__
-            _node* node = this->find(key, this->_root, this->_comp());
-            if(!(this->isNul(node)))
-                this->erase(node);
+            _node* pos = this->finds(key, this->_root, this->_comp);
+            if(!(this->isNul(pos))) {
+                ft::pair<_node *, Key *> result;
+                result = this->erases(pos);
+                this->_alloc.destroy(result.second);
+                this->_alloc.deallocate(result.second, 1);
+            }
             __INFOMONL__
-            return (!this->isNul(this->find(key, this->_root, this->_comp()))) ? 1 : 0;
+            return (!this->isNul(this->finds(key, this->_root, this->_comp))) ? 1 : 0;
         };
         /*Exchanges the contents of the container with those of other. Does not invoke any
          * move, copy, or swap operations on individual elements.All iterators and references
@@ -289,14 +293,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the number of elements with key that compares equivalent to the specified argument.
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
-        size_type count(const Key &key) const { return (this->isNul(this->find(key, this->_root, this->_comp()))) ? 1 : 0; };
+        size_type count(const Key &key) const { return (this->isNul(this->finds(key, this->_root, this->_comp))) ? 1 : 0; };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
-        iterator find(const Key &key) {__INFOMO__ return iterator(this->find(key, this->_root, this->_comp()), *this); };
+        iterator find(const Key &key) {__INFOMO__ return iterator(this->finds(key, this->_root, this->_comp), *this); };
 
-        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->find(key, this->_root, this->_comp()), *this); };
+        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->finds(key, this->_root, this->_comp()), *this); };
 
         /* Returns a range containing all elements with the given key in the container. The range is
          * defined by two iterators, one pointing to the first element that is not less than key and
