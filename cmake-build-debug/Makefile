@@ -129,29 +129,29 @@ ft_containers/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/build
 .PHONY : ft_containers/fast
 
-testset.o: testset.cpp.o
-.PHONY : testset.o
+test/sources/set_tests/constructor.o: test/sources/set_tests/constructor.cpp.o
+.PHONY : test/sources/set_tests/constructor.o
 
 # target to build an object file
-testset.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/testset.cpp.o
-.PHONY : testset.cpp.o
+test/sources/set_tests/constructor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o
+.PHONY : test/sources/set_tests/constructor.cpp.o
 
-testset.i: testset.cpp.i
-.PHONY : testset.i
+test/sources/set_tests/constructor.i: test/sources/set_tests/constructor.cpp.i
+.PHONY : test/sources/set_tests/constructor.i
 
 # target to preprocess a source file
-testset.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/testset.cpp.i
-.PHONY : testset.cpp.i
+test/sources/set_tests/constructor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.i
+.PHONY : test/sources/set_tests/constructor.cpp.i
 
-testset.s: testset.cpp.s
-.PHONY : testset.s
+test/sources/set_tests/constructor.s: test/sources/set_tests/constructor.cpp.s
+.PHONY : test/sources/set_tests/constructor.s
 
 # target to generate assembly for a file
-testset.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/testset.cpp.s
-.PHONY : testset.cpp.s
+test/sources/set_tests/constructor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ft_containers.dir/build.make CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.s
+.PHONY : test/sources/set_tests/constructor.cpp.s
 
 # Help Target
 help:
@@ -162,9 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... ft_containers"
-	@echo "... testset.o"
-	@echo "... testset.i"
-	@echo "... testset.s"
+	@echo "... test/sources/set_tests/constructor.o"
+	@echo "... test/sources/set_tests/constructor.i"
+	@echo "... test/sources/set_tests/constructor.s"
 .PHONY : help
 
 

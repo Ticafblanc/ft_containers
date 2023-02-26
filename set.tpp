@@ -33,7 +33,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         setbase() {};
 
-        explicit setbase(const Compare& comp, const Allocator& alloc) : _comp(comp), _alloc(alloc){};
+        explicit setbase(const Compare& comp, const Allocator& alloc) : _alloc(alloc), _comp(comp){};
 
         ~setbase() {};
 
@@ -117,7 +117,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
 
             _node*                                   __node;
-            set<Key, Compare, Allocator>&            __set;
+            set<Key, Compare, Allocator>*            __set;
 
             /*
             *====================================================================================
@@ -128,9 +128,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
             iterator() : __node(nullptr), __set(nullptr){};
 
-            explicit iterator(_node* tmp, set<Key, Compare, Allocator>& set ) : __node(tmp), __set(set){};
+            explicit iterator(_node* tmp, set<Key, Compare, Allocator>* set ) : __node(tmp), __set(set) { };
 
-            iterator(const iterator &other) : __node(other._node) , __set(other._set){};
+            iterator(const iterator &other) : __node(other.__node) , __set(other.__set){};
 
             ~iterator(){};
 
@@ -149,24 +149,24 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             Key* operator->() const { return &(operator*()); }
 
             iterator& operator++() {
-                __node = __set.successor(__node);
+                __node = __set->successor(__node);
                 return *this;
             };
 
             iterator operator++(int) {
                 const iterator Tmp = *this;
-                __node = __set.successor(__node);
+                __node = __set->successor(__node);
                 return Tmp;
             };
 
             iterator& operator--() {
-                __node = __set.predecessor(__node);
+                __node = __set->predecessor(__node);
                 return *this;
             };
 
             iterator  operator--(int) {
                 const iterator Tmp = *this;
-                __node = __set.predecessor(__node);
+                __node = __set->predecessor(__node);
                 return Tmp;
             };
 
@@ -224,7 +224,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             _root = copy_tree(other, other._root);
         };
 
-        ~set() { clear(); destroy(_nul); };
+        ~set() { clear(); delete_node(_nul); };
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
@@ -246,13 +246,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(_root), *this); };
+        iterator                begin()             {__INFOIT__ return iterator(this->minimum(_root), this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(_root), *this); };
+        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(_root), this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(_nul), *this); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(_nul), this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(_nul), *this); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(_nul), this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -310,13 +310,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             _node* destination_node = _nul;
             while (!isNul(forward_root)) {
                 destination_node = forward_root;
-                if (comp_is_equal(*value, *(destination_node->_Key)))
-                    return  ft::make_pair(destination_node, false);
-                if (comp_is_true(*value, *(forward_root->_Key)))
+                if (comp_is_equal(value, *(destination_node->_Key)))
+                    return  ft::make_pair(iterator(destination_node, this), false);
+                if (comp_is_true(value, *(forward_root->_Key)))
                     forward_root = forward_root->_LeftChild;
                 else
                     forward_root = forward_root->_RightChild;
-
             }
             _node* new_node = create_node(value, this->RED);
             new_node->_Parent = destination_node;
@@ -328,7 +327,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                 destination_node->_RightChild = new_node;
             insertFixup(new_node);
             __INFOMONL__
-            return  ft::make_pair(new_node, true);
+            return  ft::make_pair(iterator(new_node, this), true);
         };
 
         /*
@@ -337,13 +336,19 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          */
         iterator insert(iterator pos, const value_type &value) {
             __INFOMO__
-            _node* forward_root = _root;
+            _node* forward_root;
+            if (isNul(pos.__node) || isRoot(pos.__node)
+                || comp_is_true(*pos.__node->_Key, *successor(pos.__node)->_Key)
+                || comp_is_true(*predecessor(pos.__node)->_Key, *pos.__node->_Key))
+                forward_root = _root;
+            else
+                forward_root = pos.__node;
             _node* destination_node = _nul;
             while (!isNul(forward_root)) {
                 destination_node = forward_root;
-                if (comp_is_equal(*value, *(destination_node->_Key)))
-                    return iterator(destination_node, *this);
-                if (comp_is_true(*value, *(forward_root->_Key)))
+                if (comp_is_equal(value, *(destination_node->_Key)))
+                    return iterator(destination_node, this);
+                if (comp_is_true(value, *(forward_root->_Key)))
                     forward_root = forward_root->_LeftChild;
                 else
                     forward_root = forward_root->_RightChild;
@@ -357,7 +362,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             else
                 destination_node->_RightChild = new_node;
             insertFixup(new_node);
-            return iterator(new_node, *this);
+            return iterator(new_node, this);
         };
 
         /*Inserts elements from range [first, last). If multiple elements in the range have keys
@@ -366,21 +371,50 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         template<class InputIt>
         void insert(InputIt first, InputIt last) {
             __INFOMO__
-            iterator pos = iterator(_root, *this);
-            for ( ; first != last; ++first)
-                pos = insert(pos, *first);
+            iterator pos = iterator(_root, this);
+            for (; first != last; ++first)
+                insert(pos, *first);
             __INFOMONL__
         };
 
         /*Removes the element at pos
          * Iterator following the last removed element.*/
-        iterator erase(iterator pos) {
+        iterator erase(iterator posi) {
             __INFOMO__
-            ft::pair<_node*, Key*> result;
-            result = erases(pos._node);
-            this->_alloc.destroy(result.second);
-            this->_alloc.deallocate(result.second, 1);
-            return iterator(result.first, *this); };
+            _node* pos = posi.__node;
+            if (isNul(pos))
+                return  posi;
+            if (isRoot(pos)){
+                delete_node(_root);
+                _root = _nul;
+                return _root;
+            }
+            _node* trans;
+            _color original_color = pos->_Color;
+            if (isNul(pos->_LeftChild))
+                trans = transplant(pos, pos->_RightChild);
+            else if (isNul(pos->_RightChild))
+                trans = transplant(pos, pos->_LeftChild);
+            else {
+                _node* next = minimum(pos->_RightChild);
+                original_color = next->_Color;
+                trans = next->_RightChild;
+                if (next->_Parent == pos)
+                    trans->_Parent = next;
+                else {
+                    transplant(next, next->_RightChild);
+                    next->_RightChild = pos->_RightChild;
+                    next->_RightChild->_Parent = next;
+                }
+                transplant(pos, next);
+                next->_LeftChild = pos->_LeftChild;
+                next->_LeftChild->_Parent = next;
+                next->_Color = pos->_Color;
+            }
+            if (original_color == this->BLACK)
+                deleteFixup(trans);
+            delete_node(pos);
+            return iterator(trans, this); };
 
         /*Removes the elements in the range [first, last).
          * Iterator following the last removed element.*/
@@ -398,15 +432,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
             __INFOMO__
-            _node* pos = finds(key, _root, this->_comp);
-            if(!isNul(pos)) {
-                ft::pair<_node *, Key *> result;
-                result = erases(pos);
-                this->_alloc.destroy(result.second);
-                this->_alloc.deallocate(result.second, 1);
+            iterator posi = find(key);
+            if(!isNul(posi.__node)) {
+                erase(posi);
+                return 1;
             }
             __INFOMONL__
-            return (!this->isNul(this->finds(key, this->_root, this->_comp))) ? 1 : 0;
+            return 0;
         };
         /*Exchanges the contents of the container with those of other. Does not invoke any
          * move, copy, or swap operations on individual elements.All iterators and references
@@ -429,22 +461,22 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the number of elements with key that compares equivalent to the specified argument.
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
-        size_type count(const Key &key) const { return (this->isNul(find(key)._node)) ? 1 : 0; };
+        size_type count(const Key &key) const { return (this->isNul(find(key).__node)) ? 1 : 0; };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
         iterator find(const Key &key) {
             _node* rnode = _root;
-            while (!isNul(rnode) && (comp_is_true(*(rnode->_Key), key) || comp_is_true(key, *(rnode->_Key)))) {
-                if (this->_comp(key, *(rnode->_Key)))
+            while (!isNul(rnode) && !comp_is_equal(*(rnode->_Key), key)) {
+                if (comp_is_true(key, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
                 else
                     rnode = rnode->_RightChild;
             }
-            return iterator(rnode, *this); };
+            return iterator(rnode, this); };
 
-        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(find(key), *this); };
+        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(find(key), this); };
 
         /* Returns a range containing all elements with the given key in the container. The range is
          * defined by two iterators, one pointing to the first element that is not less than key and
@@ -466,18 +498,16 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             _node* forward_root = _root;
             _node* save = _nul;
             while (!(isNul(forward_root))) {
-                if (!comp_is_true(*(forward_root->_Key), key)) {
-                    save = forward_root;
+                save = forward_root;
+                if (!comp_is_true(*(forward_root->_Key), key))
                     forward_root = forward_root->_LeftChild;
-                }
-                else {
+                else
                     forward_root = forward_root->_RightChild;
-                }
             }
             return iterator(save, *this);
         };
 
-        const_iterator lower_bound(const Key &key) const {return const_iterator(lower_bound(key), *this); };
+        const_iterator lower_bound(const Key &key) const {return const_iterator(lower_bound(key), this); };
 
         /*Returns an iterator pointing to the first element that is greater than key.
          * Iterator pointing to the first element that is greater than key.
@@ -525,7 +555,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     Depth Property: For each node, any simple path from this node to any of its descendant leaf
      has the same black-depth (the number of black nodes).*/
 
-    private:
+//    private:
 
         /*build Key value at the Key* */
         Key* build(const Key &value) {
@@ -543,7 +573,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         void   init(){
             Key* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
-            _root = _nul = create_node(build, this->BLACK);
+            _root = _nul = new _node(build);
         };
 
         /*call constructor non void de Node and new Node */
@@ -657,87 +687,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             return node_to_transplant;
         };
 
-
-    /*
-    *====================================================================================
-    *|                                    Insert                                        |
-    *====================================================================================
-    */
-
-        /* find place with spec func to compare and add new node fo inserts value.
-         * return _node* to pos*/
-
-        _node* insertn(Key* value, _node* forward_root) {
-            __INFOMO__
-            _node* destination_node = _nul;
-            while (!isNul(forward_root)) {
-                destination_node = forward_root;
-                if (comp(*value, *(forward_root->_Key)))
-                    forward_root = forward_root->_LeftChild;
-                else
-                    forward_root = forward_root->_RightChild;
-            }
-            _node* new_node = create_node(value, this->RED);
-            new_node->_Parent = destination_node;
-            if (isNul(destination_node))
-                _root = new_node;
-            else if (comp(*(new_node->_Key), *(destination_node->_Key)))
-                destination_node->_LeftChild = new_node;
-            else
-                destination_node->_RightChild = new_node;
-            insertFixup(new_node);
-            _size++;
-            __INFOMONL__
-            return new_node;
-        };
-
-
-    /*
-    *====================================================================================
-    *|                                    Erase                                         |
-    *====================================================================================
-    */
-
-        /*Removes the element at pos delete data Key with specific allocator in set
-         * return node* to replace it*/
-        ft::pair<_node*, Key*> erases(_node* pos) {
-            __INFOMO__
-            if (isNul(pos))
-                return  ft::make_pair(pos, nullptr);
-            if (isRoot(pos)){
-                ft::pair<_node*, Key*> ret = ft::make_pair(_root, delete_node(pos));
-                _root = _nul;
-                return ret;
-            }
-            _node* trans;
-            _color original_color = pos->_Color;
-            if (isNul(pos->_LeftChild))
-                trans = transplant(pos, pos->_RightChild);
-            else if (isNul(pos->_RightChild))
-                trans = transplant(pos, pos->_LeftChild);
-            else {
-                _node* next = minimum(pos->_RightChild);
-                original_color = next->_Color;
-                trans = next->_RightChild;
-                if (next->_Parent == pos)
-                    trans->_Parent = next;
-                else {
-                    transplant(next, next->_RightChild);
-                    next->_RightChild = pos->_RightChild;
-                    next->_RightChild->_Parent = next;
-                }
-                transplant(pos, next);
-                next->_LeftChild = pos->_LeftChild;
-                next->_LeftChild->_Parent = next;
-                next->_Color = pos->_Color;
-            }
-            if (original_color == this->BLACK)
-                deleteFixup(trans);
-            _size--;
-            __INFOMONL__
-            return ft::make_pair(trans, delete_node(pos));
-        };
-
     /*
     *====================================================================================
     *|                                    Balance                                       |
@@ -786,7 +735,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                     check = new_node->_Parent->_Parent->_RightChild;
                     if (check->_Color == this->RED) {
                         new_node->_Parent->_Color = this->BLACK;
-                        check->_Color = this->BACK;
+                        check->_Color = this->BLACK;
                         new_node->_Parent->_Parent->_Color = this->RED;
                         new_node = new_node->_Parent->_Parent;
                     } else {
@@ -794,15 +743,15 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                             new_node = new_node->_Parent;
                             rotateLeft(new_node);
                         }
-                        new_node->_Parent->_Color = this->BACK;
+                        new_node->_Parent->_Color = this->BLACK;
                         new_node->_Parent->_Parent->_Color = this->RED;
                         rotateRight(new_node->_Parent->_Parent);
                     }
                 } else {
                     check = new_node->_Parent->_Parent->_LeftChild;
                     if (check->_Color == this->RED) {
-                        new_node->_Parent->_Color = this->BACK;
-                        check->_Color = this->BACK;
+                        new_node->_Parent->_Color = this->BLACK;
+                        check->_Color = this->BLACK;
                         new_node->_Parent->_Parent->_Color = this->RED;
                         new_node = new_node->_Parent->_Parent;
                     } else {
@@ -810,70 +759,70 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                             new_node = new_node->_Parent;
                             rotateRight(new_node);
                         }
-                        new_node->_Parent->_Color = this->BACK;
+                        new_node->_Parent->_Color = this->BLACK;
                         new_node->_Parent->_Parent->_Color = this->RED;
                         rotateLeft(new_node->_Parent->_Parent);
                     }
                 }
             }
-            _root->_Color = this->BACK;
+            _root->_Color = this->BLACK;
         };
 
         /*balance tree after delete*/
         void deleteFixup(_node* transplant) {
             _node* check;
-            while (transplant != _root && transplant->_Color == this->BACK) {
+            while (transplant != _root && transplant->_Color == this->BLACK) {
                 if (transplant == transplant->_Parent->_LeftChild) {
                     check= transplant->_Parent->_RightChild;
                     if (check->_Color == this->RED) {
-                        check->_Color = this->BACK;
+                        check->_Color = this->BLACK;
                         transplant->_Parent->_Color = this->RED;
                         rotateLeft(transplant->_Parent);
                         check = transplant->_Parent->_RightChild;
                     }
-                    if (check->_LeftChild->_Color == this->BACK && check->_RightChild->_Color == this->BACK) {
+                    if (check->_LeftChild->_Color == this->BACK && check->_RightChild->_Color == this->BLACK) {
                         check->_Color = this->RED;
                         transplant = transplant->_Parent;
                     } else {
-                        if (check->_RightChild->_Color == this->BACK) {
-                            check->_LeftChild->_Color = this->BACK;
+                        if (check->_RightChild->_Color == this->BLACK) {
+                            check->_LeftChild->_Color = this->BLACK;
                             check->_Color = this->RED;
                             rotateRight(check);
                             check = transplant->_Parent->_RightChild;
                         }
                         check->_Color = transplant->_Parent->_Color;
-                        transplant->_Parent->_Color = this->BACK;
-                        check->_RightChild->_Color = this->BACK;
+                        transplant->_Parent->_Color = this->BLACK;
+                        check->_RightChild->_Color = this->BLACK;
                         rotateLeft(transplant->_Parent);
                         transplant = _root;
                     }
                 } else {
                     check = transplant->_Parent->_LeftChild;
                     if (check->_Color == this->RED) {
-                        check->_Color = this->BACK;
+                        check->_Color = this->BLACK;
                         transplant->_Parent->_Color = this->RED;
                         rotateRight(transplant->_Parent);
                         check = transplant->_Parent->_LeftChild;
                     }
-                    if (check->_RightChild->_Color == this->BACK && check->_LeftChild->_Color == this->BACK) {
+                    if (check->_RightChild->_Color == this->BACK && check->_LeftChild->_Color == this->BLACK) {
                         check->_Color = this->RED;
                         transplant = transplant->_Parent;
                     } else {
-                        if (check->_LeftChild->_Color == this->BACK) {
-                            check->_RightChild->_Color = this->BACK;
+                        if (check->_LeftChild->_Color == this->BLACK) {
+                            check->_RightChild->_Color = this->BLACK;
                             check->_Color = this->RED;
                             rotateLeft(check);
                             check = transplant->_Parent->_LeftChild;
                         }
                         check->_Color = transplant->_Parent->_Color;
-                        transplant->_Parent->_Color = this->BACK;
-                        check->_LeftChild->_Color = this->BACK;
+                        transplant->_Parent->_Color = this->BLACK;
+                        check->_LeftChild->_Color = this->BLACK;
                         rotateRight(transplant->_Parent);
                         transplant = _root;
                     }
                 }
             }
-            transplant->_Color = this->BACK;
+            transplant->_Color = this->BLACK;
         };
 
     /*
@@ -895,7 +844,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             }
             if (node == _root)
                 std::cout << "─── " << "\033[1;32m" << *(node->_Key) << "\033[0m" << std::endl;
-            else if (node->_Color == this->BACK )
+            else if (node->_Color == this->BLACK )
                 std::cout << "── " << "\033[1;30m"<<  *(node->_Key) << "\033[0m" << std::endl;
 
             else

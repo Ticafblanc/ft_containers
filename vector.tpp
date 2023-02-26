@@ -441,7 +441,8 @@ private:
                            typename ft::enable_if<ft::is_integral<Integral>::value, Integral>::type last,
                            size_type SpecSize)
     {__INFOMF__
-            insert(pos, static_cast<size_type>(first), static_cast<const value_type>(last));
+        (void)SpecSize;
+        insert(pos, static_cast<size_type>(first), static_cast<const value_type>(last));
 
     __INFOMFNL__};
 

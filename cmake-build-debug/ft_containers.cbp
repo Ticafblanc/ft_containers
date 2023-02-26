@@ -82,7 +82,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/mdoquocb/CLionProjects/ft_containers/testset.cpp">
+		<Unit filename="/Users/mdoquocb/CLionProjects/ft_containers/test/sources/set_tests/constructor.cpp">
 			<Option target="ft_containers"/>
 		</Unit>
 		<Unit filename="/Users/mdoquocb/CLionProjects/ft_containers/CMakeLists.txt">
