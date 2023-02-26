@@ -306,13 +306,29 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
         ft::pair<iterator, bool> insert(const value_type &value) {
             __INFOMO__
-            iterator pos = lower_bound(value);
-            if (!isNul(pos._node) && *pos == value)
-                return  ft::make_pair(pos, false);
-            else
-                return  ft::make_pair(insert(iterator(_root, *this), value), true);
-            __INFOMONL__
+            _node* forward_root = _root;
+            _node* destination_node = _nul;
+            while (!isNul(forward_root)) {
+                destination_node = forward_root;
+                if (comp_is_equal(*value, *(destination_node->_Key)))
+                    return  ft::make_pair(destination_node, false);
+                if (comp_is_true(*value, *(forward_root->_Key)))
+                    forward_root = forward_root->_LeftChild;
+                else
+                    forward_root = forward_root->_RightChild;
 
+            }
+            _node* new_node = create_node(value, this->RED);
+            new_node->_Parent = destination_node;
+            if (isNul(destination_node))
+                _root = new_node;
+            else if (comp_is_true(*(new_node->_Key), *(destination_node->_Key)))
+                destination_node->_LeftChild = new_node;
+            else
+                destination_node->_RightChild = new_node;
+            insertFixup(new_node);
+            __INFOMONL__
+            return  ft::make_pair(new_node, true);
         };
 
         /*
@@ -321,9 +337,27 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          */
         iterator insert(iterator pos, const value_type &value) {
             __INFOMO__
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build, value);
-            return iterator(this->insertn(build, pos._node, this->_comp), *this);
+            _node* forward_root = _root;
+            _node* destination_node = _nul;
+            while (!isNul(forward_root)) {
+                destination_node = forward_root;
+                if (comp_is_equal(*value, *(destination_node->_Key)))
+                    return iterator(destination_node, *this);
+                if (comp_is_true(*value, *(forward_root->_Key)))
+                    forward_root = forward_root->_LeftChild;
+                else
+                    forward_root = forward_root->_RightChild;
+            }
+            _node* new_node = create_node(value, this->RED);
+            new_node->_Parent = destination_node;
+            if (isNul(destination_node))
+                _root = new_node;
+            else if (comp_is_true(*(new_node->_Key), *(destination_node->_Key)))
+                destination_node->_LeftChild = new_node;
+            else
+                destination_node->_RightChild = new_node;
+            insertFixup(new_node);
+            return iterator(new_node, *this);
         };
 
         /*Inserts elements from range [first, last). If multiple elements in the range have keys
@@ -365,7 +399,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         size_type erase(const Key &key) {
             __INFOMO__
             _node* pos = finds(key, _root, this->_comp);
-            if(!(this->isNul(pos))) {
+            if(!isNul(pos)) {
                 ft::pair<_node *, Key *> result;
                 result = erases(pos);
                 this->_alloc.destroy(result.second);
@@ -395,14 +429,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the number of elements with key that compares equivalent to the specified argument.
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
-        size_type count(const Key &key) const { return (this->isNul(finds(key)._node)) ? 1 : 0; };
+        size_type count(const Key &key) const { return (this->isNul(find(key)._node)) ? 1 : 0; };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
         iterator find(const Key &key) {
             _node* rnode = _root;
-            while (!isNul(rnode) && (this->_comp(*(rnode->_Key), key) || this->_comp(key, *(rnode->_Key)))) {
+            while (!isNul(rnode) && (comp_is_true(*(rnode->_Key), key) || comp_is_true(key, *(rnode->_Key)))) {
                 if (this->_comp(key, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
                 else
@@ -428,9 +462,22 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-        iterator lower_bound(const Key &key) {return iterator(this->greater_or_equal(key, this->_comp), *this); };
+        iterator lower_bound(const Key &key) {
+            _node* forward_root = _root;
+            _node* save = _nul;
+            while (!(isNul(forward_root))) {
+                if (!comp_is_true(*(forward_root->_Key), key)) {
+                    save = forward_root;
+                    forward_root = forward_root->_LeftChild;
+                }
+                else {
+                    forward_root = forward_root->_RightChild;
+                }
+            }
+            return iterator(save, *this);
+        };
 
-        const_iterator lower_bound(const Key &key) const {return const_iterator(this->greater_or_equal(key, this->_comp));};
+        const_iterator lower_bound(const Key &key) const {return const_iterator(lower_bound(key), *this); };
 
         /*Returns an iterator pointing to the first element that is greater than key.
          * Iterator pointing to the first element that is greater than key.
@@ -517,19 +564,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         _node* copy_tree(const _self &other, _node* node) {
             if(other.isNul(node))
                 return _nul;
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build, *(node->_Key));
-            _node *new_node = create_node(build, node->_Color);
+            _node *new_node = create_node(*(node->_Key), node->_Color);
             new_node->_LeftChild = copy_tree(other, node->_LeftChild);
             new_node->_RightChild = copy_tree(other, node->_RightChild);
             new_node->_Parent = _nul;
-            if (!isNul(new_node->_LeftChild)) {
+            if (!isNul(new_node->_LeftChild))
                 new_node->_LeftChild->_Parent = new_node;
-            }
-            if (!isNul(new_node->_RightChild)) {
+            if (!isNul(new_node->_RightChild))
                 new_node->_RightChild->_Parent = new_node;
-            }
-            this->_size++;
             return new_node;
         };
 
@@ -557,6 +599,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         bool isLeftChild(_node* node){
             return node == node->_Parent->_LeftChild;
         };
+
+        bool comp_is_true(const Key& lhs, const Key& rhs){
+            return this->_comp(lhs, rhs);
+        }
+
+        bool comp_is_equal(const Key& lhs, const Key& rhs){
+            return comp_is_true(lhs, rhs) && comp_is_true(rhs, lhs);
+        }
 
         _node* maximum(_node* node) {
             while (!isNul(node->_RightChild)) {
@@ -607,21 +657,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             return node_to_transplant;
         };
 
-        /* find return greater or eqaul pos value*/
-        _node* greater_or_equal(const Key& value) const {
-            _node* forward_root = _root;
-            _node* save = _nul;
-            while (!(isNul(forward_root))) {
-                if (!comp(*(forward_root->_Key), value)) {
-                    save = forward_root;
-                    forward_root = forward_root->_LeftChild;
-                }
-                else {
-                    forward_root = forward_root->_RightChild;
-                }
-            }
-            return save;
-        };
 
     /*
     *====================================================================================
