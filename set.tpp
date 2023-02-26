@@ -246,13 +246,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
+        iterator                begin()             {__INFOIT__ return iterator(this->minimum(_root), *this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
+        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(_root), *this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(_nul), *this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(_nul), *this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -271,11 +271,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     public:
 
         /*Checks if the container has no elements, i.e. whether begin() == end().*/
-        bool        empty()     const { __INFOCA__ return this->_size == 0; };
+        bool        empty()     const { __INFOCA__ return _size == 0; };
 
         /*Returns the number of elements in the container,
          * i.e. std::distance(begin(), end()).*/
-        size_type   size()      const {__INFOCA__ return this->_size; };
+        size_type   size()      const {__INFOCA__ return _size; };
 
         /*Returns the maximum number of elements the container is able to
          * hold due to system or library implementation limitations, i.e.
@@ -296,8 +296,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any past-the-end iterators are also invalidated.*/
         void clear() {
             __INFOMO__
-            clear_tree(this->_root);
-            this->_root = this->_nul;
+            clear_tree(_root);
+            _root = _nul;
             __INFOMONL__
         };
 
@@ -307,10 +307,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         ft::pair<iterator, bool> insert(const value_type &value) {
             __INFOMO__
             iterator pos = lower_bound(value);
-            if (!this->isNul(pos._node) && *pos == value)
+            if (!isNul(pos._node) && *pos == value)
                 return  ft::make_pair(pos, false);
             else
-                return  ft::make_pair(insert(iterator(this->_root, *this), value), true);
+                return  ft::make_pair(insert(iterator(_root, *this), value), true);
             __INFOMONL__
 
         };
@@ -332,7 +332,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         template<class InputIt>
         void insert(InputIt first, InputIt last) {
             __INFOMO__
-            iterator pos = iterator(this->_root, *this);
+            iterator pos = iterator(_root, *this);
             for ( ; first != last; ++first)
                 pos = insert(pos, *first);
             __INFOMONL__
@@ -343,7 +343,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         iterator erase(iterator pos) {
             __INFOMO__
             ft::pair<_node*, Key*> result;
-            result = this->erases(pos._node);
+            result = erases(pos._node);
             this->_alloc.destroy(result.second);
             this->_alloc.deallocate(result.second, 1);
             return iterator(result.first, *this); };
@@ -364,10 +364,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
             __INFOMO__
-            _node* pos = this->finds(key, this->_root, this->_comp);
+            _node* pos = finds(key, _root, this->_comp);
             if(!(this->isNul(pos))) {
                 ft::pair<_node *, Key *> result;
-                result = this->erases(pos);
+                result = erases(pos);
                 this->_alloc.destroy(result.second);
                 this->_alloc.deallocate(result.second, 1);
             }
