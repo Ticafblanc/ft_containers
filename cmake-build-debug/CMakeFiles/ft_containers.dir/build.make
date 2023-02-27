@@ -69,28 +69,28 @@ include CMakeFiles/ft_containers.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/ft_containers.dir/flags.make
 
-CMakeFiles/ft_containers.dir/testset.cpp.o: CMakeFiles/ft_containers.dir/flags.make
-CMakeFiles/ft_containers.dir/testset.cpp.o: ../testset.cpp
-CMakeFiles/ft_containers.dir/testset.cpp.o: CMakeFiles/ft_containers.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/mdoquocb/CLionProjects/ft_containers/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ft_containers.dir/testset.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ft_containers.dir/testset.cpp.o -MF CMakeFiles/ft_containers.dir/testset.cpp.o.d -o CMakeFiles/ft_containers.dir/testset.cpp.o -c /Users/mdoquocb/CLionProjects/ft_containers/testset.cpp
+CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o: CMakeFiles/ft_containers.dir/flags.make
+CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o: ../test/sources/set_tests/constructor.cpp
+CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o: CMakeFiles/ft_containers.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/mdoquocb/CLionProjects/ft_containers/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o -MF CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o.d -o CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o -c /Users/mdoquocb/CLionProjects/ft_containers/test/sources/set_tests/constructor.cpp
 
-CMakeFiles/ft_containers.dir/testset.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ft_containers.dir/testset.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mdoquocb/CLionProjects/ft_containers/testset.cpp > CMakeFiles/ft_containers.dir/testset.cpp.i
+CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mdoquocb/CLionProjects/ft_containers/test/sources/set_tests/constructor.cpp > CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.i
 
-CMakeFiles/ft_containers.dir/testset.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ft_containers.dir/testset.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mdoquocb/CLionProjects/ft_containers/testset.cpp -o CMakeFiles/ft_containers.dir/testset.cpp.s
+CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mdoquocb/CLionProjects/ft_containers/test/sources/set_tests/constructor.cpp -o CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.s
 
 # Object files for target ft_containers
 ft_containers_OBJECTS = \
-"CMakeFiles/ft_containers.dir/testset.cpp.o"
+"CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o"
 
 # External object files for target ft_containers
 ft_containers_EXTERNAL_OBJECTS =
 
-ft_containers: CMakeFiles/ft_containers.dir/testset.cpp.o
+ft_containers: CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o
 ft_containers: CMakeFiles/ft_containers.dir/build.make
 ft_containers: CMakeFiles/ft_containers.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/mdoquocb/CLionProjects/ft_containers/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ft_containers"

@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/ft_containers.dir/testset.cpp.o"
-  "CMakeFiles/ft_containers.dir/testset.cpp.o.d"
+  "CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o"
+  "CMakeFiles/ft_containers.dir/test/sources/set_tests/constructor.cpp.o.d"
   "ft_containers"
   "ft_containers.pdb"
 )

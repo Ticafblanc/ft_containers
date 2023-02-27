@@ -24,6 +24,124 @@
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
+    template<class Key, class _node>
+    struct iterator : public std::iterator<std::bidirectional_iterator_tag,
+            Key, Key, const Key *, Key> {
+
+
+        _node*                                   __node;
+//        set<Key, Compare, Allocator>*            __set;
+
+        /*
+        *====================================================================================
+        *|                                  Member Fonction                                 |
+        *====================================================================================
+        */
+
+
+        iterator() : __node(nullptr){};
+
+        explicit iterator(_node* tmp) : __node(tmp){ };
+
+        iterator(const iterator &other) : __node(other.__node) {};
+
+        ~iterator(){};
+
+        iterator& operator=(const iterator& other){
+            __node = other.__node;
+            return *this;
+        };
+        /*
+        *====================================================================================
+        *|                                  overload operator                               |
+        *====================================================================================
+        */
+
+        Key& operator*() const { return *(__node->_Key); }
+        Key* operator->() const { return &(operator*()); }
+
+        iterator& operator++() {
+            __node = successor(__node);
+            return *this;
+        };
+
+        iterator operator++(int) {
+            const iterator Tmp = *this;
+            __node = successor(__node);
+            return Tmp;
+        };
+
+        iterator& operator--() {
+            __node = predecessor(__node);
+            return *this;
+        };
+
+        iterator  operator--(int) {
+            const iterator Tmp = *this;
+            __node = predecessor(__node);
+            return Tmp;
+        };
+
+        bool operator==(const iterator& rhs) const { return __node == rhs.__node; };
+
+        bool operator!=(const iterator& rhs) const { return !(*this == rhs); };
+
+        _node* successor(_node* node) {
+            if (!isNul(node->_RightChild))
+                return minimum(node->_RightChild);
+            _node* rnode = node->_Parent;
+            while (!isNul(rnode) && node == rnode->_RightChild) {
+                node = rnode;
+                rnode = rnode->_Parent;
+            }
+            return rnode;
+        };
+
+        _node* predecessor(_node* node) {
+            if (isNul(node))
+                return maximum(_root);
+            if (!isNul(node->_LeftChild))
+                return maximum(node->_LeftChild);
+            _node* rnode = node->_Parent;
+            while (!isNul(rnode) && node == rnode->_LeftChild) {
+                node = rnode;
+                rnode = rnode->_Parent;
+            }
+            return rnode;
+        };
+
+        bool isNul(_node* node) const {
+            return (node == nullptr || node == _nul);
+        };
+
+        bool isRoot(_node* node) const {
+            return (node == _root);
+        };
+
+        _node* maximum(_node* node) {
+            while (!isNul(node->_RightChild)) {
+                node = node->_RightChild;
+            }
+            return node;
+        };
+
+        _node* minimum(_node* node) {
+            while (!isNul(node->_LeftChild)) {
+                node = node->_LeftChild;
+            }
+            return node;
+        };
+
+        _node* root(_node* node) {
+            while (!isNul(node->_Parent) {
+                node = node->_Parent;
+            }
+            return node;
+        };
+
+    };/*end of iterator*/
+
+
     template< class Key, class Compare, class Allocator >
     class setbase {
 
@@ -112,70 +230,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     private:
 
-        struct iterator : public std::iterator<std::bidirectional_iterator_tag,
-                Key, Key, const Key *, Key> {
 
-
-            _node*                                   __node;
-            set<Key, Compare, Allocator>*            __set;
-
-            /*
-            *====================================================================================
-            *|                                  Member Fonction                                 |
-            *====================================================================================
-            */
-
-
-            iterator() : __node(nullptr), __set(nullptr){};
-
-            explicit iterator(_node* tmp, set<Key, Compare, Allocator>* set ) : __node(tmp), __set(set) { };
-
-            iterator(const iterator &other) : __node(other.__node) , __set(other.__set){};
-
-            ~iterator(){};
-
-            iterator& operator=(const iterator& other){
-                __node = other.__node;
-                __set = other.__set;
-                return *this;
-            };
-            /*
-            *====================================================================================
-            *|                                  overload operator                               |
-            *====================================================================================
-            */
-
-            Key& operator*() const { return *(__node->_Key); }
-            Key* operator->() const { return &(operator*()); }
-
-            iterator& operator++() {
-                __node = __set->successor(__node);
-                return *this;
-            };
-
-            iterator operator++(int) {
-                const iterator Tmp = *this;
-                __node = __set->successor(__node);
-                return Tmp;
-            };
-
-            iterator& operator--() {
-                __node = __set->predecessor(__node);
-                return *this;
-            };
-
-            iterator  operator--(int) {
-                const iterator Tmp = *this;
-                __node = __set->predecessor(__node);
-                return Tmp;
-            };
-
-            bool operator==(const iterator& rhs) const { return __node == rhs.__node; };
-
-            bool operator!=(const iterator& rhs) const { return !(*this == rhs); };
-
-
-        };/*end of iterator*/
 
     /*
     *====================================================================================
@@ -387,7 +442,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             if (isRoot(pos)){
                 delete_node(_root);
                 _root = _nul;
-                return _root;
+                return iterator(_root, this);
             }
             _node* trans;
             _color original_color = pos->_Color;
@@ -433,6 +488,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         size_type erase(const Key &key) {
             __INFOMO__
             iterator posi = find(key);
+//            std::cout << *posi.__node->_Key << std::endl;
             if(!isNul(posi.__node)) {
                 erase(posi);
                 return 1;
@@ -469,12 +525,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         iterator find(const Key &key) {
             _node* rnode = _root;
             while (!isNul(rnode) && !comp_is_equal(*(rnode->_Key), key)) {
+//                std::cout << comp_is_equal(*(rnode->_Key), key) << " " << *(rnode->_Key) << "  " << key << std::endl;
                 if (comp_is_true(key, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
                 else
                     rnode = rnode->_RightChild;
             }
-            return iterator(rnode, this); };
+            return iterator(rnode, this);
+        };
 
         const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(find(key), this); };
 
@@ -635,7 +693,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         }
 
         bool comp_is_equal(const Key& lhs, const Key& rhs){
-            return comp_is_true(lhs, rhs) && comp_is_true(rhs, lhs);
+//            std::cout << std::boolalpha << "equal" << comp_is_true(lhs, rhs) << ":" << comp_is_true(rhs, lhs) << std::endl;
+            return (comp_is_true(lhs, rhs) && comp_is_true(rhs, lhs)) || (!comp_is_true(lhs, rhs) && !comp_is_true(rhs, lhs));
         }
 
         _node* maximum(_node* node) {
@@ -780,7 +839,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                         rotateLeft(transplant->_Parent);
                         check = transplant->_Parent->_RightChild;
                     }
-                    if (check->_LeftChild->_Color == this->BACK && check->_RightChild->_Color == this->BLACK) {
+                    if (check->_LeftChild->_Color == this->BLACK && check->_RightChild->_Color == this->BLACK) {
                         check->_Color = this->RED;
                         transplant = transplant->_Parent;
                     } else {
@@ -804,7 +863,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                         rotateRight(transplant->_Parent);
                         check = transplant->_Parent->_LeftChild;
                     }
-                    if (check->_RightChild->_Color == this->BACK && check->_LeftChild->_Color == this->BLACK) {
+                    if (check->_RightChild->_Color == this->BLACK && check->_LeftChild->_Color == this->BLACK) {
                         check->_Color = this->RED;
                         transplant = transplant->_Parent;
                     } else {

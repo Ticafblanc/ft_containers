@@ -3,67 +3,67 @@ In file included from ../set_tests/__service.ipp:3:
 ../set_tests/../../../set.tpp:251:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >', but function is not marked const
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(_root), this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:898:48: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::begin' requested here
+../set_tests/../../../set.tpp:902:48: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::begin' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                ^
-../set_tests/../../../set.tpp:912:102: note: in instantiation of function template specialization 'ft::operator<<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
+../set_tests/../../../set.tpp:916:102: note: in instantiation of function template specialization 'ft::operator<<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
         result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
                                  ^
-../set_tests/../../../set.tpp:648:16: note: 'minimum' declared here
+../set_tests/../../../set.tpp:652:16: note: 'minimum' declared here
         _node* minimum(_node* node) {
                ^
 ../set_tests/../../../set.tpp:255:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >', but function is not marked const
         const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(_nul), this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:898:61: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::end' requested here
+../set_tests/../../../set.tpp:902:61: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::end' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                             ^
-../set_tests/../../../set.tpp:912:102: note: in instantiation of function template specialization 'ft::operator<<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
+../set_tests/../../../set.tpp:916:102: note: in instantiation of function template specialization 'ft::operator<<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:27: note: in instantiation of function template specialization 'ft::operator>=<int, std::__1::less<int>, std::__1::allocator<int> >' requested here
         result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
                                  ^
-../set_tests/../../../set.tpp:641:16: note: 'maximum' declared here
+../set_tests/../../../set.tpp:645:16: note: 'maximum' declared here
         _node* maximum(_node* node) {
                ^
 ../set_tests/../../../set.tpp:251:81: error: 'this' argument to member function 'minimum' has type 'const ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >', but function is not marked const
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(_root), this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:898:48: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::begin' requested here
+../set_tests/../../../set.tpp:902:48: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::begin' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                ^
-../set_tests/../../../set.tpp:912:102: note: in instantiation of function template specialization 'ft::operator<<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
+../set_tests/../../../set.tpp:916:102: note: in instantiation of function template specialization 'ft::operator<<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
         result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
                                                                                                            ^
-../set_tests/../../../set.tpp:648:16: note: 'minimum' declared here
+../set_tests/../../../set.tpp:652:16: note: 'minimum' declared here
         _node* minimum(_node* node) {
                ^
 ../set_tests/../../../set.tpp:255:81: error: 'this' argument to member function 'maximum' has type 'const ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >', but function is not marked const
         const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(_nul), this); };
                                                                                 ^~~~
-../set_tests/../../../set.tpp:898:61: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::end' requested here
+../set_tests/../../../set.tpp:902:61: note: in instantiation of member function 'ft::set<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >::end' requested here
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                                             ^
-../set_tests/../../../set.tpp:912:102: note: in instantiation of function template specialization 'ft::operator<<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
+../set_tests/../../../set.tpp:916:102: note: in instantiation of function template specialization 'ft::operator<<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
                             const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
                                                                                                      ^
 ../set_tests/operator >=.cpp:19:101: note: in instantiation of function template specialization 'ft::operator>=<std::__1::basic_string<char>, std::__1::less<std::__1::basic_string<char> >, std::__1::allocator<std::__1::basic_string<char> > >' requested here
         result2.push_back(st.st1 >= st.st1); result2.push_back(st.st3 >= st.st3); result2.push_back(st.st5 >= st.st9);
                                                                                                            ^
-../set_tests/../../../set.tpp:641:16: note: 'maximum' declared here
+../set_tests/../../../set.tpp:645:16: note: 'maximum' declared here
         _node* maximum(_node* node) {
                ^
 4 errors generated.
 ator(save, *this);
                    ^        ~~~~~~~~~~~
-../set_tests/../../../set.tpp:487:34: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
+../set_tests/../../../set.tpp:490:34: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
             return ft::make_pair(lower_bound(key), upper_bound(key));
                                  ^
 ../set_tests/equal_range().cpp:37:83: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::equal_range' requested here
@@ -81,13 +81,13 @@ ator(save, *this);
 ../set_tests/../../../set.tpp:129:13: note: candidate constructor not viable: requires 0 arguments, but 2 were provided
             iterator() : __node(nullptr), __set(nullptr){};
             ^
-../set_tests/../../../set.tpp:510:66: error: no matching constructor for initialization of 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::const_iterator' (aka 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator')
+../set_tests/../../../set.tpp:513:66: error: no matching constructor for initialization of 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::const_iterator' (aka 'const ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::iterator')
         const_iterator lower_bound(const Key &key) const {return const_iterator(lower_bound(key), this); };
                                                                  ^              ~~~~~~~~~~~~~~~~~~~~~~
-../set_tests/../../../set.tpp:516:30: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
+../set_tests/../../../set.tpp:519:30: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::lower_bound' requested here
             iterator save =  lower_bound(key);
                              ^
-../set_tests/../../../set.tpp:487:52: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::upper_bound' requested here
+../set_tests/../../../set.tpp:490:52: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::upper_bound' requested here
             return ft::make_pair(lower_bound(key), upper_bound(key));
                                                    ^
 ../set_tests/equal_range().cpp:37:83: note: in instantiation of member function 'ft::set<int, std::__1::less<int>, std::__1::allocator<int> >::equal_range' requested here
