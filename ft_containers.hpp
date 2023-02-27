@@ -28,16 +28,6 @@
 # include <algorithm>
 //std::numeric_limits<>
 # include <limits>
-//std::less and std::greater
-#include <functional>
-//utile for print tree
-#include <unistd.h>
-#include <iostream>
-#include <cstdlib>
-#include <sstream>
-#include <deque>
-#include <iomanip>
-
 
 /* Print debug */
 
