@@ -74,7 +74,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
         void init(Key* value){
-            _root = _nul = create_node(value, BLACK);
+            _root = _nul = create_node(BLACK);
+            _nul->_Key = value;
         };
 
         bool isNul(Node* node) const {
@@ -137,14 +138,10 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
-        /*call constructor void non void de Node and new Node */
-        Node*   create_node(){
-            return new Node();
-        };
 
         /*call constructor non void de Node and new Node */
-        Node*   create_node(Key* value, Color color){
-            return new Node(value, color,  _nul);
+        Node*   create_node(Color color){
+            return new Node(color,  _nul);
         };
 
         /*delete node and call the destructor of Node*/
@@ -165,13 +162,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
                     rnode = rnode->_RightChild;
             }
             return rnode;
-        };
-
-        /*update size of container*/
-        void fixup_size(Node* node) {
-            std::size_t left_size = (isNul(node->_LeftChild)) ? 0 : node->_LeftChild->_Size;
-            std::size_t right_size = (isNul(node->_RightChild)) ? 0 : node->_RightChild->_Size;
-            node->_Size = left_size + right_size + 1;
         };
 
 
@@ -218,28 +208,34 @@ Depth Property: For each node, any simple path from this node to any of its desc
         /* find place with spec func to compare and add new node fo inserts value.
          * return Node* to pos*/
         template<typename Compare>
-        Node* insertn(Key* value, Node* forward_root, Compare comp ) {
+        ft::pair<Node*, bool> insertn(const Key& value, Node* forward_root, Compare& comp ) {
             __INFOMO__
+            if (isNul(forward_root)
+                || comp(*forward_root->_Key, *successor(forward_root)->_Key)
+                || comp(*predecessor(forward_root)->_Key, *forward_root->_Key))
+                forward_root = _root;
             Node* destination_node = _nul;
             while (!isNul(forward_root)) {
                 destination_node = forward_root;
-                if (comp(*value, *(forward_root->_Key)))
+                if (*(forward_root->_Key) == value)
+                    return ft::make_pair(destination_node, false);
+                if (comp(value, *(forward_root->_Key)))
                     forward_root = forward_root->_LeftChild;
                 else
                     forward_root = forward_root->_RightChild;
             }
-            Node* new_node = create_node(value, RED);
+            Node* new_node = create_node(RED);
             new_node->_Parent = destination_node;
             if (isNul(destination_node))
                 _root = new_node;
-            else if (comp(*(new_node->_Key), *(destination_node->_Key)))
+            else if (comp(value, *(destination_node->_Key)))
                 destination_node->_LeftChild = new_node;
             else
                 destination_node->_RightChild = new_node;
             insertFixup(new_node);
             _size++;
             __INFOMONL__
-            return new_node;
+            return ft::make_pair(new_node, true);
         };
 
 
@@ -461,17 +457,20 @@ Depth Property: For each node, any simple path from this node to any of its desc
             std::cout<<std::endl;
             sleep(1);
         }
+    };/*end of Red_black_tree*/
     /*
     *====================================================================================
     *|                                    iterator                                      |
     *====================================================================================
     */
 
-    struct iterator : public std::iterator<std::bidirectional_iterator_tag,
+    template<class Key>
+    struct rbtiterator : public std::iterator<std::bidirectional_iterator_tag,
             Key, Key, const Key *, Key> {
 
+        typedef nodeSet<Key>                     Node;
         Node*                                   _node;
-        RedBlackTree<Key, Node>&                _tree;
+        RedBlackTree<Key, Node>*                _tree;
 
     /*
     *====================================================================================
@@ -479,15 +478,15 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
-        iterator() : _node(nullptr), _tree(nullptr){};
+        rbtiterator() : _node(nullptr), _tree(nullptr){};
 
-        explicit iterator(Node* tmp, ft::RedBlackTree<Key, Node>& _tree) : _node(tmp), _tree(_tree){};
+        explicit rbtiterator(Node* tmp, ft::RedBlackTree<Key, Node>* _tree) : _node(tmp), _tree(_tree){};
 
-        iterator(const iterator &other) : _node(other._node) , _tree(other._tree){};
+        rbtiterator(const rbtiterator &other) : _node(other._node) , _tree(other._tree){};
 
-        ~iterator(){};
+        ~rbtiterator(){};
 
-        iterator& operator=(const iterator& other){
+        rbtiterator& operator=(const rbtiterator& other){
             _node = other._node;
             _tree = other._tree;
             return *this;
@@ -501,43 +500,43 @@ Depth Property: For each node, any simple path from this node to any of its desc
         Key& operator*() const { return *(_node->_Key); }
         Key* operator->() const { return &(operator*()); }
 
-        iterator& operator++() {
+        rbtiterator& operator++() {
 //            std::cout << "coucou " << std::endl;
 
-            _node = _tree.successor(_node);
+            _node = _tree->successor(_node);
             return *this;
         };
 
-        iterator operator++(int) {
+        rbtiterator operator++(int) {
 //            std::cout << "coucou " << std::endl;
 
-            const iterator Tmp = *this;
-            _node = _tree.successor(_node);
+            const rbtiterator Tmp = *this;
+            _node = _tree->successor(_node);
             return Tmp;
         };
 
-        iterator& operator--() {
+        rbtiterator& operator--() {
 //            std::cout << "coucou " << std::endl;
 
-            _node = _tree.predecessor(_node);
+            _node = _tree->predecessor(_node);
             return *this;
         };
 
-        iterator  operator--(int) {
+        rbtiterator  operator--(int) {
 //            std::cout << "coucou " << std::endl;
 
-            const iterator Tmp = *this;
-            _node = _tree.predecessor(_node);
+            const rbtiterator Tmp = *this;
+            _node = _tree->predecessor(_node);
             return Tmp;
         };
 
-        bool operator==(const iterator& rhs) const { return _node == rhs._node; };
+        bool operator==(const rbtiterator& rhs) const { return _node == rhs._node; };
 
-        bool operator!=(const iterator& rhs) const { return !(*this == rhs); };
+        bool operator!=(const rbtiterator& rhs) const { return !(*this == rhs); };
 
 
     };/*end of iterator*/
-};/*end of Red_black_tree*/
+
 
 /*
 *====================================================================================

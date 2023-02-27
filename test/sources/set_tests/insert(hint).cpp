@@ -9,11 +9,11 @@ std::vector<int> insert_test_3(std::set<T> st) {
     for (int i = 0; i < 50 * _ratio; ++i) {
         st.insert(it, i);
     }
-//    g_end1 = timer();
-//    typename std::set<T>::iterator it2 = st.begin();
-//    for (; it2 != st.end(); ++it2) {
-//        v.push_back(*it2);
-//    }
+    g_end1 = timer();
+    typename std::set<T>::iterator it2 = st.begin();
+    for (; it2 != st.end(); ++it2) {
+        v.push_back(*it2);
+    }
     return v;
 }
 
@@ -25,11 +25,11 @@ std::vector<int> insert_test_3(_set<T> st) {
     for (int i = 0; i < 50 * _ratio; ++i) {
         st.insert(it, i);
     }
-//    g_end2 = timer();
-//    typename _set<T>::iterator it2 = st.begin();
-//    for (; it2 != st.end(); ++it2) {
-//        v.push_back(*it2);
-//    }
+    g_end2 = timer();
+    typename _set<T>::iterator it2 = st.begin();
+    for (; it2 != st.end(); ++it2) {
+        v.push_back(*it2);
+    }
     return v;
 }
 

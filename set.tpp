@@ -34,7 +34,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         setbase() {};
 
-        explicit setbase(const Compare& comp, const Allocator& alloc) : _comp(comp), _alloc(alloc){};
+        explicit setbase(const Compare& comp, const Allocator& alloc) :  _alloc(alloc), _comp(comp){};
 
         ~setbase() {};
 
@@ -74,7 +74,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef typename base::allocator                            allocator_type;
         typedef typename Allocator::pointer                         pointer;
         typedef typename Allocator::const_pointer                   const_pointer;
-        typedef typename _base::iterator                            iterator;
+        typedef rbtiterator<Key>                                    iterator;
         typedef const iterator                                      const_iterator;
         typedef ft::reverse_iterator<iterator>                      reverse_iterator;
         typedef ft::reverse_iterator<const_iterator>                const_reverse_iterator;
@@ -117,6 +117,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             this->_alloc.construct(build);
             this->init(build);
             this->_root = copy_tree(other, other._root);
+            return;
         };
 
         ~set() {
@@ -146,13 +147,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
+        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
+        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -206,11 +207,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
         ft::pair<iterator, bool> insert(const value_type &value) {
             __INFOMO__
-            iterator pos = lower_bound(value);
-            if (!this->isNul(pos._node) && *pos == value)
-                return  ft::make_pair(pos, false);
-            else
-                return  ft::make_pair(insert(iterator(this->_root, *this), value), true);
+            ft::pair<_node* , bool>  check = this->insertn(value, this->_root, this->_comp);
+            if (check.second == false)
+                return  ft::make_pair(iterator(check.first, this), false);
+            build(value, check.first->_Key);
+            return  ft::make_pair(iterator(check.first, this), true);
             __INFOMONL__
 
         };
@@ -221,9 +222,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          */
         iterator insert(iterator pos, const value_type &value) {
             __INFOMO__
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build, value);
-            return iterator(this->insertn(build, pos._node, this->_comp), *this);
+            ft::pair<_node* , bool>  check = this->insertn(value, pos._node, this->_comp);
+            if (check.second == true)
+                build(value, check.first->_Key);
+            return iterator(check.first, this);
         };
 
         /*Inserts elements from range [first, last). If multiple elements in the range have keys
@@ -232,9 +234,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         template<class InputIt>
         void insert(InputIt first, InputIt last) {
             __INFOMO__
-            iterator pos = iterator(this->_root, *this);
-            for ( ; first != last; ++first)
-                pos = insert(pos, *first);
+            ft::pair<_node *, bool> check = this->insertn(*first, this->_root, this->_comp);
+            if (check.second == true)
+                build(*first, check.first->_Key);
+            for (first++; first != last; ++first){
+                check = this->insertn(*first, check.first, this->_comp);
+                if (check.second == true)
+                    build(*first, check.first->_Key);
+            }
             __INFOMONL__
         };
 
@@ -246,14 +253,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             result = this->erases(pos._node);
             this->_alloc.destroy(result.second);
             this->_alloc.deallocate(result.second, 1);
-            return iterator(result.first, *this); };
+            return iterator(result.first, this); };
 
         /*Removes the elements in the range [first, last).
          * Iterator following the last removed element.*/
         iterator erase(iterator first, iterator last) {
             __INFOMO__
             ft::pair<_node*, Key*> result;
-            for ( ; *first != *last; ++first)
+            for ( ; first != last; ++first)
                 erase(first);
             __INFOMONL__
             return erase(first);
@@ -267,12 +274,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             _node* pos = this->finds(key, this->_root, this->_comp);
             if(!(this->isNul(pos))) {
                 ft::pair<_node *, Key *> result;
-                result = this->erases(pos);
-                this->_alloc.destroy(result.second);
-                this->_alloc.deallocate(result.second, 1);
+                destroy(this->erases(pos).second) ;
+                return 1;
             }
             __INFOMONL__
-            return (!this->isNul(this->finds(key, this->_root, this->_comp))) ? 1 : 0;
+            return  0;
         };
         /*Exchanges the contents of the container with those of other. Does not invoke any
          * move, copy, or swap operations on individual elements.All iterators and references
@@ -356,13 +362,23 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     private:
 
+        /*build Key value at the Key* */
+        void build(const Key &value, Key*& build) {
+            build = this->_alloc.allocate(1);
+            this->_alloc.construct(build, value);
+        };
+
+        void destroy(Key* key) {
+            this->_alloc.destroy(key);
+            this->_alloc.deallocate(key, 1);
+        };
+
         /*copy the tree start at _root*/
         _node* copy_tree(const _self &other, _node* node) {
             if(other.isNul(node))
                 return this->_nul;
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build, *(node->_Key));
-            _node *new_node = this->create_node(build, node->_Color);
+            _node *new_node = this->create_node(node->_Color);
+            build(*(node->_Key), new_node->_Key);
             new_node->_LeftChild = copy_tree(other, node->_LeftChild);
             new_node->_RightChild = copy_tree(other, node->_RightChild);
             new_node->_Parent = this->_nul;

@@ -38,14 +38,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     *====================================================================================
     */
 
-        nodeSet() : _Key(nullptr), _Color(BLACK), _LeftChild(nullptr),
-                          _RightChild(nullptr), _Parent(nullptr){};
-
-        explicit nodeSet(Key* value) : _Key(value), _Color(BLACK), _LeftChild(nullptr),
-                     _RightChild(nullptr), _Parent(nullptr){};
-
-        explicit nodeSet(Key* value, Color color, nodeSet* _nul)
-                : _Key(value), _Color(color), _LeftChild(_nul),
+        explicit nodeSet(Color color, nodeSet* _nul)
+                : _Key(nullptr), _Color(color), _LeftChild(_nul),
                 _RightChild(_nul), _Parent(_nul){};
 
         ~nodeSet() {};
