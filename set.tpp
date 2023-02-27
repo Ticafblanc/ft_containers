@@ -15,6 +15,7 @@
 #include "ft_containers.hpp"
 #include "red_black_tree.tpp"
 #include "iterator.tpp"
+#include "node.tpp"
 #include <functional>
 #include <unistd.h>
 
@@ -24,111 +25,35 @@
 
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
-    template<class Key, class _node>
-    struct setiterator : public std::iterator<std::bidirectional_iterator_tag,
-            Key, Key, const Key *, Key> {
-
-
-        _node *__node;
-        RedBlackTree<Key> *RBT;
-
-        /*
-        *====================================================================================
-        *|                                  Member Fonction                                 |
-        *====================================================================================
-        */
-
-
-        setiterator() : __node(nullptr) {};
-
-        explicit setiterator(_node *tmp) : __node(tmp) {};
-
-        setiterator(const setiterator &other) : __node(other.__node) {};
-
-        ~setiterator() {};
-
-        setiterator &operator=(const setiterator &other) {
-            __node = other.__node;
-            RBT = other.RBT;
-            return *this;
-        };
-
-        /*
-        *====================================================================================
-        *|                                  overload operator                               |
-        *====================================================================================
-        */
-
-        Key &operator*() const { return *(__node->_Key); }
-
-        Key *operator->() const { return &(operator*()); }
-
-        setiterator &operator++() {
-            __node = RBT->successor(__node);
-            return *this;
-        };
-
-        setiterator operator++(int) {
-            const setiterator Tmp = *this;
-            __node = RBT->successor(__node);
-            return Tmp;
-        };
-
-        setiterator &operator--() {
-            __node = RBT->predecessor(__node);
-            return *this;
-        };
-
-        setiterator operator--(int) {
-            const setiterator Tmp = *this;
-            __node = RBT->predecessor(__node);
-            return Tmp;
-        };
-
-        bool operator==(const setiterator &rhs) const { return __node == rhs.__node; };
-
-        bool operator!=(const setiterator &rhs) const { return !(*this == rhs); };
-    };
-
-
     template< class Key, class Compare, class Allocator >
     class setbase {
 
     protected:
         typedef Allocator                                                           allocator;
         typedef Compare                                                             compare;
-        typedef typename RedBlackTree<Key>::Node                                    _node;
 
-        setbase() { RBT.init(build()); };
+        setbase() {};
 
-        explicit setbase(const Compare& comp, const Allocator& alloc) : _comp(comp), _alloc(alloc){ RBT.init(build()); };
+        explicit setbase(const Compare& comp, const Allocator& alloc) : _comp(comp), _alloc(alloc){};
 
-        ~setbase() { destroy(RBT.deinit()); };
+        ~setbase() {};
 
-        Key* build() {
-            Key* build = _alloc.allocate(1);
-            _alloc.construct(build);
-            return build;
-        };
-
-        void destroy(Key* key) {
-            _alloc.destroy(key);
-            _alloc.deallocate(key, 1);
-        };
 
     protected:
-        RedBlackTree<Key> RBT;
+
         Allocator _alloc;
         Compare _comp;
     };
 
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : protected setbase <Key, Compare , Allocator>{
+    class set : public setbase <Key, Compare , Allocator>, public RedBlackTree< Key, nodeSet< Key > > {
 
     private:
 
+        typedef RedBlackTree< Key, nodeSet< Key > >                 _base;
         typedef setbase <Key, Compare , Allocator>                  base;
         typedef set< Key, Compare, Allocator >                      _self;
+        typedef nodeSet< Key >                                      _node;
 
     /*
     *====================================================================================
@@ -149,7 +74,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef typename base::allocator                            allocator_type;
         typedef typename Allocator::pointer                         pointer;
         typedef typename Allocator::const_pointer                   const_pointer;
-        typedef setiterator<Key, typename base::_node>              iterator;
+        typedef typename _base::iterator                            iterator;
         typedef const iterator                                      const_iterator;
         typedef ft::reverse_iterator<iterator>                      reverse_iterator;
         typedef ft::reverse_iterator<const_iterator>                const_reverse_iterator;
@@ -162,22 +87,48 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        set() : base(){__INFOMF__};
+        set() : base(), _base(){
+            __INFOMF__
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
+            this->init(build);
+        };
 
-        explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : base(comp, alloc)
-        {__INFOMF__ };
+        explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : base(comp, alloc), _base() {
+            __INFOMF__
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
+            this->init(build);
+        };
 
         template<class InputIt>
         set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
-                : base(comp, alloc) {__INFOMF__ insert(first, last); };
+                : base(comp, alloc), _base() {
+            __INFOMF__
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
+            this->init(build);
+            insert(first, last);
+        };
 
-        set(const _self &other) : base(other._comp, other._alloc) {__INFOMF__ this->_root = copy_tree(other, other._root); };
+        set(const _self &other) : base(other._comp, other._alloc), _base() {
+            __INFOMF__
+            Key* build = this->_alloc.allocate(1);
+            this->_alloc.construct(build);
+            this->init(build);
+            this->_root = copy_tree(other, other._root);
+        };
 
-        ~set() {__INFOMF__ clear_tree();};
+        ~set() {
+            __INFOMF__
+            clear();
+            this->_alloc.destroy(this->_nul->_Key);
+            this->_alloc.deallocate(this->_nul->_Key, 1);
+        };
 
         /*Copy assignment operator. Replaces the contents with a copy of the contents of others.*/
         _self &operator=(const _self &other) {
-            clear_tree()
+            clear();
             this->_alloc = other._alloc;
             this->_comp = other._comp;
             this->_root = copy_tree(other, other._root);
@@ -195,13 +146,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), &this->RBT); };
+        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), &this->RBT); };
+        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), *this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), &this->RBT); };
+        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), &this->RBT); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), *this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -220,11 +171,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     public:
 
         /*Checks if the container has no elements, i.e. whether begin() == end().*/
-        bool        empty()     const { __INFOCA__ return this->RBT.getSize() == 0; };
+        bool        empty()     const { __INFOCA__ return this->_size == 0; };
 
         /*Returns the number of elements in the container,
          * i.e. std::distance(begin(), end()).*/
-        size_type   size()      const {__INFOCA__ return this->RBT.getSize(); };
+        size_type   size()      const {__INFOCA__ return this->_size; };
 
         /*Returns the maximum number of elements the container is able to
          * hold due to system or library implementation limitations, i.e.
@@ -245,8 +196,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any past-the-end iterators are also invalidated.*/
         void clear() {
             __INFOMO__
-            clear_tree(this->RBT.getRoot());
-            this->RBT.setNulRoot();
+            clear_tree(this->_root);
+            this->_root = this->_nul;
             __INFOMONL__
         };
 
@@ -405,40 +356,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     private:
 
-        /*build Key value at the Key* */
-        Key* build(const Key &value) {
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build, value);
-            return build;
-        };
-
-
-
-        void destroy(Key* key) {
-            this->_alloc.destroy(key);
-            this->_alloc.deallocate(key, 1);
-        };
-
-        /*init _root and _nul Node at the start */
-        void   init(){
-            Key* build = this->_alloc.allocate(1);
-            this->_alloc.construct(build);
-            _root = _nul = new _node(build);
-        };
-
-        /*call constructor non void de Node and new Node */
-        _node*   create_node(const Key value, _color color){
-            _size++;
-            return new _node(build(value), color, _nul);
-        };
-
-        /*delete node and call the destructor of Node*/
-        void    delete_node(_node* node){
-            destroy(node->_Key);
-            delete node;
-            _size--;
-
-        };
         /*copy the tree start at _root*/
         _node* copy_tree(const _self &other, _node* node) {
             if(other.isNul(node))

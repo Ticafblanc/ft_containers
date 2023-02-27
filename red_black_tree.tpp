@@ -17,6 +17,7 @@
 #include "ft_containers.hpp"
 #include "type_traits.tpp"
 #include "algorithm.tpp"
+#include "node.tpp"
 #include "utility.tpp"
 #include "stack.tpp"
 #include <functional>
@@ -47,56 +48,10 @@ Depth Property: For each node, any simple path from this node to any of its desc
 /*==================================================================================*/
 
 
-    template< class Key >
+    template< class Key, class Node >
     struct RedBlackTree {
 
-        enum Color { RED, BLACK };
-
-        struct Node {
-
-            Key         *_Key;
-            Color       _Color;
-            Node    *_LeftChild;
-            Node    *_RightChild;
-            Node    *_Parent;
-
-            /*
-            *====================================================================================
-            *|                                  Member Fonction                                 |
-            *====================================================================================
-            */
-            Node() : _Key(nullptr), _Color(BLACK), _LeftChild(nullptr),
-                        _RightChild(nullptr), _Parent(nullptr){};
-
-            explicit Node(Key* value) : _Key(value), _Color(BLACK), _LeftChild(nullptr),
-                                           _RightChild(nullptr), _Parent(nullptr){};
-
-            explicit Node(Key* value, Color color, Node* _nul)
-                    : _Key(value), _Color(color), _LeftChild(_nul),
-                      _RightChild(_nul), _Parent(_nul){};
-
-            ~Node() {};
-
-            //is not a depp copy
-            Node &operator=(const Node &other) {
-                _Key = other._Key;
-                _Color = other._Color;
-                _LeftChild = other._LeftChild;
-                _RightChild = other._RightChild;
-                _Parent = other._Parent;
-                return *this;
-            };
-        };
-
-/*
-    *====================================================================================
-    *|                                     Member Type                                  |
-    *====================================================================================
-    */
-
-    private:
-
-        typedef RedBlackTree<Key>                           _self;
+        typedef RedBlackTree<Key, Node>                     _self;
         Node                                                *_root;
         Node                                                *_nul;
         std::size_t                                         _size;
@@ -106,7 +61,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *|                                  Member Fonction                                 |
     *====================================================================================
     */
-    public:
 
 
         explicit RedBlackTree() : _root(nullptr), _nul(nullptr), _size(0) { __INFOMF__ };
@@ -115,34 +69,12 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
     /*
     *====================================================================================
-    *|                                    utility                                       |
+    *|                                    Move                                         |
     *====================================================================================
     */
 
-        void setNulRoot(){
-            _root = _nul;
-        }
-
         void init(Key* value){
             _root = _nul = create_node(value, BLACK);
-        }
-
-        Node *getRoot() const {
-            return _root;
-        }
-
-        Node *getNul() const {
-            return _nul;
-        }
-
-        size_t getSize() const {
-            return _size;
-        };
-
-        Key*   deinit(){
-            Key* save = _nul->_Key;
-            delete _nul;
-            return save;
         };
 
         bool isNul(Node* node) const {
