@@ -300,34 +300,48 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns the number of elements with key that compares equivalent to the specified argument.
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
-        size_type count(const Key &key) const { return (this->isNul(this->finds(key, this->_root, this->_comp))) ? 1 : 0; };
+        size_type count(const Key &key) const {
+            _node* _return = this->finds(key, this->_root, this->_comp);
+            return (this->isNul(_return)) ? 0 : 1;
+        };
 
         /*Finds an element with key equivalent to key.
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
-        iterator find(const Key &key) {__INFOMO__ return iterator(this->finds(key, this->_root, this->_comp), *this); };
+        iterator find(const Key &key)  {
+            _node* _return = this->finds(key, this->_root, this->_comp);
+            return iterator(_return, this);
+        };
 
-        const_iterator find(const Key &key) const {__INFOMO__ return const_iterator(this->finds(key, this->_root, this->_comp()), *this); };
-
+        const_iterator find(const Key &key) const {
+            _node* _return = this->finds(key, this->_root, this->_comp);
+            return const_iterator(_return, this);
+        };
         /* Returns a range containing all elements with the given key in the container. The range is
          * defined by two iterators, one pointing to the first element that is not less than key and
          * another pointing to the first element greater than key. Alternatively, the first iterator
          * may be obtained with lower_bound(), and the second with upper_bound().
          * 1,2) Compares the keys to key.*/
-        std::pair<iterator, iterator> equal_range(const Key &key) {
+        ft::pair<iterator, iterator> equal_range(const Key &key) {
             return ft::make_pair(lower_bound(key), upper_bound(key));
         };
 
-        std::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
+        const std::pair<const_iterator, const_iterator> equal_range(const Key &key) const {
             return ft::make_pair(lower_bound(key), upper_bound(key));
         };
 
         /*Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
-        iterator lower_bound(const Key &key) {return iterator(this->greater_or_equal(key, this->_comp), *this); };
+        iterator lower_bound(const Key &key) {
+            _node* _return = this->greater_or_equal(key, this->_comp);
+            return iterator(_return, this);
+        };
 
-        const_iterator lower_bound(const Key &key) const {return const_iterator(this->greater_or_equal(key, this->_comp));};
+        const_iterator lower_bound(const Key &key) const {
+            _node* _return = this->greater_or_equal(key, this->_comp);
+            return iterator(_return, this);
+        };
 
         /*Returns an iterator pointing to the first element that is greater than key.
          * Iterator pointing to the first element that is greater than key.
@@ -407,18 +421,17 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     };//end of ft::set
 
     /*
-    *====================================================================================
-    *|                                 Non Membre fonction                              |
-    *====================================================================================
-    */
+*====================================================================================
+*|                                 Non Membre fonction                              |
+*====================================================================================
+*/
 
-
-    /*Checks if the contents of lhs and rhs are equal,
-    * that is, they have the same number of elements and each element
-    * in lhs compares equal with the element in rhs at the same position.*/
-    template< class Key, class Compare, class Allocator >
-    inline bool operator== ( const ft::set< Key, Compare, Allocator >& lhs,
-                             const ft::set< Key, Compare, Allocator >& rhs)
+/*Checks if the contents of lhs and rhs are equal,
+ * that is, they have the same number of elements and each element
+ * in lhs compares equal with the element in rhs at the same position.*/
+    template< class Key, class Compare , class Allocator >
+    inline bool operator== ( ft::set< Key, Compare, Allocator >& lhs,
+                             ft::set< Key, Compare, Allocator >& rhs )
     {__INFONM__
         if (lhs.size() == rhs.size())
             return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
@@ -426,31 +439,31 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     };
 
     template< class Key, class Compare, class Allocator >
-    inline bool operator!=( const ft::set< Key, Compare, Allocator >& lhs,
-                            const ft::set< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
+    inline bool operator!=( ft::set< Key, Compare, Allocator >& lhs,
+                            ft::set< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
 
-    /*3-6) Compares the contents of lhs and rhs lexicographically.
-     * The comparison is performed
-     * by a function equivalent to std::lexicographical_compare.*/
+/*3-6) Compares the contents of lhs and rhs lexicographically.
+ * The comparison is performed
+ * by a function equivalent to std::lexicographical_compare.*/
     template< class Key, class Compare, class Allocator >
-    inline bool operator<( const ft::set< Key, Compare, Allocator >& lhs,
-                           const ft::set< Key, Compare, Allocator >& rhs)
+    inline bool operator<( ft::set< Key, Compare, Allocator >& lhs,
+                           ft::set< Key, Compare, Allocator >& rhs )
     {__INFONM__
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                            rhs.begin(), rhs.end());
     };
 
     template< class Key, class Compare, class Allocator >
-    inline bool operator<=( const ft::set< Key, Compare, Allocator >& lhs,
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
+    inline bool operator<=( ft::set< Key, Compare, Allocator >& lhs,
+                            ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
 
     template< class Key, class Compare, class Allocator >
-    inline bool operator>( const ft::set< Key, Compare, Allocator >& lhs,
-                           const ft::set< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
+    inline bool operator>( ft::set< Key, Compare, Allocator >& lhs,
+                           ft::set< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
 
     template< class Key, class Compare, class Allocator >
-    inline bool operator>=( const ft::set< Key, Compare, Allocator >& lhs,
-                            const ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
+    inline bool operator>=( ft::set< Key, Compare, Allocator >& lhs,
+                            ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
 

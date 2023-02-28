@@ -154,7 +154,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
         /*find value in the tree and return Node * to the pos
          * or retur the _nul node*/
         template<class compare>
-        Node*   finds(const Key& value, Node* rnode, compare comp ) {
+        Node*   finds(const Key& value, Node* rnode, compare comp ) const {
             while (!isNul(rnode) && (*(rnode->_Key) != value)) {
                 if (comp(value, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
