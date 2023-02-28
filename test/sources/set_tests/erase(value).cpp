@@ -5,7 +5,7 @@ template <class T>
 std::vector<int> erase_test_1(std::set<T> st) {
     std::vector<int> v;
     v.push_back(st.erase(3));
-    for (int i = 0; i < 30 * _ratio; ++i)
+    for (int i = 0; i < 30 * _ratio ; ++i)
         st.insert(i);
     typename std::set<T>::iterator it = st.begin();
     v.push_back(*it);
@@ -36,7 +36,7 @@ template <class T>
 std::vector<int> erase_test_1(_set<T> st) {
     std::vector<int> v;
     v.push_back(st.erase(3));
-    for (int i = 0; i < 30 * _ratio; ++i)
+    for (int i = 0; i < 30 * _ratio ; ++i)
         st.insert(i);
     typename _set<T>::iterator it = st.begin();
     v.push_back(*it);

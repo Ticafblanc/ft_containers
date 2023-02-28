@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_CXX_FLAGS #[["-Wall -Wextra -Werror "]])
 include_directories(SYSTEM ./)
 
-add_executable(ft_containers test/sources/set_tests/compare\ class.cpp)
+add_executable(ft_containers test/sources/set_tests/erase\(value\).cpp)

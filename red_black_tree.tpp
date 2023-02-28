@@ -155,7 +155,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
          * or retur the _nul node*/
         template<class compare>
         Node*   finds(const Key& value, Node* rnode, compare comp ) {
-            while (!isNul(rnode) && (comp(*(rnode->_Key), value) || comp(value, *(rnode->_Key)))) {
+            while (!isNul(rnode) && (*(rnode->_Key) != value)) {
                 if (comp(value, *(rnode->_Key)))
                     rnode = rnode->_LeftChild;
                 else
@@ -174,12 +174,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 node_to_delete->_Parent->_RightChild = node_to_transplant;
             node_to_transplant->_Parent = node_to_delete->_Parent;
             return node_to_transplant;
-        };
-
-        void swap(_self& other) {
-            std::swap(_root, other._root);
-            std::swap(_nul, other._nul);
-            std::swap(_size, other._size);
         };
 
         /* find return greater or eqaul pos value*/
@@ -250,11 +244,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             __INFOMO__
             if (isNul(pos))
                 return  ft::make_pair(pos, nullptr);
-            if (isRoot(pos)){
-                ft::pair<Node*, Key*> ret = ft::make_pair(_root, delete_node(pos));
-                _root = _nul;
-                return ret;
-            }
             Node* trans;
             Color original_color = pos->_Color;
             if (isNul(pos->_LeftChild))
@@ -547,11 +536,5 @@ Depth Property: For each node, any simple path from this node to any of its desc
 
 __FT_CONTAINERS_END_NAMESPACE
 
-namespace std {
-    template< class Key, class Node>
-    inline void swap(ft::RedBlackTree< Key, Node>& lhs,
-                     ft::RedBlackTree< Key, Node> &rhs)
-    {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
-}
 
 #endif //FT_CONTAINERS_RED_BLACK_TREE_TPP

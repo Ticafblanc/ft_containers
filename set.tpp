@@ -151,9 +151,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->maximum(this->_nul), this); };
+        iterator                end()               {__INFOIT__ return iterator(this->_nul, this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->maximum(this->_nul), this); };
+        const_iterator          end()       const   {__INFOIT__ return iterator(this->_nul, this); };
 
         reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
 
@@ -259,11 +259,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Iterator following the last removed element.*/
         iterator erase(iterator first, iterator last) {
             __INFOMO__
-            ft::pair<_node*, Key*> result;
+            iterator _return;
             for ( ; first != last; ++first)
-                erase(first);
+                _return = erase(first);
             __INFOMONL__
-            return erase(first);
+            return _return;
         };
 
         /*Removes the element (if one exists) with the key equivalent to key.
@@ -273,7 +273,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             __INFOMO__
             _node* pos = this->finds(key, this->_root, this->_comp);
             if(!(this->isNul(pos))) {
-                ft::pair<_node *, Key *> result;
                 destroy(this->erases(pos).second) ;
                 return 1;
             }
@@ -287,7 +286,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         void swap( _self& other ) {
             std::swap(this->_alloc, other._alloc);
             std::swap(this->_comp, other._comp);
-            this->swap(other);
+            std::swap(this->_root, other._root);
+            std::swap(this->_nul, other._nul);
+            std::swap(this->_size, other._size);
         };
 
     /*
