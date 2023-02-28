@@ -178,12 +178,15 @@ public:
     // Equivalent to Iter tmp = current; return *--tmp;
     reference		operator*() const
     {
-        iterator_type tmp = current;
+        Iter tmp = current;
         return (*(--tmp));
     }
 
     // Equivalent to return std::addressof(operator*());.
-    pointer operator->() const{ return std::addressof(operator*()); }
+    pointer operator->() const{
+        Iter tmp = current;
+        return &(*(--tmp));
+    }
 //    pointer operator->() const {
 //        iterator_type	tmp(this->Base_iterator);
 //        tmp--;

@@ -16,6 +16,7 @@
 #include "red_black_tree.tpp"
 #include "iterator.tpp"
 #include "node.tpp"
+#include "utility.tpp"
 #include <functional>
 #include <unistd.h>
 
@@ -50,6 +51,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         public:
             bool operator()(const ft::pair<const Key, T>& lhs, const ft::pair<const Key, T>& rhs) const
             {return comp(lhs.first, rhs.first);}
+
         };
 
         mapbase() {};
@@ -90,7 +92,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef std::size_t                                         size_type;
         typedef std::ptrdiff_t                                      difference_type;
         typedef typename base::compare                              key_compare;
-        typedef key_compare                                         value_compare;
+//        typedef key_compare                                         value_compare;
         typedef value_type &                                        reference;
         typedef const value_type &                                  const_reference;
         typedef typename base::allocator                            allocator_type;
@@ -312,7 +314,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
             __INFOMO__
-            _node* pos = this->finds(key, this->_root, this->_comp);
+
+            _node* pos = this->findm(ft::make_pair(key, NULL), this->_root, this->_comp);
             if(!(this->isNul(pos))) {
                 destroy(this->erases(pos).second) ;
                 return 1;
@@ -342,7 +345,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Returns the number of elements with key key. This is either 1 or 0 since this container
          * does not allow duplicates.*/
         size_type count(const Key &key) const {
-            _node* _return = this->finds(key, this->_root, this->_comp);
+            _node* _return = this->findm(ft::make_pair(key, NULL), this->_root, this->_comp);
             return (this->isNul(_return)) ? 0 : 1;
         };
 
@@ -350,12 +353,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Iterator to an element with key equivalent to key. If no such element is found,
          * past-the-end (see end()) iterator is returned.*/
         iterator find(const Key &key)  {
-            _node* _return = this->finds(key, this->_root, this->_comp);
+            _node* _return = this->findm(ft::make_pair(key, NULL), this->_root, this->_comp);
             return iterator(_return, this);
         };
 
         const_iterator find(const Key &key) const {
-            _node* _return = this->finds(key, this->_root, this->_comp);
+            _node* _return = this->findm(ft::make_pair(key, NULL), this->_root, this->_comp);
             return const_iterator(_return, this);
         };
         /* Returns a range containing all elements with the given key in the container. The range is
@@ -408,7 +411,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         key_compare key_comp() const { return key_compare(); };
 
         /*Returns the function object that compares the values. It is the same as key_comp.*/
-        value_compare value_comp() const { return value_compare(); };
+        typename base::value_compare value_comp() const { return this->value_compare(); };
 
         /*
         *====================================================================================
@@ -470,48 +473,48 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 /*Checks if the contents of lhs and rhs are equal,
  * that is, they have the same number of elements and each element
  * in lhs compares equal with the element in rhs at the same position.*/
-    template< class Key, class Compare , class Allocator >
-    inline bool operator== ( ft::map< Key, Compare, Allocator >& lhs,
-                             ft::map< Key, Compare, Allocator >& rhs )
+    template< class Key, class T, class Compare , class Allocator >
+    inline bool operator== ( ft::map< Key, T, Compare, Allocator >& lhs,
+                             ft::map< Key, T, Compare, Allocator >& rhs )
     {__INFONM__
         if (lhs.size() == rhs.size())
             return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
         return false;
     };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator!=( ft::map< Key, Compare, Allocator >& lhs,
-                            ft::map< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
+    template< class Key, class T, class Compare, class Allocator >
+    inline bool operator!=( ft::map< Key, T, Compare, Allocator >& lhs,
+                            ft::map< Key, T, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
 
 /*3-6) Compares the contents of lhs and rhs lexicographically.
  * The comparison is performed
  * by a function equivalent to std::lexicographical_compare.*/
-    template< class Key, class Compare, class Allocator >
-    inline bool operator<( ft::map< Key, Compare, Allocator >& lhs,
-                           ft::map< Key, Compare, Allocator >& rhs )
+    template< class Key, class T, class Compare, class Allocator >
+    inline bool operator<( ft::map< Key, T, Compare, Allocator >& lhs,
+                           ft::map< Key, T, Compare, Allocator >& rhs )
     {__INFONM__
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                            rhs.begin(), rhs.end());
     };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator<=( ft::map< Key, Compare, Allocator >& lhs,
-                            ft::map< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
+    template< class Key, class T, class Compare, class Allocator >
+    inline bool operator<=( ft::map< Key, T, Compare, Allocator >& lhs,
+                            ft::map< Key, T, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator>( ft::map< Key, Compare, Allocator >& lhs,
-                           ft::map< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
+    template< class Key, class T, class Compare, class Allocator >
+    inline bool operator>( ft::map< Key, T, Compare, Allocator >& lhs,
+                           ft::map< Key, T, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
 
-    template< class Key, class Compare, class Allocator >
-    inline bool operator>=( ft::map< Key, Compare, Allocator >& lhs,
-                            ft::map< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
+    template< class Key, class T, class Compare, class Allocator >
+    inline bool operator>=( ft::map< Key, T, Compare, Allocator >& lhs,
+                            ft::map< Key, T, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
 
 namespace std {
-    template< class Key, class Compare, class Allocator >
-    inline void swap(ft::map< Key, Compare, Allocator >& lhs,
-                     ft::map< Key, Compare, Allocator >& rhs)
+    template< class Key, class T, class Compare, class Allocator >
+    inline void swap(ft::map< Key, T, Compare, Allocator >& lhs,
+                     ft::map< Key, T, Compare, Allocator >& rhs)
     {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
 }
 

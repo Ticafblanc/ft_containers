@@ -164,6 +164,18 @@ Depth Property: For each node, any simple path from this node to any of its desc
             return rnode;
         };
 
+        template<class compare>
+        Node*   findm(const Key& value, Node* rnode, compare comp ) const {
+            while (!isNul(rnode) && ((*(rnode->_Key)).first != value.first)) {
+                if (comp(value, *(rnode->_Key)))
+                    rnode = rnode->_LeftChild;
+                else
+                    rnode = rnode->_RightChild;
+            }
+            return rnode;
+        };
+
+
 
         Node* transplant(Node* node_to_delete, Node* node_to_transplant) {
             if (isNul(node_to_delete->_Parent))

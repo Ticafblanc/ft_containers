@@ -115,6 +115,9 @@ bool lexicographical_compare( InputIt1 first1, InputIt1 last1,
 {
     for (; (first1 != last1) && (first2 != last2); ++first1, ++first2)
     {
+//        std::cout << first1->first << " " <<  first1->second
+//        << " " << first2->first << " " << first2->second << " "
+//        << (*first1 < *first2) << " " << (*first2 < *first1)<< std::endl;
         if (*first1 < *first2)
             return true;
         if (*first2 < *first1)

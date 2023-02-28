@@ -42,21 +42,21 @@ std::vector<int> reverse_iterators_test_ft(_map<T, V> mp) {
     typename _map<T, V>::reverse_iterator rit = mp.rbegin();
     typename _map<T, V>::reverse_iterator rit2 = mp.rend();
     v.push_back(rit->first);
-//    rit++;
-//    rit2--;
-//    v.push_back(rit->first);
-//    v.push_back(rit2->first);
-//    rit++;
-//    v.push_back(*rit == *rit2);
-//    rit2--;
-//    v.push_back(rit->first);
-//    v.push_back(rit2->first);
+    rit++;
+    rit2--;
+    v.push_back(rit->first);
+    v.push_back(rit2->first);
+    rit++;
+    v.push_back(*rit == *rit2);
+    rit2--;
+    v.push_back(rit->first);
+    v.push_back(rit2->first);
     v.push_back(*rit2 > *rit);
     v.push_back(*rit2 < *rit);
-//    v.push_back((--rit)->first);
-//    v.push_back((++rit2)->first);
-//    v.push_back((rit--)->first);
-//    v.push_back((rit2++)->first);
+    v.push_back((--rit)->first);
+    v.push_back((++rit2)->first);
+    v.push_back((rit--)->first);
+    v.push_back((rit2++)->first);
     return v;
 }
 
