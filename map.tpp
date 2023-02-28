@@ -32,26 +32,34 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef Allocator                                                           allocator;
         typedef Compare                                                             compare;
 
-        mapbase() {};
-
-        explicit mapbase(const Compare& comp, const Allocator& alloc) :  _alloc(alloc), _comp(comp){};
-
-        ~mapbase() {};
-
-        class value_compare : public std::binary_function<ft::pair<const Key, T>, ft::pair<const Key, T>, bool>{
+        struct value_compare : public std::binary_function<ft::pair<const Key, T>, ft::pair<const Key, T>, bool>{
             //class value_compare https://en.cppreference.com/w/cpp/container/map/value_compare
             //std::map::value_compare is a function object that compares objects of type std::map::value_type
             // (key-value pairs) by comparing of the first components of the pairs.
 
+            value_compare(){};
+            value_compare(const Compare & comp) : comp(comp) {};
+            value_compare(const value_compare & other) : comp(other.comp) {};
+            value_compare &operator=(const value_compare &other) { this->comp = other.comp; return *this; };
+
         protected:
             //the stored comparator
             Compare comp;
-            value_compare(Compare c) : comp(c) {};
+
 
         public:
             bool operator()(const ft::pair<const Key, T>& lhs, const ft::pair<const Key, T>& rhs) const
             {return comp(lhs.first, rhs.first);}
         };
+
+        mapbase() {};
+
+        explicit mapbase(const Compare& comp, const Allocator& alloc) :  _alloc(alloc), _comp(comp){};
+
+        explicit mapbase(const value_compare& comp, const Allocator& alloc) :  _alloc(alloc), _comp(comp){};
+
+        ~mapbase() {};
+
     protected:
 
         Allocator _alloc;
@@ -59,14 +67,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     };
 
     template< class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
-    class map : public mapbase <Key, T, Compare , Allocator>, public RedBlackTree< Key, nodeSet< ft::pair<const Key, T> > > {
+    class map : public mapbase <Key, T, Compare , Allocator>, public RedBlackTree< ft::pair<const Key, T> , nodeSet< ft::pair<const Key, T> > > {
 
     private:
 
-        typedef RedBlackTree< Key, nodeSet< Key > >                 _base;
-        typedef mapbase <Key, T, Compare , Allocator>               base;
-        typedef map< Key, Compare, Allocator >                      _self;
-        typedef nodeSet< Key >                                      _node;
+        typedef RedBlackTree< ft::pair<const Key, T>, nodeSet<ft::pair<const Key, T> >  >                  _base;
+        typedef mapbase <Key, T, Compare , Allocator>                                                       base;
+        typedef map< Key, T, Compare, Allocator >                                                           _self;
+        typedef nodeSet< ft::pair<const Key, T> >                                                                              _node;
 
         /*
         *====================================================================================
@@ -88,7 +96,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef typename base::allocator                            allocator_type;
         typedef typename Allocator::pointer                         pointer;
         typedef typename Allocator::const_pointer                   const_pointer;
-        typedef rbtiterator<Key>                                    iterator;
+        typedef rbtiterator<ft::pair<const Key, T> >                iterator;
         typedef const iterator                                      const_iterator;
         typedef ft::reverse_iterator<iterator>                      reverse_iterator;
         typedef ft::reverse_iterator<const_iterator>                const_reverse_iterator;
@@ -105,14 +113,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         map() : base(), _base(){
             __INFOMF__
-            Key* build = this->_alloc.allocate(1);
+            value_type* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
         };
 
         explicit map(const Compare &comp, const Allocator &alloc = Allocator()) : base(comp, alloc), _base() {
             __INFOMF__
-            Key* build = this->_alloc.allocate(1);
+            value_type* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
         };
@@ -121,7 +129,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         map(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
                 : base(comp, alloc), _base() {
             __INFOMF__
-            Key* build = this->_alloc.allocate(1);
+            value_type* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
             insert(first, last);
@@ -129,7 +137,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         map(const _self &other) : base(other._comp, other._alloc), _base() {
             __INFOMF__
-            Key* build = this->_alloc.allocate(1);
+            value_type* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
             this->_root = copy_tree(other, other._root);
@@ -282,7 +290,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Iterator following the last removed element.*/
         iterator erase(iterator pos) {
             __INFOMO__
-            ft::pair<_node*, Key*> result;
+            ft::pair<_node*, value_type*> result;
             result = this->erases(pos._node);
             this->_alloc.destroy(result.second);
             this->_alloc.deallocate(result.second, 1);
@@ -411,12 +419,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     private:
 
         /*build Key value at the Key* */
-        void build(const Key &value, Key*& build) {
+        void build(const value_type &value, value_type*& build) {
             build = this->_alloc.allocate(1);
             this->_alloc.construct(build, value);
         };
 
-        void destroy(Key* key) {
+        void destroy(value_type * key) {
             this->_alloc.destroy(key);
             this->_alloc.deallocate(key, 1);
         };
@@ -445,7 +453,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             if (!this->isNul(node)) {
                 clear_tree(node->_LeftChild);
                 clear_tree(node->_RightChild);
-                Key * save = this->delete_node(node);
+                value_type * save = this->delete_node(node);
                 this->_alloc.destroy(save);
                 this->_alloc.deallocate(save, 1);
                 this->_size--;

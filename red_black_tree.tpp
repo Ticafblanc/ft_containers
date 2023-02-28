@@ -487,7 +487,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
         Key& operator*() const { return *(_node->_Key); }
-        Key* operator->() const { return &(operator*()); }
+        Key* operator->() const { return std::addressof(operator*()); }
 
         rbtiterator& operator++() {
 //            std::cout << "coucou " << std::endl;
