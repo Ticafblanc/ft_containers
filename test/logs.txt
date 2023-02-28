@@ -1,22 +1,17 @@
-In file included from ../map_tests/find().cpp:1:
-In file included from ../map_tests/../system/system_methods.ipp:2:
-In file included from ../map_tests/../system/lib.hpp:28:
-In file included from ../map_tests/../system/../../config.hpp:3:
-../map_tests/../../../map.tpp:353:36: error: no matching member function for call to 'finds'
-            _node* _return = this->finds(key, this->_root, this->_comp);
-                             ~~~~~~^~~~~
-../map_tests/find().cpp:31:43: note: in instantiation of member function 'ft::map<int, int, std::__1::less<int>, std::__1::allocator<ft::pair<const int, int> > >::find' requested here
-    typename _map<T, V>::iterator it = mp.find(34 * _ratio);
-                                          ^
-../map_tests/find().cpp:46:59: note: in instantiation of function template specialization 'find_test<int, int>' requested here
-    exit(run_map_unit_test<int, int>("find()", find_test, find_test));
-                                                          ^
-../map_tests/../system/../../../red_black_tree.tpp:157:17: note: candidate function template not viable: no known conversion from 'const int' to 'const ft::pair<const int, int>' for 1st argument
-        Node*   finds(const Key& value, Node* rnode, compare comp ) const {
-                ^
-1 error generated.
-                                ^
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/type_traits:591:1: note: candidate function [with _Tp = ft::pair<const int, int>] not viable: expects an l-value for 1st argument
-addressof(_Tp& __x) _NOEXCEPT
-^
-1 error generated.
+In file included from ../set_tests/iterators.cpp:1:
+In file included from ../set_tests/../system/system_methods.ipp:2:
+In file included from ../set_tests/../system/lib.hpp:30:
+../set_tests/../system/Alloc.hpp:55:27: error: variadic templates are a C++11 extension [-Werror,-Wc++11-extensions]
+template <class _Up, class... _Args>
+                          ^
+../set_tests/../system/Alloc.hpp:58:34: error: rvalue references are a C++11 extension [-Werror,-Wc++11-extensions]
+        construct(_Up* __p, _Args&&... __args)
+                                 ^
+../set_tests/../system/Alloc.hpp:164:27: error: variadic templates are a C++11 extension [-Werror,-Wc++11-extensions]
+template <class _Up, class... _Args>
+                          ^
+../set_tests/../system/Alloc.hpp:167:34: error: rvalue references are a C++11 extension [-Werror,-Wc++11-extensions]
+        construct(_Up* __p, _Args&&... __args)
+                                 ^
+4 errors generated.
+ated.
