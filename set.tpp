@@ -260,8 +260,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         iterator erase(iterator first, iterator last) {
             __INFOMO__
             iterator _return;
-            for ( ; first != last; ++first)
-                _return = erase(first);
+            for ( ; first != last; ){
+                _return = first++;
+                _return = erase(_return);
+            }
             __INFOMONL__
             return _return;
         };

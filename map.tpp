@@ -27,9 +27,8 @@
 __FT_CONTAINERS_BEGIN_NAMESPACE
 
     template< class Key, class T, class Compare, class Allocator >
-    class mapbase {
+    struct mapbase {
 
-    protected:
         typedef Allocator                                                           allocator;
         typedef Compare                                                             compare;
 
@@ -43,12 +42,9 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
             value_compare(const value_compare & other) : comp(other.comp) {};
             value_compare &operator=(const value_compare &other) { this->comp = other.comp; return *this; };
 
-        protected:
             //the stored comparator
             Compare comp;
 
-
-        public:
             bool operator()(const ft::pair<const Key, T>& lhs, const ft::pair<const Key, T>& rhs) const
             {return comp(lhs.first, rhs.first);}
 
@@ -62,7 +58,6 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
         ~mapbase() {};
 
-    protected:
 
         Allocator _alloc;
         value_compare _comp;
@@ -91,8 +86,8 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         typedef ft::pair<const Key, T>                              value_type;
         typedef std::size_t                                         size_type;
         typedef std::ptrdiff_t                                      difference_type;
-        typedef typename base::compare                              key_compare;
-//        typedef key_compare                                         value_compare;
+        typedef Compare                                             key_compare;
+        typedef typename base::value_compare                        value_compare;
         typedef value_type &                                        reference;
         typedef const value_type &                                  const_reference;
         typedef typename base::allocator                            allocator_type;
@@ -174,13 +169,18 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Returns a reference to the mapped value of the element with key equivalent to key.
          * If no such element exists, an exception of type std::out_of_range is thrown.*/
 
-//        T& at( const Key& key ){}
-//
-//        const T& at( const Key& key ) const{}
+        T& at( const Key& key ) {return (find(key)->second);};
+
+        const T& at( const Key& key ) const{ return (find(key)->second); };
 
         /*Returns a reference to the value that is mapped to a key equivalent to key,
          * performing an insertion if such key does not already exist.*/
-//        T& operator[]( const Key& key ){}
+        T& operator[]( const Key& key ){
+            _node* _return = this->findm(ft::make_pair(key, NULL), this->_root, this->_comp);
+            if (this->isNul(_return))
+                insert(ft::make_pair(key, T()));
+            return at(key);
+        };
 
         /*
         *====================================================================================
@@ -303,8 +303,10 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         iterator erase(iterator first, iterator last) {
             __INFOMO__
             iterator _return;
-            for ( ; first != last; ++first)
-                _return = erase(first);
+            for ( ; first != last; first){
+                _return = first++;
+                _return = erase(_return);
+            }
             __INFOMONL__
             return _return;
         };
@@ -378,12 +380,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Iterator pointing to the first element that is not less than key.
          * If no such element is found, a past-the-end iterator (see end()) is returned.*/
         iterator lower_bound(const Key &key) {
-            _node* _return = this->greater_or_equal(key, this->_comp);
+            _node* _return = this->greater_or_equal(ft::make_pair(key, NULL), this->_comp);
             return iterator(_return, this);
         };
 
         const_iterator lower_bound(const Key &key) const {
-            _node* _return = this->greater_or_equal(key, this->_comp);
+            _node* _return = this->greater_or_equal(ft::make_pair(key, NULL), this->_comp);
             return iterator(_return, this);
         };
 
@@ -392,12 +394,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * If no such element is found, past-the-end (see end()) iterator is returned.*/
         iterator upper_bound(const Key &key) {
             iterator save =  lower_bound(key);
-            return (*save == key) ? ++save : save;
+            return (save->first == key) ? ++save : save;
         };
 
         const_iterator upper_bound(const Key &key) const {
             iterator save =  lower_bound(key);
-            return const_cast<const_iterator>((*save == key) ? ++save : save);
+            return const_cast<const_iterator>((save->first == key) ? ++save : save);
         };
 
         /*
@@ -411,7 +413,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         key_compare key_comp() const { return key_compare(); };
 
         /*Returns the function object that compares the values. It is the same as key_comp.*/
-        typename base::value_compare value_comp() const { return this->value_compare(); };
+        value_compare value_comp() const { return value_comp(); };
 
         /*
         *====================================================================================

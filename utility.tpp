@@ -78,46 +78,35 @@ Return value
 //Tests if both elements of lhs and rhs are equal, that is, compares lhs.first with rhs.first and lhs.second with
 // rhs.second.
 template <class T1, class T2>
-bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+inline bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
     return lhs.first == rhs.first && lhs.second == rhs.second;
 };
 
 template <class T1, class T2>
-bool operator!= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+inline bool operator!= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
     return !(lhs == rhs);
 };
 
 //Compares lhs and rhs lexicographically by operator<, that is, compares the first elements and only if they are
 // equivalent, compares the second elements
 template <class T1, class T2>
-bool operator<  (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-        std::cout << lhs.first << " " << rhs.first
-                  << " " << lhs.second << " " << rhs.second << " "
-                  << (lhs.first < rhs.first) << " " << (lhs.second < rhs.second)<< std::endl;
-    if (lhs.first < rhs.first)
-        return lhs.second < rhs.second;
-    return lhs.first < rhs.first;
+inline bool operator<  (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+    return (lhs.first < rhs.first) || (!(rhs.first < lhs.first) && lhs.second < rhs.second);
 };
 
 template <class T1, class T2>
-bool operator>  (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-    if (lhs.first > rhs.first)
-        return lhs.second > rhs.second;
-    return lhs.first > rhs.first;
+inline bool operator>  (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+    return rhs < lhs;
 };
 
 template <class T1, class T2>
-bool operator<= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-    if (lhs.first <= rhs.first)
-        return lhs.second <= rhs.second;
-    return lhs.first <= rhs.first;
+inline bool operator<= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+    return !(rhs < lhs);
 };
 
 template <class T1, class T2>
-bool operator>= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-    if (lhs.first >= rhs.first)
-        return lhs.second >= rhs.second;
-    return lhs.first >= rhs.first;
+inline bool operator>= (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
+    return !(lhs < rhs);
 };
 
 //ft::make_pair

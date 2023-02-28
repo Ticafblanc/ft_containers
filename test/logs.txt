@@ -1,114 +1,14 @@
-In file included from ../map_tests/operator >=.cpp:1:
-In file included from ../map_tests/../system/system_methods.ipp:2:
-In file included from ../map_tests/../system/lib.hpp:30:
-../map_tests/../system/Alloc.hpp:55:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
-template <class _Up, class... _Args>
-                          ^
-../map_tests/../system/Alloc.hpp:58:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
-        construct(_Up* __p, _Args&&... __args)
-                                 ^
-../map_tests/../system/Alloc.hpp:164:27: warning: variadic templates are a C++11 extension [-Wc++11-extensions]
-template <class _Up, class... _Args>
-                          ^
-../map_tests/../system/Alloc.hpp:167:34: warning: rvalue references are a C++11 extension [-Wc++11-extensions]
-        construct(_Up* __p, _Args&&... __args)
-                                 ^
-4 warnings generated.
-ed.
-/map_tests/equal_range().cpp:1:
+In file included from ../map_tests/erase(InputIt).cpp:1:
 In file included from ../map_tests/../system/system_methods.ipp:2:
 In file included from ../map_tests/../system/lib.hpp:28:
 In file included from ../map_tests/../system/../../config.hpp:3:
-../map_tests/../../../map.tpp:381:36: error: no matching member function for call to 'greater_or_equal'
-            _node* _return = this->greater_or_equal(key, this->_comp);
-                             ~~~~~~^~~~~~~~~~~~~~~~
-../map_tests/../../../map.tpp:370:34: note: in instantiation of member function 'ft::map<int, int>::lower_bound' requested here
-            return ft::make_pair(lower_bound(key), upper_bound(key));
-                                 ^
-../map_tests/equal_range().cpp:43:93: note: in instantiation of member function 'ft::map<int, int>::equal_range' requested here
-    const _pair<_map<int, int>::const_iterator , _map<int, int>::const_iterator>& pair = mp.equal_range(10);
-                                                                                            ^
-../map_tests/equal_range().cpp:64:73: note: in instantiation of function template specialization 'equal_range_test<int, int>' requested here
-    exit(run_map_unit_test<int, int>("equal_range()", equal_range_test, equal_range_test));
-                                                                        ^
-../map_tests/../system/../../../red_black_tree.tpp:193:15: note: candidate function template not viable: no known conversion from 'const int' to 'const ft::pair<const int, int>' for 1st argument
-        Node* greater_or_equal(const Key& value, Compare comp) const {
-              ^
-In file included from ../map_tests/equal_range().cpp:1:
-In file included from ../map_tests/../system/system_methods.ipp:2:
-In file included from ../map_tests/../system/lib.hpp:28:
-In file included from ../map_tests/../system/../../config.hpp:3:
-../map_tests/../../../map.tpp:395:27: error: invalid operands to binary expression ('ft::pair<const int, int>' and 'const int')
-            return (*save == key) ? ++save : save;
-                    ~~~~~ ^  ~~~
-../map_tests/../../../map.tpp:370:52: note: in instantiation of member function 'ft::map<int, int>::upper_bound' requested here
-            return ft::make_pair(lower_bound(key), upper_bound(key));
-                                                   ^
-../map_tests/equal_range().cpp:43:93: note: in instantiation of member function 'ft::map<int, int>::equal_range' requested here
-    const _pair<_map<int, int>::const_iterator , _map<int, int>::const_iterator>& pair = mp.equal_range(10);
-                                                                                            ^
-../map_tests/equal_range().cpp:64:73: note: in instantiation of function template specialization 'equal_range_test<int, int>' requested here
-    exit(run_map_unit_test<int, int>("equal_range()", equal_range_test, equal_range_test));
-                                                                        ^
-../map_tests/../system/../../../utility.tpp:81:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'const int'
-bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-     ^
-../map_tests/../system/../../../iterator.tpp:254:6: note: candidate template ignored: could not match 'reverse_iterator' against 'pair'
-bool operator== (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
-     ^
-../map_tests/../system/../../../vector.tpp:628:13: note: candidate template ignored: could not match 'vector' against 'pair'
-inline bool operator== ( const ft::vector<T,Alloc>& lhs,
-            ^
-../map_tests/../system/../../../stack.tpp:132:13: note: candidate template ignored: could not match 'stack' against 'pair'
-inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-            ^
-../map_tests/../../../map.tpp:477:17: note: candidate template ignored: could not match 'map' against 'pair'
-    inline bool operator== ( ft::map< Key, T, Compare, Allocator >& lhs,
-                ^
-../map_tests/../system/../../../set.tpp:433:17: note: candidate template ignored: could not match 'set' against 'pair'
-    inline bool operator== ( ft::set< Key, Compare, Allocator >& lhs,
-                ^
-4 warnings and 2 errors generated.
-mp2.upper_bound(1) == mp2.end())
-            ^
-../map_tests/upper_bound().cpp:92:73: note: in instantiation of function template specialization 'upper_bound_test<int, int>' requested here
-    exit(run_map_unit_test<int, int>("upper_bound()", upper_bound_test, upper_bound_test));
-                                                                        ^
-../map_tests/../system/../../../utility.tpp:81:6: note: candidate template ignored: could not match 'pair<type-parameter-0-0, type-parameter-0-1>' against 'const int'
-bool operator== (const ft::pair<T1, T2> &lhs, const ft::pair<T1, T2> &rhs) {
-     ^
-../map_tests/../system/../../../iterator.tpp:254:6: note: candidate template ignored: could not match 'reverse_iterator' against 'pair'
-bool operator== (const reverse_iterator<Iterator1>& lhs, const reverse_iterator<Iterator2>& rhs)
-     ^
-../map_tests/../system/../../../vector.tpp:628:13: note: candidate template ignored: could not match 'vector' against 'pair'
-inline bool operator== ( const ft::vector<T,Alloc>& lhs,
-            ^
-../map_tests/../system/../../../stack.tpp:132:13: note: candidate template ignored: could not match 'stack' against 'pair'
-inline bool operator==( const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs )
-            ^
-../map_tests/../../../map.tpp:477:17: note: candidate template ignored: could not match 'map' against 'pair'
-    inline bool operator== ( ft::map< Key, T, Compare, Allocator >& lhs,
-                ^
-../map_tests/../system/../../../set.tpp:433:17: note: candidate template ignored: could not match 'set' against 'pair'
-    inline bool operator== ( ft::set< Key, Compare, Allocator >& lhs,
-                ^
-In file included from ../map_tests/upper_bound().cpp:1:
-In file included from ../map_tests/../system/system_methods.ipp:2:
-In file included from ../map_tests/../system/lib.hpp:28:
-In file included from ../map_tests/../system/../../config.hpp:3:
-../map_tests/../../../map.tpp:381:36: error: no matching member function for call to 'greater_or_equal'
-            _node* _return = this->greater_or_equal(key, this->_comp);
-                             ~~~~~~^~~~~~~~~~~~~~~~
-../map_tests/../../../map.tpp:394:30: note: in instantiation of member function 'ft::map<int, int, std::greater<int> >::lower_bound' requested here
-            iterator save =  lower_bound(key);
-                             ^
-../map_tests/upper_bound().cpp:55:13: note: in instantiation of member function 'ft::map<int, int, std::greater<int> >::upper_bound' requested here
-    if (mp2.upper_bound(1) == mp2.end())
-            ^
-../map_tests/upper_bound().cpp:92:73: note: in instantiation of function template specialization 'upper_bound_test<int, int>' requested here
-    exit(run_map_unit_test<int, int>("upper_bound()", upper_bound_test, upper_bound_test));
-                                                                        ^
-../map_tests/../system/../../../red_black_tree.tpp:193:15: note: candidate function template not viable: no known conversion from 'const int' to 'const ft::pair<const int, int>' for 1st argument
-        Node* greater_or_equal(const Key& value, Compare comp) const {
-              ^
-4 warnings and 4 errors generated.
+../map_tests/../../../map.tpp:306:36: warning: expression result unused [-Wunused-value]
+            for ( ; first != last; first){
+                                   ^~~~~
+../map_tests/erase(InputIt).cpp:24:8: note: in instantiation of member function 'ft::map<int, int, std::__1::less<int>, std::__1::allocator<ft::pair<const int, int> > >::erase' requested here
+    mp.erase(mp.begin(), --mp.end());
+       ^
+../map_tests/erase(InputIt).cpp:32:70: note: in instantiation of function template specialization 'erase_test_3<int, int>' requested here
+    exit(run_map_unit_test<int, int>("erase(InputIt)", erase_test_3, erase_test_3));
+                                                                     ^
+1 warning generated.

@@ -76,6 +76,9 @@ Depth Property: For each node, any simple path from this node to any of its desc
         void init(Key* value){
             _root = _nul = create_node(BLACK);
             _nul->_Key = value;
+            _nul->_LeftChild = _nul;
+            _nul->_RightChild = _nul;
+            _nul->_Parent = _nul;
         };
 
         bool isNul(Node* node) const {
