@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../map.tpp"
+#include "../set.tpp"
 #include "../vector.tpp"
 #include "../stack.tpp"
 #include "../type_traits.tpp"
@@ -14,21 +16,21 @@
 /**************************************************/
 #define VECTOR			"../../../vector.tpp"
 #define STACK			"../../../stack.tpp"
-//#define MAP			  	"../../../Map.tpp"
+#define MAP			  	"../../../map.tpp"
 #define SET			  	"../../../set.tpp"
 #define UTILITIES		"../../../utility.tpp"
 #define TYPE_TRAITS     "../../../type_traits.tpp"
 
 
 /* comment this to turn OFF flags (-WWW, -std=98) */
-// #define FLAGS
+#define FLAGS
 
 /**************************************************/
 /*		Change template names of your classes	  */
 /**************************************************/
 #define	_vector 			ft::vector
 #define	_stack	 			ft::stack
-//#define	_map 				ft::Map
+#define	_map 				ft::map
 #define	_set	 			ft::set
 #define	_is_integral 		ft::is_integral
 #define	_enable_if 			ft::enable_if
