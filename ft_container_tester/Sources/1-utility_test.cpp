@@ -10,9 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Unit_test.hpp"
+#include "../Include/Unit_test.hpp"
 
-int main(){
+int utility_test(){
+
     pid_t pid;
 
     //Test ft::pair https://en.cppreference.com/w/cpp/utility/pair/pair

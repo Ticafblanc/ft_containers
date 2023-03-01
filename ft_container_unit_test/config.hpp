@@ -1,25 +1,25 @@
 #pragma once
 
-#include "../map.tpp"
-#include "../set.tpp"
-#include "../vector.tpp"
-#include "../stack.tpp"
-#include "../type_traits.tpp"
-#include "../iterator.tpp"
-#include "../algorithm.tpp"
-#include "../utility.tpp"
+#include "../ft_stl/map.tpp"
+#include "../ft_stl/set.tpp"
+#include "../ft_stl/vector.tpp"
+#include "../ft_stl/stack.tpp"
+#include "../ft_stl/type_traits.tpp"
+#include "../ft_stl/iterator.tpp"
+#include "../ft_stl/algorithm.tpp"
+#include "../ft_stl/utility.tpp"
 
 /**************************************************/
 /*			Change paths to your files			  */
 /*				or comment #include				  */
 /*		if you haven't yet some container		  */
 /**************************************************/
-#define VECTOR			"../../../vector.tpp"
-#define STACK			"../../../stack.tpp"
-#define MAP			  	"../../../map.tpp"
-#define SET			  	"../../../set.tpp"
-#define UTILITIES		"../../../utility.tpp"
-#define TYPE_TRAITS     "../../../type_traits.tpp"
+#define VECTOR			"../../../ft_stl/vector.tpp"
+#define STACK			"../../../ft_stl/stack.tpp"
+#define MAP			  	"../../../ft_stl/map.tpp"
+#define SET			  	"../../../ft_stl/set.tpp"
+#define UTILITIES		"../../../ft_stl/utility.tpp"
+#define TYPE_TRAITS     "../../../ft_stl/type_traits.tpp"
 
 
 /* comment this to turn OFF flags (-WWW, -std=98) */

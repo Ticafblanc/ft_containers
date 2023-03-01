@@ -10,13 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Unit_test.hpp"
-#include <vector>
-#include <set>
-#include <map>
-#include <iostream>
-#include <iterator>
-#include "../stack.tpp"
+#include "../Include/Unit_test.hpp"
+
 
 int main(){
     std::chrono::system_clock::time_point start = std::chrono::system_clock::now();

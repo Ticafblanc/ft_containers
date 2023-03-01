@@ -46,7 +46,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     };
 
     template< class Key, class Compare = std::less<Key>, class Allocator = std::allocator<Key> >
-    class set : public setbase <Key, Compare , Allocator>, public RedBlackTree< Key, nodeSet< Key > > {
+    class set : private setbase <Key, Compare , Allocator>, private RedBlackTree< Key, nodeSet< Key > > {
 
     private:
 

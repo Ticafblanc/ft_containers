@@ -92,7 +92,7 @@ Allocator	-	An allocator that is used to acquire/release memory and to construct
  (since C++20) if Allocator::value_type is not the same as T.*/
 
 template <class T, class Allocator = std::allocator<T> >
-class vector : protected VectorBase<T, Allocator> {
+class vector : private VectorBase<T, Allocator> {
 
 private:
     typedef VectorBase<T, Allocator>                                            Base;

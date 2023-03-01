@@ -73,6 +73,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
+
         void init(Key* value){
             _root = _nul = create_node(BLACK);
             _nul->_Key = value;
@@ -294,6 +295,7 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
+
         /*rotate Node X */
         void rotateLeft(Node* node) {
             Node* tmp = node->_RightChild;
@@ -482,6 +484,8 @@ Depth Property: For each node, any simple path from this node to any of its desc
     *====================================================================================
     */
 
+    public:
+
         rbtiterator() : _node(nullptr), _tree(nullptr){};
 
         explicit rbtiterator(Node* tmp, ft::RedBlackTree<Key, Node>* _tree) : _node(tmp), _tree(_tree){};
@@ -505,30 +509,22 @@ Depth Property: For each node, any simple path from this node to any of its desc
         Key* operator->() const { return std::addressof(operator*()); }
 
         rbtiterator& operator++() {
-//            std::cout << "coucou " << std::endl;
-
             _node = _tree->successor(_node);
             return *this;
         };
 
         rbtiterator operator++(int) {
-//            std::cout << "coucou " << std::endl;
-
             const rbtiterator Tmp = *this;
             _node = _tree->successor(_node);
             return Tmp;
         };
 
         rbtiterator& operator--() {
-//            std::cout << "coucou " << std::endl;
-
             _node = _tree->predecessor(_node);
             return *this;
         };
 
         rbtiterator  operator--(int) {
-//            std::cout << "coucou " << std::endl;
-
             const rbtiterator Tmp = *this;
             _node = _tree->predecessor(_node);
             return Tmp;

@@ -64,7 +64,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     };
 
     template< class Key, class T, class Compare = std::less<Key>, class Allocator = std::allocator<ft::pair<const Key, T> > >
-    class map : public mapbase <Key, T, Compare , Allocator>, public RedBlackTree< ft::pair<const Key, T> , nodeSet< ft::pair<const Key, T> > > {
+    class map : private mapbase <Key, T, Compare , Allocator>, private RedBlackTree< ft::pair<const Key, T> , nodeSet< ft::pair<const Key, T> > > {
 
     private:
 

@@ -10,31 +10,49 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Unit_test.hpp"
-#include <vector>
-#include <set>
-#include <map>
+#ifndef FT_CONTAINERS_UNIT_TEST_HPP
+# define FT_CONTAINERS_UNIT_TEST_HPP
+
 #include <iostream>
-#include <iterator>
-#include "../stack.tpp"
+#include <chrono>
+#include <deque>
+#include <unistd.h>
+#include <iostream>
+#include <fstream>
 
-int main(){
-    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 
+#define MAX_RAM 4294967296
+#define BUFFER_SIZE 4096
 
-    std::set<int> test;
-    test.insert(4);
-    test.insert(4);
-    test.insert(4);
-    test.insert(4);
-    test.insert(4);
+struct Buffer
+{
+    int idx;
+    char buff[BUFFER_SIZE];
+};
 
-    for(int i= 0; i < 5 ; ++i){
-        std::cout << *test.find(i)<<std::endl;
-    }
+#define COUNT (MAX_RAM / (int)sizeof(Buffer))
 
-	std::cout << std::endl;
-    std::cout << "execution time : " << std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now() - start).count() << "ms" << std::endl;
-    return 0;
-}
+#if REAL  //CREATE A REAL STL EXAMPLE
+    #include <stack>
+    #include <type_traits>
+    #include <algorithm>
+    #include <iterator>
+    #include <utility>
+    #include <vector>
+    #include <map>
+    #include <set>
+	namespace ft = std;
+#else
+    #include "../vector.tpp"
+    #include "../map.tpp"
+    #include "../set.tpp"
+    #include "../stack.tpp"
+    #include "../type_traits.tpp"
+    #include "../iterator.tpp"
+    #include "../algorithm.tpp"
+    #include "../utility.tpp"
+#endif
+
+int utility_test();
+
+#endif //FT_CONTAINERS_UNIT_TEST_HPP
