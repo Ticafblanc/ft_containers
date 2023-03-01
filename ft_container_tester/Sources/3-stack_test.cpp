@@ -12,16 +12,14 @@
 
 #include "../Include/Unit_test.hpp"
 
-int main(){
-    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-    srand(123);
+int stack_test(){
 
-	std::vector<std::string> vector_str;
-	std::vector<int> vector_int;
+	ft::vector<std::string> vector_str;
+	ft::vector<int> vector_int;
 	ft::stack<int> stack_int;
-    std::vector<Buffer> vector_buffer;
+    ft::vector<Buffer> vector_buffer;
 	ft::stack<Buffer, std::deque<Buffer> > stack_deq_buffer;
-	std::map<int, int> map_int;
+	ft::map<int, int> map_int;
 
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -33,7 +31,7 @@ int main(){
 		const int idx = rand() % COUNT;
 		vector_buffer[idx].idx = 5;
 	}
-	std::vector<Buffer>().swap(vector_buffer);
+	ft::vector<Buffer>().swap(vector_buffer);
 
 	try
 	{
@@ -46,16 +44,16 @@ int main(){
 	}
 	catch(const std::exception& e)
 	{
-		//NORMAL ! :P
+		std::cout << "error" << std::endl;
 	}
 
 	for (int i = 0; i < COUNT; ++i)
 	{
-		map_int.insert(std::make_pair(rand(), rand()));
+		map_int.insert(ft::make_pair(rand(), rand()));
 	}
 
 	int sum = 0;
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < COUNT; i++)
 	{
 		int access = rand();
 		sum += map_int[access];
@@ -63,7 +61,7 @@ int main(){
 	std::cout << "should be constant with the same seed: " << sum << std::endl;
 
 	{
-		std::map<int, int> copy = map_int;
+		ft::map<int, int> copy = map_int;
 	}
 	ft::MutantStack<char> iterable_stack;
 	for (char letter = 'a'; letter <= 'z'; letter++)
@@ -73,7 +71,6 @@ int main(){
 		std::cout << *it;
 	}
 	std::cout << std::endl;
-    std::cout << "execution time : " << std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now() - start).count() << "ms" << std::endl;
+
     return 0;
 }

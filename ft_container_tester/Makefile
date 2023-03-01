@@ -10,7 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 
-PROJECT = ft_containers
+PROJECT = ft_stl
+PROJECT2 = stl
 
 	#  BINARY  #
 
@@ -20,6 +21,10 @@ BIN_NAME = $(PROJECT)
 
 BIN = $(addprefix $(BIN_PATH),$(BIN_NAME))
 
+BIN_NAME2 = $(PROJECT2)
+
+BIN2 = $(addprefix $(BIN_PATH),$(BIN_NAME2))
+
 	#  INCLUDES  #
 
 INC_PATH = ../ft_stl
@@ -28,13 +33,13 @@ INC_FLAGS = -I $(INC_PATH)
 
 INC_PATH2 = ./Include
 
-INC_FLAGS += -I $(INC_PATH@)
+INC_FLAGS += -I $(INC_PATH)
 
 	#  SOURCES  #
 
 SRC_PATH = Sources/
 
-SRC_NAME = tester.cpp))
+SRC_NAME = $(notdir $(wildcard Sources/*.cpp))
 
 SRC = $(addprefix $(SRC_PATH),$(SRC_NAME))
 
@@ -42,7 +47,7 @@ SRC = $(addprefix $(SRC_PATH),$(SRC_NAME))
 
 OBJ_PATH = $(BIN_PATH)Objects/
 
-OBJ_NAME = $(SRC_NAME:.c=.o)
+OBJ_NAME = $(SRC_NAME:.cpp=.o)
 
 OBJ = $(addprefix $(OBJ_PATH),$(OBJ_NAME))
 	
@@ -51,6 +56,8 @@ OBJ = $(addprefix $(OBJ_PATH),$(OBJ_NAME))
 CC = c++
 
 CC_FLAGS = -std=c++98 -Wall -Wextra -Werror
+
+CC_DEF = -D real
 
 CL = rm -rf
 
@@ -85,10 +92,10 @@ BLU = \033[1;34m
 
 	#  COMPILATION  #
 
-all: $(BIN) 
+all: $(BIN) $(BIN2)
 		@echo $(GREEN) Compilation $(PROJECT) is completed !!
 
-$(OBJ_PATH)%.o:$(SRC_PATH)%.c
+$(OBJ_PATH)%.o:$(SRC_PATH)%.cpp
 		@$(CC) $(CC_FLAGS) $(INC_FLAGS) -c $< -o $@
 		@echo $(BLUE) $(notdir $@) is created !!
 
@@ -96,8 +103,17 @@ $(BIN): title directory $(OBJ)
 		@$(CC) $(OBJ) -o $(BIN)
 		@echo $(BLUE) $(notdir $(BIN)) is created !!
 
-run: all
-		@$(LEAK) ./Bin/cube3D Maps/test/mandatory.cub
+$(BIN2): $(OBJ)
+		@$(CC) $(OBJ) $(CC_DEF) -o $(BIN2)
+		@echo $(BLUE) $(notdir $(BIN2)) is created !!
+
+run:
+		@$(LEAK) ./test.sh
+
+unit:
+		@cd ../ft_container_unit_test && ./start.sh
+
+full: run unit
 
 title: 
 		@echo $(GREEN)******************$(PROJECT)******************
@@ -112,8 +128,8 @@ clean:
 		@echo $(RED) Object $(notdir $(OBJ)) is delete !
 
 fclean: clean 
-		@$(CL) $(BIN)
-		@echo $(RED) Binary $(notdir $(BIN)) is delete !
+		@$(CL) $(BIN) $(BIN2)
+		@echo $(RED) Binary $(notdir $(BIN)) and $(notdir $(BIN2)) is delete !
 
 finish: 
 		@$(CL) $(BIN_PATH)

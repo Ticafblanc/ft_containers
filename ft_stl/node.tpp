@@ -51,15 +51,12 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     */
 
         void        swap(_self& other)
-        {__INFOMO__
-
+        {
             std::swap(_Key, other._Key);
             std::swap(_Color, other._Color);
             std::swap(_LeftChild, other._LeftChild);
             std::swap(_RightChild, other._RightChild);
             std::swap(_Parent, other._Parent);
-
-            __INFOMONL__
         };
     };
 
@@ -68,7 +65,7 @@ __FT_CONTAINERS_END_NAMESPACE
 namespace std {
     template<class Key>
     inline void swap(ft::nodeSet<Key>&lhs, ft::nodeSet<Key> &rhs)
-    {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
+    { lhs.swap(rhs);  };
 };
 
 #endif //FT_CONTAINERS_NODE_TPP

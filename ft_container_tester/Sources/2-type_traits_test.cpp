@@ -12,9 +12,7 @@
 
 #include "../Include/Unit_test.hpp"
 
-int main(){
-    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
-    //Test ft::enable_if https://en.cppreference.com/w/cpp/types/enable_if
+int type_traits(){
 
     std::cout << "####  Test >> ft::enable_if  ####" << std::endl;
 
@@ -53,17 +51,17 @@ int main(){
 
     std::cout << "####  Test >> ft::lexicographical_compare  ####" << std::endl;
     int let = 97;
-    std::vector<char> va1;
+    ft::vector<char> va1;
     for(int i = 0; i < 6; ++i)
         va1.insert(va1.begin(), static_cast<char>(let++));
-    std::vector<char> va2;
+    ft::vector<char> va2;
     for(int i = 0; i < 6; ++i)
         va2.insert(va2.begin(), static_cast<char>(let--));
 
     while (!ft::lexicographical_compare(va1.begin(), va1.end(),
                                          va2.begin(), va2.end()))
     {
-        std::vector<char>::iterator itv = va1.begin();
+        ft::vector<char>::iterator itv = va1.begin();
         for (int i = 0; i < 6; ++i)
             std::cout << *(itv++) << ' ';
         std::cout << "< ";
@@ -78,7 +76,7 @@ int main(){
 
     }
 
-    std::vector<char>::iterator itv = va1.begin();
+    ft::vector<char>::iterator itv = va1.begin();
     for (int i = 0; i < 6; ++i)
         std::cout << *(itv++) << ' ';
     std::cout << ">= ";
@@ -86,8 +84,8 @@ int main(){
     itv = va2.begin();
     for (int i = 0; i < 6; ++i)
         std::cout << *(itv++) << ' ';
-    std::cout << '\n' << std::endl;
-    std::cout << "execution time : " << std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now() - start).count() << "ms" << std::endl;
+
+    std::cout << std::endl;
+
     return 0;
 }

@@ -10,27 +10,28 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_CONTAINERS_UNIT_TEST_HPP
-# define FT_CONTAINERS_UNIT_TEST_HPP
+#pragma once
+
+#ifndef UNIT_TEST_HPP
+# define UNIT_TEST_HPP
 
 #include <iostream>
-#include <chrono>
 #include <deque>
 #include <unistd.h>
-#include <iostream>
-#include <fstream>
 
-
-#define MAX_RAM 4294967296
+#define MAX_RAM 4234545
 #define BUFFER_SIZE 4096
 
 struct Buffer
 {
     int idx;
     char buff[BUFFER_SIZE];
+
 };
 
+
 #define COUNT (MAX_RAM / (int)sizeof(Buffer))
+
 
 #if REAL  //CREATE A REAL STL EXAMPLE
     #include <stack>
@@ -41,18 +42,23 @@ struct Buffer
     #include <vector>
     #include <map>
     #include <set>
-	namespace ft = std;
+    namespace ft = std;
 #else
-    #include "../vector.tpp"
-    #include "../map.tpp"
-    #include "../set.tpp"
-    #include "../stack.tpp"
-    #include "../type_traits.tpp"
-    #include "../iterator.tpp"
-    #include "../algorithm.tpp"
-    #include "../utility.tpp"
+    #include "../../ft_stl/vector.tpp"
+    #include "../../ft_stl/map.tpp"
+    #include "../../ft_stl/set.tpp"
+    #include "../../ft_stl/stack.tpp"
+    #include "../../ft_stl/type_traits.tpp"
+    #include "../../ft_stl/iterator.tpp"
+    #include "../../ft_stl/algorithm.tpp"
+    #include "../../ft_stl/utility.tpp"
 #endif
 
-int utility_test();
+int utility_test(void);
+int type_traits(void);
+int stack_test(void);
+int vector_test(void);
+int map_test(void);
+int set_test(void);
 
 #endif //FT_CONTAINERS_UNIT_TEST_HPP

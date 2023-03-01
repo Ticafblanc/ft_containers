@@ -88,14 +88,14 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     public:
 
         set() : base(), _base(){
-            __INFOMF__
+
             Key* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
         };
 
         explicit set(const Compare &comp, const Allocator &alloc = Allocator()) : base(comp, alloc), _base() {
-            __INFOMF__
+
             Key* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
@@ -104,7 +104,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         template<class InputIt>
         set(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator())
                 : base(comp, alloc), _base() {
-            __INFOMF__
+
             Key* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
@@ -112,7 +112,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         };
 
         set(const _self &other) : base(other._comp, other._alloc), _base() {
-            __INFOMF__
+
             Key* build = this->_alloc.allocate(1);
             this->_alloc.construct(build);
             this->init(build);
@@ -121,7 +121,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         };
 
         ~set() {
-            __INFOMF__
+
             clear();
             this->_alloc.destroy(this->_nul->_Key);
             this->_alloc.deallocate(this->_nul->_Key, 1);
@@ -147,21 +147,21 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     public:
 
-        iterator                begin()             {__INFOIT__ return iterator(this->minimum(this->_root), this); };
+        iterator                begin()             { return iterator(this->minimum(this->_root), this); };
 
-        const_iterator          begin()     const   {__INFOIT__ return iterator(this->minimum(this->_root), this); };
+        const_iterator          begin()     const   { return iterator(this->minimum(this->_root), this); };
 
-        iterator                end()               {__INFOIT__ return iterator(this->_nul, this); };
+        iterator                end()               { return iterator(this->_nul, this); };
 
-        const_iterator          end()       const   {__INFOIT__ return iterator(this->_nul, this); };
+        const_iterator          end()       const   { return iterator(this->_nul, this); };
 
-        reverse_iterator        rbegin()            {__INFOIT__ return reverse_iterator(end()); };
+        reverse_iterator        rbegin()            { return reverse_iterator(end()); };
 
-        reverse_iterator        rend()              {__INFOIT__ return reverse_iterator(begin()); };
+        reverse_iterator        rend()              { return reverse_iterator(begin()); };
 
-        const_reverse_iterator  rbegin()    const   {__INFOIT__ return reverse_iterator(end()); };
+        const_reverse_iterator  rbegin()    const   { return reverse_iterator(end()); };
 
-        const_reverse_iterator  rend()      const   {__INFOIT__ return reverse_iterator(begin()); };
+        const_reverse_iterator  rend()      const   { return reverse_iterator(begin()); };
 
     /*
     *====================================================================================
@@ -172,16 +172,16 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     public:
 
         /*Checks if the container has no elements, i.e. whether begin() == end().*/
-        bool        empty()     const { __INFOCA__ return this->_size == 0; };
+        bool        empty()     const {  return this->_size == 0; };
 
         /*Returns the number of elements in the container,
          * i.e. std::distance(begin(), end()).*/
-        size_type   size()      const {__INFOCA__ return this->_size; };
+        size_type   size()      const { return this->_size; };
 
         /*Returns the maximum number of elements the container is able to
          * hold due to system or library implementation limitations, i.e.
          * std::distance(begin(), end()) for the largest container.*/
-        size_type   max_size()  const {__INFOCA__ return std::numeric_limits<size_type>::max() / sizeof(value_type); };
+        size_type   max_size()  const { return std::numeric_limits<size_type>::max() / sizeof(value_type); };
 
     /*
     *====================================================================================
@@ -196,23 +196,23 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Invalidates any references, pointers, or iterators referring to contained elements.
          * Any past-the-end iterators are also invalidated.*/
         void clear() {
-            __INFOMO__
+
             clear_tree(this->_root);
             this->_root = this->_nul;
-            __INFOMONL__
+
         };
 
         /* inserts value.
          * Returns a pair consisting of an iterator to the inserted element (or to the element
          * that prevented the insertion) and a bool value set to true if and only if the insertion took place.*/
         ft::pair<iterator, bool> insert(const value_type &value) {
-            __INFOMO__
+
             ft::pair<_node* , bool>  check = this->insertn(value, this->_root, this->_comp);
             if (check.second == false)
                 return  ft::make_pair(iterator(check.first, this), false);
             build(value, check.first->_Key);
             return  ft::make_pair(iterator(check.first, this), true);
-            __INFOMONL__
+
 
         };
 
@@ -221,7 +221,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Returns an iterator to the inserted element, or to the element that prevented the insertion.
          */
         iterator insert(iterator pos, const value_type &value) {
-            __INFOMO__
+
             ft::pair<_node* , bool>  check = this->insertn(value, pos._node, this->_comp);
             if (check.second == true)
                 build(value, check.first->_Key);
@@ -232,8 +232,11 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * that compare equivalent, it is unspecified which element is inserted
          * O(N·log(size() + N)), where N is the number of elements to insert.*/
         template<class InputIt>
-        void insert(InputIt first, InputIt last) {
-            __INFOMO__
+        void insert(InputIt first, typename ft::enable_if<ft::is_bidirectional_iterator
+                    <typename ft::iterator_traits_if
+                    <InputIt, !is_integral
+                    <InputIt>::value>::iterator_category>::value, InputIt>::type last) {
+
             ft::pair<_node *, bool> check = this->insertn(*first, this->_root, this->_comp);
             if (check.second == true)
                 build(*first, check.first->_Key);
@@ -242,13 +245,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
                 if (check.second == true)
                     build(*first, check.first->_Key);
             }
-            __INFOMONL__
+
         };
 
         /*Removes the element at pos
          * Iterator following the last removed element.*/
         iterator erase(iterator pos) {
-            __INFOMO__
+
             ft::pair<_node*, Key*> result;
             result = this->erases(pos._node);
             this->_alloc.destroy(result.second);
@@ -258,13 +261,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
         /*Removes the elements in the range [first, last).
          * Iterator following the last removed element.*/
         iterator erase(iterator first, iterator last) {
-            __INFOMO__
+
             iterator _return;
             for ( ; first != last; ){
                 _return = first++;
                 _return = erase(_return);
             }
-            __INFOMONL__
+
             return _return;
         };
 
@@ -272,13 +275,13 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
          * Number of elements removed (0 or 1).
          * Any exceptions thrown by the Compare object.*/
         size_type erase(const Key &key) {
-            __INFOMO__
+
             _node* pos = this->finds(key, this->_root, this->_comp);
             if(!(this->isNul(pos))) {
                 destroy(this->erases(pos).second) ;
                 return 1;
             }
-            __INFOMONL__
+
             return  0;
         };
         /*Exchanges the contents of the container with those of other. Does not invoke any
@@ -434,7 +437,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     template< class Key, class Compare , class Allocator >
     inline bool operator== ( ft::set< Key, Compare, Allocator >& lhs,
                              ft::set< Key, Compare, Allocator >& rhs )
-    {__INFONM__
+    {
         if (lhs.size() == rhs.size())
             return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
         return false;
@@ -442,7 +445,7 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
 
     template< class Key, class Compare, class Allocator >
     inline bool operator!=( ft::set< Key, Compare, Allocator >& lhs,
-                            ft::set< Key, Compare, Allocator >& rhs ){__INFONM__ return !(lhs == rhs); };
+                            ft::set< Key, Compare, Allocator >& rhs ){ return !(lhs == rhs); };
 
 /*3-6) Compares the contents of lhs and rhs lexicographically.
  * The comparison is performed
@@ -450,22 +453,22 @@ __FT_CONTAINERS_BEGIN_NAMESPACE
     template< class Key, class Compare, class Allocator >
     inline bool operator<( ft::set< Key, Compare, Allocator >& lhs,
                            ft::set< Key, Compare, Allocator >& rhs )
-    {__INFONM__
+    {
         return ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                            rhs.begin(), rhs.end());
     };
 
     template< class Key, class Compare, class Allocator >
     inline bool operator<=( ft::set< Key, Compare, Allocator >& lhs,
-                            ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(rhs < lhs); };
+                            ft::set< Key, Compare, Allocator >& rhs ) { return !(rhs < lhs); };
 
     template< class Key, class Compare, class Allocator >
     inline bool operator>( ft::set< Key, Compare, Allocator >& lhs,
-                           ft::set< Key, Compare, Allocator >& rhs )  {__INFONM__ return rhs < lhs; };
+                           ft::set< Key, Compare, Allocator >& rhs )  { return rhs < lhs; };
 
     template< class Key, class Compare, class Allocator >
     inline bool operator>=( ft::set< Key, Compare, Allocator >& lhs,
-                            ft::set< Key, Compare, Allocator >& rhs ) {__INFONM__ return !(lhs < rhs); };
+                            ft::set< Key, Compare, Allocator >& rhs ) { return !(lhs < rhs); };
 
 __FT_CONTAINERS_END_NAMESPACE
 
@@ -473,7 +476,7 @@ namespace std {
     template< class Key, class Compare, class Allocator >
     inline void swap(ft::set< Key, Compare, Allocator >& lhs,
                      ft::set< Key, Compare, Allocator >& rhs)
-    {__INFOMO__ lhs.swap(rhs); __INFOMONL__ };
+    { lhs.swap(rhs);  };
 }
 
 #endif //FT_CONTAINERS_SET_TPP

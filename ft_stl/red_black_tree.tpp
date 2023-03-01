@@ -63,9 +63,9 @@ Depth Property: For each node, any simple path from this node to any of its desc
     */
 
 
-        explicit RedBlackTree() : _root(nullptr), _nul(nullptr), _size(0) { __INFOMF__ };
+        explicit RedBlackTree() : _root(nullptr), _nul(nullptr), _size(0) { };
 
-        ~RedBlackTree() { __INFOMF__ delete_node(_nul);  };
+        ~RedBlackTree() {  delete_node(_nul);  };
 
     /*
     *====================================================================================
@@ -219,7 +219,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
          * return Node* to pos*/
         template<typename Compare>
         ft::pair<Node*, bool> insertn(const Key& value, Node* forward_root, Compare& comp ) {
-            __INFOMO__
             if (isNul(forward_root)
                 || comp(*forward_root->_Key, *successor(forward_root)->_Key)
                 || comp(*predecessor(forward_root)->_Key, *forward_root->_Key))
@@ -244,7 +243,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
                 destination_node->_RightChild = new_node;
             insertFixup(new_node);
             _size++;
-            __INFOMONL__
             return ft::make_pair(new_node, true);
         };
 
@@ -257,7 +255,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
         /*Removes the element at pos delete data Key with specific allocator in set
          * return node* to replace it*/
         ft::pair<Node*, Key*> erases(Node* pos) {
-            __INFOMO__
             if (isNul(pos))
                 return  ft::make_pair(pos, nullptr);
             Node* trans;
@@ -285,7 +282,6 @@ Depth Property: For each node, any simple path from this node to any of its desc
             if (original_color == BLACK)
                 deleteFixup(trans);
             _size--;
-            __INFOMONL__
             return ft::make_pair(trans, delete_node(pos));
         };
 

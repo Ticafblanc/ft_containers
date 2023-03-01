@@ -12,42 +12,24 @@
 
 #include "../Include/Unit_test.hpp"
 
-int main(int argc, char **argv){
+int main(){
 
-    std::ofstream output(argv[1]);
-    std::streambuf* old_cout = std::cout.rdbuf();
-    std::cout.rdbuf(file.rdbuf());
+    std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+    for(int i = 0; i < 100; i++) {
+        std::cout<<"Test utility start" << std::endl;
+        utility_test();
+        std::cout<<"Test type_trait start" << std::endl;
+        type_traits();
+        std::cout<<"Test stack start" << std::endl;
+        stack_test();
+        std::cout<<"Test vector start" << std::endl;
+        vector_test();
+        std::cout<<"Test map start" << std::endl;
+        map_test();
+        std::cout<<"Test set start" << std::endl;
+        set_test();
 
-    utility_test();
-
-    std::cout.rdbuf(old_cout);
-}
-
-
-int main() {
-
-    // exécuter la fonction
-    maFonction(42, 3.14);
-
-    // restaurer le flux cout original
-    std::cout.rdbuf(old_cout);
-
-    // comparer le contenu du fichier avec une valeur attendue
-    std::ifstream expected("attendu.txt");
-    std::ifstream actual("resultat.txt");
-    if (expected && actual) {
-        std::string expected_line, actual_line;
-        while (std::getline(expected, expected_line) && std::getline(actual, actual_line)) {
-            if (expected_line != actual_line) {
-                std::cout << "Les résultats ne correspondent pas." << std::endl;
-                return 1; // sortie avec une erreur
-            }
-        }
-        std::cout << "Les résultats correspondent." << std::endl;
-        return 0; // sortie avec succès
     }
-    else {
-        std::cout << "Erreur lors de l'ouverture des fichiers." << std::endl;
-        return 1; // sortie avec une erreur
-    }
+    std::cout << "execution time : " << std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now() - start).count() << "ms" << std::endl;
 }
